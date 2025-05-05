@@ -104,16 +104,26 @@ export default function Footer() {
         <div className="border-t mt-12 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm text-muted-foreground">
-              &copy; {new Date().getFullYear()} Noveena Furniture. All rights reserved.
+              &copy; {new Date().getFullYear()} Noveena Furniture. All rights reserved. 
+              <span className="block md:inline md:ml-2">Crafting Comfort Since 2010.</span>
             </p>
-            <div className="flex space-x-4 mt-4 md:mt-0">
+            <div className="flex flex-wrap gap-4 mt-4 md:mt-0">
               <Link href="/privacy-policy" className="text-sm text-muted-foreground hover:text-primary">
                 Privacy Policy
               </Link>
               <Link href="/terms-of-service" className="text-sm text-muted-foreground hover:text-primary">
                 Terms of Service
               </Link>
+              <Link href="/shipping-policy" className="text-sm text-muted-foreground hover:text-primary">
+                Shipping Policy
+              </Link>
+              <Link href="/returns" className="text-sm text-muted-foreground hover:text-primary">
+                Returns & Warranty
+              </Link>
             </div>
+          </div>
+          <div className="mt-4 text-center text-xs text-muted-foreground">
+            <p>Noveena Furniture - Premium Quality, Exceptional Comfort, Timeless Designs</p>
           </div>
         </div>
       </div>
