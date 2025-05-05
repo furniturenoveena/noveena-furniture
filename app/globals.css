@@ -1,0 +1,315 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 20 14.3% 4.1%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 14.3% 4.1%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 14.3% 4.1%;
+    --primary: 346, 84%, 45%;
+    --primary-foreground: 60 9.1% 97.8%;
+    --secondary: 60, 5%, 96%;
+    --secondary-foreground: 24 9.8% 10%;
+    --muted: 60 4.8% 95.9%;
+    --muted-foreground: 25 5.3% 44.7%;
+    --accent: 60 4.8% 95.9%;
+    --accent-foreground: 24 9.8% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 60 9.1% 97.8%;
+    --border: 20 5.9% 90%;
+    --input: 20 5.9% 90%;
+    --ring: 346, 84%, 45%;
+    --radius: 0.75rem;
+
+    /* Accent colors for categories */
+    --accent-living: 346, 84%, 45%;
+    --accent-dining: 27, 96%, 61%;
+    --accent-bedroom: 199, 89%, 48%;
+    --accent-office: 145, 63%, 42%;
+  }
+
+  .dark {
+    --background: 20 14.3% 4.1%;
+    --foreground: 60 9.1% 97.8%;
+    --card: 20 14.3% 4.1%;
+    --card-foreground: 60 9.1% 97.8%;
+    --popover: 20 14.3% 4.1%;
+    --popover-foreground: 60 9.1% 97.8%;
+    --primary: 347, 87%, 48%;
+    --primary-foreground: 60 9.1% 97.8%;
+    --secondary: 12 6.5% 15.1%;
+    --secondary-foreground: 60 9.1% 97.8%;
+    --muted: 12 6.5% 15.1%;
+    --muted-foreground: 24 5.4% 63.9%;
+    --accent: 12 6.5% 15.1%;
+    --accent-foreground: 60 9.1% 97.8%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 60 9.1% 97.8%;
+    --border: 12 6.5% 15.1%;
+    --input: 12 6.5% 15.1%;
+    --ring: 347, 87%, 48%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  /* Typography classes */
+  .font-playfair {
+    font-family: var(--font-playfair);
+  }
+
+  .font-cormorant {
+    font-family: var(--font-cormorant);
+  }
+
+  .font-montserrat {
+    font-family: var(--font-montserrat);
+  }
+
+  .font-italiana {
+    font-family: var(--font-italiana);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-playfair);
+  }
+
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-cormorant);
+  }
+
+  .subtitle {
+    font-family: var(--font-italiana);
+    letter-spacing: 0.05em;
+  }
+
+  .body-elegant {
+    font-family: var(--font-cormorant);
+    font-weight: 300;
+    line-height: 1.7;
+  }
+
+  .caption-elegant {
+    font-family: var(--font-montserrat);
+    font-size: 0.85rem;
+    letter-spacing: 0.03em;
+  }
+
+  /* Decorative elements */
+  .decorative-line {
+    position: relative;
+  }
+
+  .decorative-line::after {
+    content: "";
+    position: absolute;
+    bottom: -0.5rem;
+    left: 0;
+    width: 3rem;
+    height: 2px;
+    background-color: hsl(var(--primary));
+  }
+
+  .decorative-line-center::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  /* 3D and premium effects */
+  .premium-card {
+    @apply rounded-lg overflow-hidden transition-all duration-500;
+    box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.1);
+    transform-style: preserve-3d;
+    perspective: 1000px;
+  }
+
+  .premium-card:hover {
+    box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px) rotateX(2deg) rotateY(2deg);
+  }
+
+  .premium-card .card-content {
+    transform: translateZ(20px);
+  }
+
+  .premium-image-container {
+    @apply overflow-hidden relative;
+  }
+
+  .premium-image {
+    @apply transition-all duration-700;
+  }
+
+  .premium-image-container:hover .premium-image {
+    transform: scale(1.05);
+  }
+
+  /* Animations */
+  .hero-section {
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.3)), url("/hero-bg.jpg");
+    background-size: cover;
+    background-position: center;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.8s ease-in-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.8s ease-in-out;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.8s ease-in-out;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-pulse-subtle {
+    animation: pulseSlow 3s ease-in-out infinite;
+  }
+
+  .card-hover-effect {
+    @apply transition-all duration-300;
+    transform: translateY(0);
+  }
+
+  .card-hover-effect:hover {
+    @apply shadow-lg;
+    transform: translateY(-5px) scale(1.02);
+  }
+
+  /* Category accent colors */
+  .accent-living {
+    color: hsl(var(--accent-living));
+  }
+
+  .accent-dining {
+    color: hsl(var(--accent-dining));
+  }
+
+  .accent-bedroom {
+    color: hsl(var(--accent-bedroom));
+  }
+
+  .accent-office {
+    color: hsl(var(--accent-office));
+  }
+
+  .bg-accent-living {
+    background-color: hsl(var(--accent-living));
+  }
+
+  .bg-accent-dining {
+    background-color: hsl(var(--accent-dining));
+  }
+
+  .bg-accent-bedroom {
+    background-color: hsl(var(--accent-bedroom));
+  }
+
+  .bg-accent-office {
+    background-color: hsl(var(--accent-office));
+  }
+
+  /* Keyframes */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(30px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      transform: translateX(30px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+
+  @keyframes pulseSlow {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  /* Pricing tiers */
+  .pricing-tier {
+    @apply border rounded-lg p-4 transition-all duration-300;
+  }
+
+  .pricing-tier:hover {
+    @apply border-primary shadow-md;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--secondary));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary) / 0.5);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary));
+  }
+}
