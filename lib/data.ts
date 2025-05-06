@@ -4,7 +4,8 @@ export const products = [
     id: 1,
     name: "Elegant Leather Sofa",
     price: 189000,
-    image: "/placeholder.svg?height=400&width=600",
+    image:
+      "https://images.unsplash.com/photo-1567016432779-094069958ea5?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     category: "Living Room",
     type: "Brand New",
     rating: 4.9,
@@ -28,7 +29,8 @@ export const products = [
     id: 2,
     name: "Vintage Dining Table",
     price: 156000,
-    image: "/placeholder.svg?height=400&width=600",
+    image:
+      "https://images.unsplash.com/photo-1604578762246-41134e37f9cc?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     category: "Dining",
     type: "Imported Used",
     rating: 4.7,
@@ -52,7 +54,8 @@ export const products = [
     id: 3,
     name: "Modern Coffee Table",
     price: 48000,
-    image: "/placeholder.svg?height=400&width=600",
+    image:
+      "https://plus.unsplash.com/premium_photo-1680546330888-f995d2d64571?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     category: "Living Room",
     type: "Brand New",
     rating: 4.8,
@@ -76,7 +79,8 @@ export const products = [
     id: 4,
     name: "Premium Queen Bed",
     price: 220000,
-    image: "/placeholder.svg?height=400&width=600",
+    image:
+      "https://images.unsplash.com/photo-1634344656611-0773d8dbbe2c?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     category: "Bedroom",
     type: "Imported Used",
     rating: 5.0,
@@ -100,7 +104,8 @@ export const products = [
     id: 5,
     name: "Executive Office Desk",
     price: 175000,
-    image: "/placeholder.svg?height=400&width=600",
+    image:
+      "https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?q=80&w=1536&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     category: "Office",
     type: "Brand New",
     rating: 4.6,
@@ -124,11 +129,13 @@ export const products = [
     id: 6,
     name: "Vintage Dresser",
     price: 89000,
-    image: "/placeholder.svg?height=400&width=600",
+    image:
+      "https://images.unsplash.com/photo-1724093835399-72d8e0eb1f3a?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     category: "Bedroom",
     type: "Imported Used",
     rating: 4.5,
-    description: "A beautifully restored vintage dresser with intricate detailing and plenty of storage space.",
+    description:
+      "A beautifully restored vintage dresser with intricate detailing and plenty of storage space.",
     features: [
       "Solid wood construction",
       "Six spacious drawers",
@@ -147,11 +154,13 @@ export const products = [
     id: 7,
     name: "Ergonomic Office Chair",
     price: 65000,
-    image: "/placeholder.svg?height=400&width=600",
+    image:
+      "https://images.unsplash.com/photo-1688578735427-994ecdea3ea4?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     category: "Office",
     type: "Brand New",
     rating: 4.7,
-    description: "A premium ergonomic office chair designed for maximum comfort during long working hours.",
+    description:
+      "A premium ergonomic office chair designed for maximum comfort during long working hours.",
     features: [
       "Breathable mesh backrest",
       "Adjustable lumbar support",
@@ -170,7 +179,8 @@ export const products = [
     id: 8,
     name: "Dining Chair Set of 6",
     price: 120000,
-    image: "/placeholder.svg?height=400&width=600",
+    image:
+      "https://images.unsplash.com/photo-1710005897739-1f174b24de63?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     category: "Dining",
     type: "Imported Used",
     rating: 4.8,
@@ -194,7 +204,8 @@ export const products = [
     id: 9,
     name: "Corner Bookshelf",
     price: 35000,
-    image: "/placeholder.svg?height=400&width=600",
+    image:
+      "https://images.unsplash.com/photo-1543248939-4296e1fea89b?q=80&w=2074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     category: "Living Room",
     type: "Brand New",
     rating: 4.4,
@@ -218,7 +229,8 @@ export const products = [
     id: 10,
     name: "Antique Side Table",
     price: 42000,
-    image: "/placeholder.svg?height=400&width=600",
+    image:
+      "https://images.unsplash.com/photo-1499933374294-4584851497cc?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     category: "Living Room",
     type: "Imported Used",
     rating: 4.6,
@@ -242,7 +254,8 @@ export const products = [
     id: 11,
     name: "Modern TV Stand",
     price: 68000,
-    image: "/placeholder.svg?height=400&width=600",
+    image:
+      "https://images.unsplash.com/photo-1542487354-feaf93476caa?q=80&w=2030&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     category: "Living Room",
     type: "Brand New",
     rating: 4.5,
@@ -266,11 +279,13 @@ export const products = [
     id: 12,
     name: "King Size Four-Poster Bed",
     price: 250000,
-    image: "/placeholder.svg?height=400&width=600",
+    image:
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     category: "Bedroom",
     type: "Imported Used",
     rating: 4.9,
-    description: "A majestic king-size four-poster bed imported from India, featuring intricate hand-carved details.",
+    description:
+      "A majestic king-size four-poster bed imported from India, featuring intricate hand-carved details.",
     features: [
       "Solid teak wood construction",
       "Hand-carved posts and headboard",
@@ -285,4 +300,4 @@ export const products = [
     },
     inStock: true,
   },
-]
+];

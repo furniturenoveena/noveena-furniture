@@ -1,45 +1,91 @@
+"use client"; // Add this directive to make it a client component
+
 import Link from "next/link"
-import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from "lucide-react"
+import Image from "next/image"
+import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, ArrowUp, Send } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { cn } from "@/lib/utils"
 
 export default function Footer() {
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
-    <footer className="bg-muted/30 pt-16 border-t">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+    <footer className="relative bg-gradient-to-b from-muted/30 to-muted/50 pt-20 border-t overflow-hidden">
+      {/* Decorative Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -right-24 -top-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute -left-24 -bottom-24 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute right-1/4 bottom-12 w-32 h-32 bg-primary/5 rounded-full blur-xl" />
+      </div>
+
+      <div className="container mx-auto px-4 relative">
+        {/* Back to top button */}
+        <button 
+          onClick={scrollToTop}
+          className="absolute right-4 -top-10 bg-primary text-primary-foreground hover:bg-primary/90 
+                    rounded-full flex items-center justify-center w-10 h-10 shadow-lg transform 
+                    transition-transform hover:-translate-y-1"
+          aria-label="Back to top"
+        >
+          <ArrowUp size={18} />
+        </button>
+        
+        {/* Main Footer Content */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12">
           {/* Company Info */}
-          <div>
-            <h3 className="font-playfair text-xl font-bold mb-4">Noveena Furniture</h3>
-            <p className="text-muted-foreground mb-6">
-              Premium furniture store offering imported used and brand new pieces for discerning customers.
+          <div className="lg:col-span-4">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="relative h-12 w-12 overflow-hidden rounded-full border-2 border-primary/30">
+                <Image 
+                  src="/placeholder.svg?height=48&width=48" 
+                  alt="Noveena Furniture Logo" 
+                  width={48} 
+                  height={48}
+                  className="object-contain" 
+                />
+              </div>
+              <div>
+                <h2 className="font-playfair text-xl font-bold text-primary">NOVEENA</h2>
+                <p className="text-xs uppercase tracking-widest font-montserrat text-muted-foreground">Luxury Furniture</p>
+              </div>
+            </div>
+            
+            <p className="text-muted-foreground mb-6 leading-relaxed">
+              Premium furniture store offering imported used and brand new pieces for discerning customers. 
+              Crafting comfort and elegance for your space since 2010.
             </p>
+            
             <div className="flex space-x-4">
-              <Link href="https://facebook.com" target="_blank" rel="noopener noreferrer">
-                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
-                  <Facebook className="h-5 w-5" />
-                  <span className="sr-only">Facebook</span>
-                </Button>
-              </Link>
-              <Link href="https://instagram.com" target="_blank" rel="noopener noreferrer">
-                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
-                  <Instagram className="h-5 w-5" />
-                  <span className="sr-only">Instagram</span>
-                </Button>
-              </Link>
-              <Link href="https://twitter.com" target="_blank" rel="noopener noreferrer">
-                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
-                  <Twitter className="h-5 w-5" />
-                  <span className="sr-only">Twitter</span>
-                </Button>
-              </Link>
+              {[
+                { icon: <Facebook className="h-5 w-5" />, label: "Facebook", href: "https://facebook.com" },
+                { icon: <Instagram className="h-5 w-5" />, label: "Instagram", href: "https://instagram.com" },
+                { icon: <Twitter className="h-5 w-5" />, label: "Twitter", href: "https://twitter.com" },
+              ].map((social) => (
+                <Link 
+                  key={social.label}
+                  href={social.href} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="bg-background hover:bg-primary/10 border border-border transition-colors 
+                          duration-200 h-10 w-10 rounded-full flex items-center justify-center group"
+                >
+                  <span className="group-hover:text-primary">{social.icon}</span>
+                  <span className="sr-only">{social.label}</span>
+                </Link>
+              ))}
             </div>
           </div>
 
           {/* Quick Links */}
-          <div>
-            <h3 className="font-playfair text-xl font-bold mb-4">Quick Links</h3>
-            <ul className="space-y-2">
+          <div className="lg:col-span-2">
+            <h3 className="font-playfair text-xl font-bold mb-5 relative inline-block">
+              Quick Links
+              <span className="absolute left-0 bottom-0 w-1/2 h-0.5 bg-primary/30"></span>
+            </h3>
+            <ul className="space-y-3">
               {[
                 { name: "Home", href: "/" },
                 { name: "About Us", href: "/about" },
@@ -50,8 +96,10 @@ export default function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-muted-foreground hover:text-primary transition-colors duration-200"
+                    className="text-muted-foreground hover:text-primary transition-colors duration-200 
+                              flex items-center group"
                   >
+                    <span className="h-1 w-0 bg-primary mr-0 group-hover:w-2 group-hover:mr-2 transition-all duration-300"></span>
                     {link.name}
                   </Link>
                 </li>
@@ -60,27 +108,39 @@ export default function Footer() {
           </div>
 
           {/* Contact Info */}
-          <div>
-            <h3 className="font-playfair text-xl font-bold mb-4">Contact Us</h3>
+          <div className="lg:col-span-3">
+            <h3 className="font-playfair text-xl font-bold mb-5 relative inline-block">
+              Contact Us
+              <span className="absolute left-0 bottom-0 w-1/2 h-0.5 bg-primary/30"></span>
+            </h3>
             <ul className="space-y-4">
-              <li className="flex items-start">
-                <MapPin className="h-5 w-5 text-primary mr-3 mt-0.5" />
-                <span className="text-muted-foreground">123 Furniture Avenue, Colombo 05, Sri Lanka</span>
+              <li className="flex items-start group">
+                <span className="bg-background p-2 rounded-full mr-3 border border-border group-hover:border-primary/50 transition-colors duration-200">
+                  <MapPin className="h-4 w-4 text-primary/80" />
+                </span>
+                <span className="text-muted-foreground mt-1 text-sm">
+                  123 Furniture Avenue, <br />
+                  Colombo 05, Sri Lanka
+                </span>
               </li>
-              <li className="flex items-center">
-                <Phone className="h-5 w-5 text-primary mr-3" />
+              <li className="flex items-center group">
+                <span className="bg-background p-2 rounded-full mr-3 border border-border group-hover:border-primary/50 transition-colors duration-200">
+                  <Phone className="h-4 w-4 text-primary/80" />
+                </span>
                 <Link
                   href="tel:+94112345678"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-200"
+                  className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm"
                 >
                   +94 11 234 5678
                 </Link>
               </li>
-              <li className="flex items-center">
-                <Mail className="h-5 w-5 text-primary mr-3" />
+              <li className="flex items-center group">
+                <span className="bg-background p-2 rounded-full mr-3 border border-border group-hover:border-primary/50 transition-colors duration-200">
+                  <Mail className="h-4 w-4 text-primary/80" />
+                </span>
                 <Link
                   href="mailto:info@noveena.com"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-200"
+                  className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm"
                 >
                   info@noveena.com
                 </Link>
@@ -89,31 +149,71 @@ export default function Footer() {
           </div>
 
           {/* Newsletter */}
-          <div>
-            <h3 className="font-playfair text-xl font-bold mb-4">Newsletter</h3>
-            <p className="text-muted-foreground mb-4">
+          <div className="lg:col-span-3">
+            <h3 className="font-playfair text-xl font-bold mb-5 relative inline-block">
+              Newsletter
+              <span className="absolute left-0 bottom-0 w-1/2 h-0.5 bg-primary/30"></span>
+            </h3>
+            <p className="text-muted-foreground mb-4 text-sm">
               Subscribe to our newsletter for the latest updates and exclusive offers.
             </p>
-            <div className="flex flex-col space-y-2">
-              <Input type="email" placeholder="Your email address" className="bg-background" />
-              <Button>Subscribe</Button>
+            <div className="relative">
+              <Input 
+                type="email" 
+                placeholder="Your email address" 
+                className="bg-background pr-12 border-primary/20 focus-visible:ring-primary/50" 
+              />
+              <Button 
+                size="icon"
+                className="absolute right-1 top-1 h-8 w-8 rounded-md"
+                aria-label="Subscribe to newsletter"
+              >
+                <Send className="h-4 w-4" />
+              </Button>
             </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              By subscribing you agree to our{" "}
+              <Link href="/privacy-policy" className="underline hover:text-primary">
+                Privacy Policy
+              </Link>
+            </p>
           </div>
         </div>
 
-        <div className="border-t mt-12 py-6">
+        {/* Footer Bottom */}
+        <div className="border-t border-border/50 mt-12 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm text-muted-foreground">
               &copy; {new Date().getFullYear()} Noveena Furniture. All rights reserved.
+              <span className="hidden md:inline md:ml-2">Crafting Comfort Since 2010.</span>
             </p>
-            <div className="flex space-x-4 mt-4 md:mt-0">
-              <Link href="/privacy-policy" className="text-sm text-muted-foreground hover:text-primary">
-                Privacy Policy
-              </Link>
-              <Link href="/terms-of-service" className="text-sm text-muted-foreground hover:text-primary">
-                Terms of Service
-              </Link>
+            
+            <div className="flex flex-wrap gap-x-6 gap-y-2 mt-4 md:mt-0 justify-center">
+              {[
+                { name: "Privacy Policy", href: "/privacy-policy" },
+                { name: "Terms of Service", href: "/terms-of-service" },
+                { name: "Shipping Policy", href: "/shipping-policy" },
+                { name: "Returns & Warranty", href: "/returns" },
+              ].map((link) => (
+                <Link 
+                  key={link.name} 
+                  href={link.href} 
+                  className={cn(
+                    "text-sm text-muted-foreground hover:text-primary transition-colors relative group",
+                    "after:absolute after:left-0 after:-bottom-1 after:h-px after:bg-primary",
+                    "after:w-0 after:transition-all after:duration-300 hover:after:w-full"
+                  )}
+                >
+                  {link.name}
+                </Link>
+              ))}
             </div>
+          </div>
+          
+          <div className="mt-6 text-center">
+            <p className="text-xs text-muted-foreground font-light tracking-wider">
+              <span className="font-semibold">NOVEENA FURNITURE</span> - Premium Quality • Exceptional Comfort • Timeless Designs
+            </p>
           </div>
         </div>
       </div>

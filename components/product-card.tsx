@@ -91,10 +91,11 @@ export default function ProductCard({ product, variants, className }: ProductCar
       className={cn("group", className)}
     >
       <Card
-        className="overflow-hidden premium-card"
+        className="overflow-hidden premium-card border border-primary/5"
         style={{
-          transform: isHovered ? `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)` : "none",
-          transition: "transform 0.3s ease",
+          transform: isHovered ? `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)` : "none",
+          transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+          boxShadow: isHovered ? "0 20px 40px rgba(0, 0, 0, 0.14)" : "0 10px 30px -15px rgba(0, 0, 0, 0.1)",
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => {
@@ -103,82 +104,126 @@ export default function ProductCard({ product, variants, className }: ProductCar
         }}
         onMouseMove={handleMouseMove}
       >
-        <div className="relative aspect-square premium-image-container">
+        <div className="relative aspect-square premium-image-container overflow-hidden">
           <Image
             src={product.image || "/placeholder.svg"}
             alt={product.name}
             fill
             className="object-cover premium-image"
+            style={{
+              transform: isHovered ? "scale(1.08)" : "scale(1)",
+              transition: "transform 0.7s ease"
+            }}
           />
 
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300">
-            <div className="absolute top-4 left-4 flex flex-col gap-2">
-              <Badge variant="secondary" className="bg-primary text-white hover:bg-primary/90">
-                {product.type}
-              </Badge>
-
-              {product.discountPercentage && (
-                <Badge variant="secondary" className="bg-accent-dining text-white">
-                  {product.discountPercentage}% OFF
-                </Badge>
-              )}
-            </div>
-
-            <div className="absolute top-4 right-4">
+          {/* Elegant gradient overlay on hover */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 ease-in-out">
+            <motion.div 
+              className="absolute top-4 right-4"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: isHovered ? 1 : 0, scale: isHovered ? 1 : 0.8 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
+            >
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
                       size="icon"
                       variant="secondary"
-                      className="rounded-full h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white hover:text-primary"
+                      className="rounded-full h-9 w-9 hover:bg-white hover:text-primary shadow-lg backdrop-blur-sm bg-white/50"
                     >
                       <Heart className="h-4 w-4" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>
+                  <TooltipContent className="bg-white/90 backdrop-blur-lg border-primary/10">
                     <p>Add to wishlist</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-            </div>
+            </motion.div>
 
-            <div className="absolute bottom-4 inset-x-0 flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-4 group-hover:translate-y-0">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Link href={`/product/${product.id}`}>
-                      <Button className="rounded-full bg-white text-primary hover:bg-white/90">
-                        <Eye className="mr-2 h-4 w-4" />
-                        Quick View
+            <div className="absolute bottom-6 inset-x-0 flex justify-center gap-3">
+              <motion.div
+                className="flex gap-3"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 20 }}
+                transition={{ duration: 0.4 }}
+              >
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link href={`/product/${product.id}`}>
+                        <Button 
+                          className="rounded-full bg-white text-primary hover:bg-white/90 shadow-lg font-montserrat text-xs tracking-wide px-5 py-2 h-auto"
+                        >
+                          <Eye className="mr-2 h-4 w-4" />
+                          Quick View
+                        </Button>
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-white/90 backdrop-blur-lg border-primary/10">
+                      <p>View product details</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        variant="secondary" 
+                        className="rounded-full shadow-lg backdrop-blur-sm bg-white/50 hover:bg-white text-primary h-9 w-9 p-0"
+                      >
+                        <ShoppingCart className="h-4 w-4" />
                       </Button>
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>View product details</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="secondary" className="rounded-full">
-                      <ShoppingCart className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Add to cart</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-white/90 backdrop-blur-lg border-primary/10">
+                      <p>Add to cart</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </motion.div>
             </div>
+          </div>
+
+          {/* Type badge with improved visibility - moved outside the overlay for better visibility */}
+          <div className="absolute top-4 left-4 flex flex-col gap-2">
+            <Badge 
+              variant="secondary" 
+              className={`${
+                product.type === "Brand New" 
+                  ? "bg-emerald-100 text-emerald-800 border border-emerald-200" 
+                  : "bg-blue-100 text-blue-800 border border-blue-200"
+              } shadow-sm font-medium`}
+            >
+              {product.type === "Brand New" && "✨ "}
+              {product.type === "Imported Used" && "🏛️ "}
+              {product.type}
+            </Badge>
+
+            {product.discountPercentage && (
+              <Badge 
+                variant="secondary" 
+                className="bg-amber-100 text-amber-800 border border-amber-200 shadow-sm font-medium"
+              >
+                🏷️ {product.discountPercentage}% OFF
+              </Badge>
+            )}
+            
+            {product.tieredPricing && !product.discountPercentage && (
+              <Badge
+                variant="secondary"
+                className="bg-purple-100 text-purple-800 border border-purple-200 shadow-sm font-medium"
+              >
+                📦 Bulk Discount
+              </Badge>
+            )}
           </div>
         </div>
 
-        <CardContent className="p-4 card-content">
-          <div className="space-y-1">
-            <p className="text-sm text-muted-foreground font-montserrat tracking-wider uppercase">{product.category}</p>
+        <CardContent className="p-5 card-content">
+          <div className="space-y-2">
+            <p className="text-xs text-primary/80 font-montserrat tracking-wider uppercase">{product.category}</p>
             <h3 className="font-cormorant font-semibold truncate text-lg">{product.name}</h3>
 
             {product.rating && (
@@ -194,10 +239,13 @@ export default function ProductCard({ product, variants, className }: ProductCar
                 <span className="text-xs text-muted-foreground ml-1">({product.rating})</span>
               </div>
             )}
+            
+            {/* Add subtle divider */}
+            <div className="w-12 h-[1px] bg-gradient-to-r from-primary/20 to-transparent my-2"></div>
           </div>
         </CardContent>
 
-        <CardFooter className="p-4 pt-0 flex justify-between items-center">
+        <CardFooter className="p-5 pt-0 flex justify-between items-center">
           <div>
             {discountedPrice ? (
               <div className="space-y-1">
@@ -215,8 +263,13 @@ export default function ProductCard({ product, variants, className }: ProductCar
           </div>
 
           <Link href={`/product/${product.id}`}>
-            <Button size="sm" variant="ghost" className="hover:text-primary">
-              View Details
+            <Button 
+              size="sm" 
+              variant="ghost" 
+              className="hover:text-primary group/btn relative overflow-hidden"
+            >
+              <span className="relative z-10">View Details</span>
+              <span className="absolute inset-0 bg-primary/5 -translate-x-full group-hover/btn:translate-x-0 transition-transform duration-300 ease-out" />
             </Button>
           </Link>
         </CardFooter>

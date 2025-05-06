@@ -1,57 +1,144 @@
 "use client";
 
+import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, useAnimation, useInView } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProductCard from "@/components/product-card";
 import { products } from "@/lib/data";
 
-// Category data
-const importedUsedCategories = [
+// Define grid item size types with more granular options
+type BentoItemSize = "large" | "medium" | "small" | "wide" | "tall" | "tiny";
+
+interface BentoGridConfig {
+  sizes: Record<BentoItemSize, string>;
+  aspectRatios: Record<BentoItemSize, string>;
+}
+
+// Updated bento grid configuration with bigger grid items
+const bentoConfig: BentoGridConfig = {
+  sizes: {
+    large: "md:col-span-5 md:row-span-2", // Wider but shorter
+    wide: "md:col-span-8 md:row-span-1", // Extra wide horizontal item
+    tall: "md:col-span-3 md:row-span-2", // Narrower but still tall
+    medium: "md:col-span-4 md:row-span-1", // Smaller but wider aspect
+    small: "md:col-span-2 md:row-span-1", // Smaller width
+    tiny: "md:col-span-2 md:row-span-1", // Tiny item (unchanged)
+  },
+  aspectRatios: {
+    large: "aspect-[16/8]", // Wider, less tall
+    wide: "aspect-[20/5]", // Extra wide panoramic
+    tall: "aspect-[12/16]", // Less tall, bit wider proportionally
+    medium: "aspect-[4/3]", // Wider aspect ratio
+    small: "aspect-[4/3]", // Wider than square
+    tiny: "aspect-[3/2]", // Small rectangle (unchanged)
+  },
+};
+
+interface Category {
+  id: number;
+  name: string;
+  image: string;
+  count: number;
+  description: string;
+  accent: string;
+  size: BentoItemSize;
+  position?: number; // Optional position in grid for precise layout control
+}
+
+// Organized category data with intentional layout
+const importedUsedCategories: Category[] = [
   {
     id: 1,
     name: "Living Room",
-    image: "/placeholder.svg?height=300&width=400",
+    image:
+      "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     count: 42,
     description:
       "Elegant imported living room furniture with character and history",
     accent: "accent-living",
+    size: "large",
+    position: 1, // Featured item
   },
   {
     id: 2,
     name: "Dining Room",
-    image: "/placeholder.svg?height=300&width=400",
+    image:
+      "https://images.unsplash.com/photo-1602872029708-84d970d3382b?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     count: 28,
     description: "Classic dining sets that bring sophistication to your meals",
     accent: "accent-dining",
+    size: "tall",
+    position: 2,
   },
   {
     id: 3,
     name: "Bedroom",
-    image: "/placeholder.svg?height=300&width=400",
+    image:
+      "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     count: 35,
     description: "Premium bedroom furniture for ultimate comfort and style",
     accent: "accent-bedroom",
+    size: "medium",
+    position: 3,
   },
   {
     id: 4,
     name: "Office",
-    image: "/placeholder.svg?height=300&width=400",
+    image:
+      "https://plus.unsplash.com/premium_photo-1670315264879-59cc6b15db5f?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     count: 18,
     description: "Professional office furniture with timeless appeal",
     accent: "accent-office",
+    size: "medium",
+    position: 4,
   },
 ];
 
-// Get only the Brand New products for showcase (limited to 4)
+// Map brand new products to bento grid items with proper sizing
 const brandNewProducts = products
   .filter((product) => product.type === "Brand New")
-  .slice(0, 4);
+  .slice(0, 4)
+  .map((product, index) => ({
+    ...product,
+    // Assign different sizes for visual interest in the bento grid
+    size:
+      index === 0
+        ? ("large" as BentoItemSize)
+        : index === 1
+        ? ("tall" as BentoItemSize)
+        : index === 2
+        ? ("medium" as BentoItemSize)
+        : ("medium" as BentoItemSize),
+    position: index + 1,
+  }));
 
 export default function CategoryShowcase() {
-  // Animation variants
+  // Animation controls for better sequence control
+  const brandNewControlsRef = useRef(null);
+  const isBrandNewInView = useInView(brandNewControlsRef, {
+    amount: 0.1,
+    once: false,
+  });
+  const brandNewControls = useAnimation();
+
+  // Track if sections have been animated
+  const [sectionsAnimated, setSectionsAnimated] = useState({
+    importedUsed: false,
+    brandNew: false,
+  });
+
+  // Trigger animations when sections come into view
+  useEffect(() => {
+    if (isBrandNewInView && !sectionsAnimated.brandNew) {
+      brandNewControls.start("visible");
+      setSectionsAnimated((prev) => ({ ...prev, brandNew: true }));
+    }
+  }, [isBrandNewInView, brandNewControls, sectionsAnimated]);
+
+  // Enhanced animation variants with sequential timing
   const fadeIn = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -66,14 +153,34 @@ export default function CategoryShowcase() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
+        staggerChildren: 0.15,
+        delayChildren: 0.2,
       },
     },
   };
 
+  // Product card animation variants
+  const productCardVariants = {
+    hidden: {
+      opacity: 0,
+      y: 50,
+      scale: 0.95,
+    },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.7,
+        ease: [0.22, 1, 0.36, 1],
+        delay: i * 0.2, // Increased delay for more noticeable sequence
+      },
+    }),
+  };
+
   return (
-    <section className="py-16">
-      <div className="container mx-auto px-4">
+    <section className="py-12">
+      <div className="container mx-auto px-3">
         {/* Imported Used Section */}
         <motion.div
           className="text-center mb-12"
@@ -94,22 +201,29 @@ export default function CategoryShowcase() {
           </p>
         </motion.div>
 
-        <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16"
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
-          {importedUsedCategories.map((category, index) => (
-            <CategoryCard
-              key={category.id}
-              category={category}
-              index={index}
-              type="imported-used"
-            />
-          ))}
-        </motion.div>
+        {/* Bento grid layout - centered with justified content */}
+        <div className="flex justify-center w-full">
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-12 gap-3 mb-16 auto-rows-[minmax(140px,_auto)] w-full max-w-7xl"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            {/* Sort categories by position if available */}
+            {importedUsedCategories
+              .sort((a, b) => (a.position || 99) - (b.position || 99))
+              .map((category, index) => (
+                <CategoryCard
+                  key={category.id}
+                  category={category}
+                  index={index}
+                  type="imported-used"
+                  config={bentoConfig}
+                />
+              ))}
+          </motion.div>
+        </div>
 
         <div className="text-center mb-16">
           <Button
@@ -125,12 +239,12 @@ export default function CategoryShowcase() {
           </Button>
         </div>
 
-        {/* Brand New Section */}
+        {/* Brand New Section title */}
         <motion.div
           className="text-center mb-12"
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true }}
+          viewport={{ once: true, margin: "-100px" }}
           variants={fadeIn}
         >
           <span className="text-primary font-montserrat text-sm tracking-wider uppercase">
@@ -145,28 +259,31 @@ export default function CategoryShowcase() {
           </p>
         </motion.div>
 
-        <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16"
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
-          {brandNewProducts.map((product, index) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              variants={{
-                hidden: { opacity: 0, y: 20 },
-                visible: {
-                  opacity: 1,
-                  y: 0,
-                  transition: { duration: 0.5, delay: index * 0.1 },
-                },
-              }}
-            />
-          ))}
-        </motion.div>
+        {/* Brand New Products Grid - centered with justified content */}
+        <div className="flex justify-center w-full">
+          <motion.div
+            ref={brandNewControlsRef}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16 w-full max-w-7xl"
+            variants={staggerContainer}
+            initial="hidden"
+            animate={brandNewControls}
+          >
+            {/* No sorting or bento sizing for uniform grid */}
+            {brandNewProducts.map((product, index) => (
+              <motion.div
+                key={product.id}
+                custom={index}
+                variants={productCardVariants}
+                className="opacity-0"
+              >
+                <ProductCard
+                  product={(({ size, position, ...rest }) => rest)(product)}
+                  variants={{}}
+                />
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
 
         <div className="text-center">
           <Button
@@ -186,6 +303,7 @@ export default function CategoryShowcase() {
   );
 }
 
+// Updated interface with config param
 interface CategoryCardProps {
   category: {
     id: number;
@@ -194,58 +312,210 @@ interface CategoryCardProps {
     count: number;
     description: string;
     accent: string;
+    size: BentoItemSize;
+    position?: number;
   };
   index: number;
   type: string;
+  config: BentoGridConfig;
 }
 
-function CategoryCard({ category, index, type }: CategoryCardProps) {
+function CategoryCard({ category, index, type, config }: CategoryCardProps) {
   const href = `/category/${type}/${category.name
     .toLowerCase()
     .replace(" ", "-")}`;
 
+  // Add refs and hooks for scroll detection
+  const cardRef = useRef(null);
+  const cardInView = useInView(cardRef, {
+    once: false,
+    amount: 0.2,
+    margin: "-100px 0px -100px 0px",
+  });
+
+  // Control individual elements with separate animations
+  const controls = useAnimation();
+  const imageControls = useAnimation();
+  const contentControls = useAnimation();
+
+  // Trigger animations when card comes into view while scrolling
+  useEffect(() => {
+    if (cardInView) {
+      // Sequence the animations
+      controls.start("visible");
+      imageControls.start("visible");
+
+      // Delayed content reveal
+      setTimeout(() => {
+        contentControls.start("visible");
+      }, 300 + index * 100);
+    }
+  }, [cardInView, controls, imageControls, contentControls, index]);
+
+  // Get grid classes from config
+  const gridClass = config.sizes[category.size];
+  const aspectClass = config.aspectRatios[category.size];
+
   return (
     <motion.div
+      ref={cardRef}
       variants={{
-        hidden: { opacity: 0, y: 20 },
+        hidden: { opacity: 0, y: 40 },
         visible: {
           opacity: 1,
           y: 0,
-          transition: { duration: 0.5, delay: index * 0.1 },
+          transition: {
+            duration: 0.7,
+            ease: [0.22, 1, 0.36, 1],
+          },
         },
       }}
-      className="group"
+      initial="hidden"
+      animate={controls}
+      className={`group ${gridClass}`}
     >
-      <Link href={href}>
-        <div className="premium-card overflow-hidden">
-          <div className="relative aspect-[4/3] overflow-hidden">
-            <Image
-              src={category.image || "/placeholder.svg"}
-              alt={category.name}
-              fill
-              className="object-cover transition-transform duration-700 group-hover:scale-110"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-80" />
+      <Link href={href} className="h-full block">
+        <div
+          className={`premium-card overflow-hidden rounded-md shadow-sm border border-neutral-200 hover:shadow-md transition-all duration-500 relative before:absolute before:inset-0 before:z-10 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-1000 before:opacity-0 hover:before:opacity-100 h-full`}
+        >
+          <div className={`relative h-full overflow-hidden ${aspectClass}`}>
+            <motion.div
+              initial="hidden"
+              animate={imageControls}
+              variants={{
+                hidden: { scale: 1.2, opacity: 0 },
+                visible: {
+                  scale: 1,
+                  opacity: 1,
+                  transition: {
+                    duration: 1.2,
+                    ease: "easeOut",
+                  },
+                },
+              }}
+              className="h-full w-full"
+            >
+              <Image
+                src={category.image || "/placeholder.svg"}
+                alt={category.name}
+                fill
+                className="object-cover transition-transform duration-700 group-hover:scale-110 filter group-hover:brightness-110"
+              />
+            </motion.div>
 
-            <div className="absolute bottom-0 left-0 p-6 w-full">
-              <h3
-                className={`text-xl font-bold text-white mb-1 font-cormorant ${category.accent}`}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={imageControls}
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 0.8,
+                  transition: { duration: 0.8 },
+                },
+              }}
+              className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"
+            />
+
+            <motion.div
+              className={`absolute bottom-0 left-0 p-4 md:p-5 w-full ${
+                category.size === "tall"
+                  ? "h-full flex flex-col justify-end"
+                  : ""
+              }`}
+              initial="hidden"
+              animate={contentControls}
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: {
+                  opacity: 1,
+                  y: 0,
+                  transition: {
+                    duration: 0.6,
+                    staggerChildren: 0.1,
+                    delayChildren: 0.1,
+                  },
+                },
+              }}
+            >
+              <motion.div
+                variants={{
+                  hidden: { width: "0%" },
+                  visible: {
+                    width: "40%",
+                    transition: { duration: 0.5, delay: 0.2 },
+                  },
+                }}
+                className={`h-0.5 bg-primary/80 ${
+                  category.size === "tall" ? "mb-2" : "mb-3"
+                } rounded-full`}
+              />
+
+              <motion.h3
+                variants={{
+                  hidden: { opacity: 0, y: 10 },
+                  visible: { opacity: 1, y: 0 },
+                }}
+                className={`${
+                  category.size === "large"
+                    ? "text-lg md:text-2xl"
+                    : category.size === "medium"
+                    ? "text-base md:text-xl"
+                    : category.size === "tall"
+                    ? "text-sm md:text-lg"
+                    : "text-sm md:text-lg"
+                } font-bold text-white ${
+                  category.size === "tall" ? "mb-0.5" : "mb-1"
+                } font-cormorant ${
+                  category.accent
+                } group-hover:text-white transition-colors duration-300`}
               >
                 {category.name}
-              </h3>
-              <p className="text-white/80 text-sm mb-2 line-clamp-2">
+              </motion.h3>
+
+              <motion.p
+                variants={{
+                  hidden: { opacity: 0, y: 10 },
+                  visible: { opacity: 1, y: 0 },
+                }}
+                className={`text-white/80 ${
+                  category.size === "large"
+                    ? "text-sm md:text-base md:line-clamp-2"
+                    : category.size === "medium"
+                    ? "text-xs md:text-sm md:line-clamp-2"
+                    : category.size === "tall"
+                    ? "text-xs md:text-xs line-clamp-2 md:line-clamp-2"
+                    : "text-xs hidden md:block md:line-clamp-1"
+                } font-light`}
+              >
                 {category.description}
-              </p>
-              <div className="flex justify-between items-center">
-                <span className="text-white/90 text-sm">
-                  {category.count} Items
+              </motion.p>
+
+              <motion.div
+                variants={{
+                  hidden: { opacity: 0, y: 10 },
+                  visible: { opacity: 1, y: 0 },
+                }}
+                className={`flex justify-between items-center ${
+                  category.size === "tall" ? "mt-1.5" : "mt-2"
+                }`}
+              >
+                <span
+                  className={`text-white/90 ${
+                    category.size === "tall" ? "text-xs" : "text-xs md:text-sm"
+                  } px-2 py-0.5 bg-black/30 rounded-full`}
+                >
+                  {category.count}
                 </span>
-                <span className="text-white flex items-center text-sm font-medium group-hover:underline">
-                  View Collection{" "}
-                  <ArrowRight className="ml-1 h-3 w-3 transition-transform duration-300 group-hover:translate-x-1" />
+                <span
+                  className={`text-white flex items-center ${
+                    category.size === "tall" ? "text-xs" : "text-xs md:text-sm"
+                  } font-medium group-hover:underline relative px-2 py-0.5 overflow-hidden rounded-md group-hover:bg-white/10 transition-all duration-300`}
+                >
+                  View
+                  <ArrowRight className="ml-1 h-2.5 w-2.5 transition-all duration-300 group-hover:translate-x-1 group-hover:text-primary" />
                 </span>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
         </div>
       </Link>

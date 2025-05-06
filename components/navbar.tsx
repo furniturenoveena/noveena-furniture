@@ -12,6 +12,12 @@ import {
   ChevronDown,
   ChevronRight,
   Search,
+  Phone,
+  Mail,
+  MapPin,
+  Instagram,
+  Facebook,
+  Twitter,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -87,7 +93,7 @@ export default function Navbar() {
         "fixed top-0 w-full z-50 transition-all duration-500",
         scrolled
           ? "bg-background/95 backdrop-blur-md shadow-md py-2"
-          : "bg-transparent py-4 text-white"
+          : "bg-background/50 backdrop-blur-sm py-4"
       )}
     >
       <div className="container mx-auto px-4">
@@ -122,9 +128,7 @@ export default function Navbar() {
               <span
                 className={cn(
                   "transition-colors duration-300",
-                  scrolled
-                    ? "text-foreground group-hover:text-primary"
-                    : "text-white group-hover:text-primary/90"
+                  "text-foreground group-hover:text-primary"
                 )}
               >
                 Home
@@ -142,9 +146,7 @@ export default function Navbar() {
                 <button
                   className={cn(
                     "flex items-center text-sm font-medium transition-colors relative group",
-                    scrolled
-                      ? "text-foreground hover:text-primary"
-                      : "text-white hover:text-primary/90"
+                    "text-foreground hover:text-primary"
                   )}
                   onClick={() => handleCategoryClick(category.name)}
                 >
@@ -205,9 +207,7 @@ export default function Navbar() {
               <span
                 className={cn(
                   "transition-colors duration-300",
-                  scrolled
-                    ? "text-foreground group-hover:text-primary"
-                    : "text-white group-hover:text-primary/90"
+                  "text-foreground group-hover:text-primary"
                 )}
               >
                 About
@@ -222,9 +222,7 @@ export default function Navbar() {
               <span
                 className={cn(
                   "transition-colors duration-300",
-                  scrolled
-                    ? "text-foreground group-hover:text-primary"
-                    : "text-white group-hover:text-primary/90"
+                  "text-foreground group-hover:text-primary"
                 )}
               >
                 Contact
@@ -263,16 +261,20 @@ export default function Navbar() {
               className="hidden md:flex"
               onClick={toggleSearch}
             >
-              <Search
-                className={cn(
-                  "h-5 w-5 transition-colors",
-                  scrolled ? "text-foreground" : "text-white"
-                )}
-              />
+              <Search className="h-5 w-5 transition-colors text-foreground" />
               <span className="sr-only">Search</span>
             </Button>
 
-            <ThemeToggle scrolled={scrolled} />
+            {/* Ensure ThemeToggle icon is always visible with consistent color */}
+            <div
+
+              style={{
+                // Force proper contrast for the icon regardless of scroll position
+                padding: !scrolled ? "2px" : "0"
+              }}
+            >
+              <ThemeToggle />
+            </div>
 
             <Button
               variant="outline"
@@ -295,12 +297,7 @@ export default function Navbar() {
               className="md:hidden"
               onClick={handleToggleMenu}
             >
-              <MenuIcon
-                className={cn(
-                  "h-6 w-6 transition-colors",
-                  scrolled ? "text-foreground" : "text-white"
-                )}
-              />
+              <MenuIcon className="h-6 w-6 transition-colors text-foreground" />
               <span className="sr-only">Toggle Menu</span>
             </Button>
           </div>
@@ -414,11 +411,103 @@ export default function Navbar() {
                   Contact
                 </Link>
 
-                <Button asChild className="w-full mt-2">
-                  <Link href="/contact" onClick={() => setIsOpen(false)}>
-                    Contact for Purchase
-                  </Link>
-                </Button>
+                <div className="mt-4 pt-4 border-t border-border/40">
+                  <div className="space-y-4">
+                    <div className="bg-muted/40 p-4 rounded-lg">
+                      <h4 className="text-sm font-semibold mb-3 flex items-center">
+                        <ShoppingBag className="mr-2 h-4 w-4 text-primary" />
+                        Shopping Cart
+                      </h4>
+                      <div className="text-center py-3">
+                        <p className="text-muted-foreground text-sm">
+                          Your cart is empty
+                        </p>
+                        <Button
+                          variant="link"
+                          size="sm"
+                          asChild
+                          className="mt-1 p-0"
+                        >
+                          <Link
+                            href="/category/imported-used"
+                            onClick={() => setIsOpen(false)}
+                          >
+                            Browse Products
+                          </Link>
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <h4 className="text-sm font-semibold">Get in Touch</h4>
+                      <div className="grid gap-2">
+                        <a
+                          href="tel:+123456789"
+                          className="flex items-center text-sm hover:text-primary transition-colors"
+                        >
+                          <Phone className="h-4 w-4 mr-2 text-primary/70" />
+                          <span>+1 (234) 567-8900</span>
+                        </a>
+                        <a
+                          href="mailto:info@noveena.com"
+                          className="flex items-center text-sm hover:text-primary transition-colors"
+                        >
+                          <Mail className="h-4 w-4 mr-2 text-primary/70" />
+                          <span>info@noveena.com</span>
+                        </a>
+                        <div className="flex items-center text-sm">
+                          <MapPin className="h-4 w-4 mr-2 text-primary/70 flex-shrink-0" />
+                          <span>123 Luxury Lane, Furniture District</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <h4 className="text-sm font-semibold">Follow Us</h4>
+                      <div className="flex space-x-3">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-9 w-9 rounded-full"
+                        >
+                          <Instagram className="h-4 w-4" />
+                          <span className="sr-only">Instagram</span>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-9 w-9 rounded-full"
+                        >
+                          <Facebook className="h-4 w-4" />
+                          <span className="sr-only">Facebook</span>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-9 w-9 rounded-full"
+                        >
+                          <Twitter className="h-4 w-4" />
+                          <span className="sr-only">Twitter</span>
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 space-y-3">
+                    <Button asChild variant="default" className="w-full">
+                      <Link href="/contact" onClick={() => setIsOpen(false)}>
+                        <Phone className="mr-2 h-4 w-4" />
+                        Contact for Purchase
+                      </Link>
+                    </Button>
+
+                    <Button asChild variant="outline" className="w-full">
+                      <Link href="/about" onClick={() => setIsOpen(false)}>
+                        Learn About Noveena
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>

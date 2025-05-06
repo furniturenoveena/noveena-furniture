@@ -1,211 +1,687 @@
-"use client"
+"use client";
 
-import type React from "react"
+import { useState } from "react";
+import { motion } from "framer-motion";
+import {
+  MapPin,
+  Phone,
+  Mail,
+  Clock,
+  Send,
+  CheckCircle,
+  Loader2,
+  User,
+  AtSign,
+  MessageSquare,
+  Calendar,
+  X,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { Checkbox } from "@/components/ui/checkbox";
+import Image from "next/image";
+import { Card, CardContent } from "@/components/ui/card";
 
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { MapPin, Phone, Mail, Clock, Send } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Label } from "@/components/ui/label"
-import { useToast } from "@/components/ui/use-toast"
+const socialLinks = [
+  {
+    name: "Instagram",
+    icon: "https://res.cloudinary.com/do08c2xq5/image/upload/v1746506300/instagram_lfprdb.png",
+    href: "https://www.instagram.com/noveena.furniture",
+  },
+  {
+    name: "Facebook",
+    icon: "https://res.cloudinary.com/do08c2xq5/image/upload/v1746506300/facebook_tkpqrx.png",
+    href: "https://facebook.com/noveenafurniture",
+  },
+  {
+    name: "TikTok",
+    icon: "https://res.cloudinary.com/do08c2xq5/image/upload/v1746506300/tik-tok_vd5e4v.png",
+    href: "https://www.tiktok.com/@noveenafurniture",
+  },
+];
 
 export default function ContactPage() {
-  const { toast } = useToast()
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     subject: "",
     message: "",
-  })
+    preferredContact: "email",
+    preferredTime: "",
+    newsletter: false,
+  });
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
 
-  const handleSelectChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, subject: value }))
-  }
+    // Clear error for this field when user types
+    if (formErrors[name]) {
+      setFormErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCheckboxChange = (name: string, checked: boolean) => {
+    setFormData((prev) => ({ ...prev, [name]: checked }));
+  };
+
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+
+    if (!formData.name.trim()) errors.name = "Name is required";
+    if (!formData.email.trim()) {
+      errors.email = "Email is required";
+    } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
+      errors.email = "Email is not valid";
+    }
+    if (!formData.phone.trim()) errors.phone = "Phone number is required";
+    if (!formData.subject) errors.subject = "Please select a subject";
+    if (!formData.message.trim()) errors.message = "Message is required";
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
 
     // Simulate form submission
     setTimeout(() => {
       toast({
         title: "Message Sent!",
-        description: "We've received your message and will get back to you soon.",
-      })
+        description:
+          "We've received your message and will get back to you soon.",
+        variant: "success",
+      });
 
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        subject: "",
-        message: "",
-      })
+      setFormSubmitted(true);
+      setIsSubmitting(false);
+    }, 1500);
+  };
 
-      setIsSubmitting(false)
-    }, 1500)
-  }
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      subject: "",
+      message: "",
+      preferredContact: "email",
+      preferredTime: "",
+      newsletter: false,
+    });
+    setFormSubmitted(false);
+    setFormErrors({});
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1 },
+  };
 
   return (
     <div className="container mx-auto px-4 py-16 mt-16">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="mb-12 text-center"
+      >
+        <Badge className="mb-4 px-3 py-1 text-sm">Get In Touch</Badge>
+        <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          Contact Noveena Furniture
+        </h1>
+        <p className="text-muted-foreground max-w-2xl mx-auto">
+          Have questions about our products or services? We're here to help and
+          eager to hear from you.
+        </p>
+      </motion.div>
+
       <div className="grid lg:grid-cols-2 gap-12 items-start">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">Contact Us</h1>
-          <p className="text-muted-foreground max-w-md mb-8">
-            We'd love to hear from you. Fill out the form below and our team will get back to you promptly.
-          </p>
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="space-y-8"
+        >
+          <motion.div
+            variants={itemVariants}
+            className="bg-primary/5 p-6 rounded-lg border border-primary/10"
+          >
+            <h2 className="text-2xl font-semibold mb-6">How to Reach Us</h2>
 
-          <div className="space-y-6">
-            <div className="flex items-start space-x-4">
-              <MapPin className="h-6 w-6 text-primary mt-0.5" />
-              <div>
-                <h3 className="font-semibold">Visit Our Showroom</h3>
-                <p className="text-muted-foreground">337 Kaduwela Rd, Thalangama Koswatta</p>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-4">
-              <Phone className="h-6 w-6 text-primary mt-0.5" />
-              <div>
-                <h3 className="font-semibold">Call Us</h3>
-                <p className="text-muted-foreground">
-                  <a href="tel:+94779134361" className="hover:text-primary transition-colors">
-                    077 913 4361
+            <div className="space-y-6">
+              <motion.div
+                variants={itemVariants}
+                className="flex items-start space-x-4 group"
+              >
+                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                  <MapPin className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">Visit Our Showroom</h3>
+                  <p className="text-muted-foreground">
+                    337 Kaduwela Rd, Thalangama Koswatta
+                  </p>
+                  <a
+                    href="https://maps.app.goo.gl/EzF1nU5qdPDaxnjLA"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-primary hover:underline mt-1 inline-block"
+                  >
+                    View on Google Maps
                   </a>
-                </p>
-              </div>
+                </div>
+              </motion.div>
+
+              <motion.div
+                variants={itemVariants}
+                className="flex items-start space-x-4 group"
+              >
+                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                  <Phone className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">Call Us</h3>
+                  <p className="text-muted-foreground">
+                    <a
+                      href="tel:+94779134361"
+                      className="hover:text-primary transition-colors"
+                    >
+                      +94 77 913 4361
+                    </a>
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Our customer support is available during business hours
+                  </p>
+                </div>
+              </motion.div>
+
+              <motion.div
+                variants={itemVariants}
+                className="flex items-start space-x-4 group"
+              >
+                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                  <Mail className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">Email Us</h3>
+                  <p className="text-muted-foreground">
+                    <a
+                      href="mailto:noveenafurniture@gmail.com"
+                      className="hover:text-primary transition-colors"
+                    >
+                      noveenafurniture@gmail.com
+                    </a>
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    We typically respond within 24 hours
+                  </p>
+                </div>
+              </motion.div>
+
+              <motion.div
+                variants={itemVariants}
+                className="flex items-start space-x-4 group"
+              >
+                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                  <Clock className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">Opening Hours</h3>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-muted-foreground">
+                    <span>Monday - Friday:</span>
+                    <span>9:00 AM - 7:00 PM</span>
+                    <span>Saturday:</span>
+                    <span>9:00 AM - 6:00 PM</span>
+                    <span>Sunday:</span>
+                    <span>10:00 AM - 5:00 PM</span>
+                  </div>
+                </div>
+              </motion.div>
             </div>
 
-            <div className="flex items-start space-x-4">
-              <Mail className="h-6 w-6 text-primary mt-0.5" />
-              <div>
-                <h3 className="font-semibold">Email Us</h3>
-                <p className="text-muted-foreground">
-                  <a href="mailto:noveenafurniture@gmail.com" className="hover:text-primary transition-colors">
-                    noveenafurniture@gmail.com
+            <div className="mt-8">
+              <h3 className="font-semibold text-lg mb-4">Connect With Us</h3>
+              <div className="flex space-x-6">
+                {socialLinks.map((social) => (
+                  <a
+                    key={social.name}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-background h-10 w-10 rounded-full flex items-center justify-center shadow-sm hover:bg-primary/10 transition-colors"
+                    aria-label={social.name}
+                  >
+                    <span className="sr-only">{social.name}</span>
+                    <img
+                      src={social.icon}
+                      alt={social.name}
+                      className="h-8 w-8 object-contain"
+                    />
                   </a>
-                </p>
+                ))}
               </div>
             </div>
+          </motion.div>
 
-            <div className="flex items-start space-x-4">
-              <Clock className="h-6 w-6 text-primary mt-0.5" />
-              <div>
-                <h3 className="font-semibold">Opening Hours</h3>
-                <p className="text-muted-foreground">
-                  Monday - Saturday: 9:00 AM - 7:00 PM
-                  <br />
-                  Sunday: 10:00 AM - 5:00 PM
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Map Placeholder */}
-          <div className="mt-8 bg-muted h-[300px] rounded-lg flex items-center justify-center">
-            <p className="text-muted-foreground">Map will be displayed here</p>
-          </div>
+          {/* Map */}
+          <motion.div
+            variants={itemVariants}
+            className="relative h-[350px] rounded-lg overflow-hidden border border-muted"
+          >
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3960.859297243933!2d79.93040177475686!3d6.907423093091964!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae2574e59f5e2c5%3A0xffbb01e9e79542a4!2swww.homestar.lk!5e0!3m2!1sen!2slk!4v1746506676252!5m2!1sen!2slk"
+              width="800"
+              height="600"
+              style={{ border: 0 }}
+              allowFullScreen={false}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </motion.div>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="bg-muted/30 p-6 sm:p-8 rounded-lg"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="space-y-8"
         >
-          <h2 className="text-2xl font-bold mb-6">Send Us a Message</h2>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Your Name</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  placeholder="Enter your name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            </div>
+          <motion.div
+            variants={itemVariants}
+            className="bg-card border shadow-sm p-6 sm:p-8 rounded-xl"
+          >
+            {formSubmitted ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex flex-col items-center justify-center h-full py-10 text-center"
+              >
+                <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
+                  <CheckCircle className="h-10 w-10" />
+                </div>
+                <h2 className="text-2xl font-bold mb-4">
+                  Message Sent Successfully!
+                </h2>
+                <p className="text-muted-foreground max-w-md mb-8">
+                  Thank you for contacting us. We've received your inquiry and a
+                  member of our team will get back to you shortly.
+                </p>
+                <Button onClick={resetForm} variant="outline" size="lg">
+                  <X className="mr-2 h-4 w-4" />
+                  Send Another Message
+                </Button>
+              </motion.div>
+            ) : (
+              <>
+                <motion.div
+                  variants={itemVariants}
+                  className="flex items-center justify-between mb-6"
+                >
+                  <h2 className="text-2xl font-bold">Send Us a Message</h2>
+                  <Badge variant="outline" className="font-normal">
+                    We reply within 24hrs
+                  </Badge>
+                </motion.div>
 
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
-                <Input
-                  id="phone"
-                  name="phone"
-                  placeholder="Enter your phone number"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="subject">Subject</Label>
-                <Select value={formData.subject} onValueChange={handleSelectChange} required>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select subject" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="general">General Inquiry</SelectItem>
-                    <SelectItem value="product">Product Information</SelectItem>
-                    <SelectItem value="purchase">Purchase Assistance</SelectItem>
-                    <SelectItem value="delivery">Delivery Information</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+                <motion.form
+                  variants={itemVariants}
+                  onSubmit={handleSubmit}
+                  className="space-y-6"
+                >
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name" className="flex items-center">
+                        <User className="h-3.5 w-3.5 mr-1.5 opacity-70" />
+                        Your Name
+                      </Label>
+                      <Input
+                        id="name"
+                        name="name"
+                        placeholder="Enter your full name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        className={cn(
+                          formErrors.name &&
+                            "border-destructive focus-visible:ring-destructive"
+                        )}
+                      />
+                      {formErrors.name && (
+                        <p className="text-destructive text-xs mt-1">
+                          {formErrors.name}
+                        </p>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="flex items-center">
+                        <AtSign className="h-3.5 w-3.5 mr-1.5 opacity-70" />
+                        Email Address
+                      </Label>
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder="your.email@example.com"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className={cn(
+                          formErrors.email &&
+                            "border-destructive focus-visible:ring-destructive"
+                        )}
+                      />
+                      {formErrors.email && (
+                        <p className="text-destructive text-xs mt-1">
+                          {formErrors.email}
+                        </p>
+                      )}
+                    </div>
+                  </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="message">Your Message</Label>
-              <Textarea
-                id="message"
-                name="message"
-                placeholder="Enter your message"
-                value={formData.message}
-                onChange={handleChange}
-                rows={6}
-                required
-              />
-            </div>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="phone" className="flex items-center">
+                        <Phone className="h-3.5 w-3.5 mr-1.5 opacity-70" />
+                        Phone Number
+                      </Label>
+                      <Input
+                        id="phone"
+                        name="phone"
+                        placeholder="+94 XX XXX XXXX"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        className={cn(
+                          formErrors.phone &&
+                            "border-destructive focus-visible:ring-destructive"
+                        )}
+                      />
+                      {formErrors.phone && (
+                        <p className="text-destructive text-xs mt-1">
+                          {formErrors.phone}
+                        </p>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="subject" className="flex items-center">
+                        <MessageSquare className="h-3.5 w-3.5 mr-1.5 opacity-70" />
+                        Subject
+                      </Label>
+                      <Select
+                        value={formData.subject}
+                        onValueChange={(value) =>
+                          handleSelectChange("subject", value)
+                        }
+                      >
+                        <SelectTrigger
+                          className={cn(
+                            formErrors.subject &&
+                              "border-destructive focus-visible:ring-destructive"
+                          )}
+                        >
+                          <SelectValue placeholder="Select subject" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="general">
+                            General Inquiry
+                          </SelectItem>
+                          <SelectItem value="product">
+                            Product Information
+                          </SelectItem>
+                          <SelectItem value="purchase">
+                            Purchase Assistance
+                          </SelectItem>
+                          <SelectItem value="delivery">
+                            Delivery Information
+                          </SelectItem>
+                          <SelectItem value="customization">
+                            Custom Furniture Inquiry
+                          </SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {formErrors.subject && (
+                        <p className="text-destructive text-xs mt-1">
+                          {formErrors.subject}
+                        </p>
+                      )}
+                    </div>
+                  </div>
 
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? (
-                <>Sending...</>
-              ) : (
-                <>
-                  <Send className="mr-2 h-4 w-4" />
-                  Send Message
-                </>
-              )}
-            </Button>
-          </form>
+                  <div className="space-y-2">
+                    <Label className="flex items-center">
+                      Preferred Contact Method
+                    </Label>
+                    <div className="flex space-x-4">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          id="email-contact"
+                          name="preferredContact"
+                          value="email"
+                          checked={formData.preferredContact === "email"}
+                          onChange={(e) =>
+                            handleSelectChange(
+                              "preferredContact",
+                              e.target.value
+                            )
+                          }
+                          className="text-primary focus:ring-primary"
+                        />
+                        <Label
+                          htmlFor="email-contact"
+                          className="text-sm cursor-pointer"
+                        >
+                          Email
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          id="phone-contact"
+                          name="preferredContact"
+                          value="phone"
+                          checked={formData.preferredContact === "phone"}
+                          onChange={(e) =>
+                            handleSelectChange(
+                              "preferredContact",
+                              e.target.value
+                            )
+                          }
+                          className="text-primary focus:ring-primary"
+                        />
+                        <Label
+                          htmlFor="phone-contact"
+                          className="text-sm cursor-pointer"
+                        >
+                          Phone
+                        </Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="preferredTime"
+                      className="flex items-center"
+                    >
+                      <Calendar className="h-3.5 w-3.5 mr-1.5 opacity-70" />
+                      Best Time to Contact
+                    </Label>
+                    <Select
+                      value={formData.preferredTime}
+                      onValueChange={(value) =>
+                        handleSelectChange("preferredTime", value)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select preferred time (optional)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="morning">
+                          Morning (9AM - 12PM)
+                        </SelectItem>
+                        <SelectItem value="afternoon">
+                          Afternoon (12PM - 4PM)
+                        </SelectItem>
+                        <SelectItem value="evening">
+                          Evening (4PM - 7PM)
+                        </SelectItem>
+                        <SelectItem value="anytime">
+                          Anytime during business hours
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="message" className="flex items-center">
+                      <MessageSquare className="h-3.5 w-3.5 mr-1.5 opacity-70" />
+                      Your Message
+                    </Label>
+                    <Textarea
+                      id="message"
+                      name="message"
+                      placeholder="Tell us about your inquiry, questions, or special requirements..."
+                      value={formData.message}
+                      onChange={handleChange}
+                      rows={5}
+                      className={cn(
+                        formErrors.message &&
+                          "border-destructive focus-visible:ring-destructive"
+                      )}
+                    />
+                    {formErrors.message && (
+                      <p className="text-destructive text-xs mt-1">
+                        {formErrors.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="newsletter"
+                      checked={formData.newsletter}
+                      onCheckedChange={(checked) =>
+                        handleCheckboxChange("newsletter", checked as boolean)
+                      }
+                    />
+                    <Label
+                      htmlFor="newsletter"
+                      className="text-sm cursor-pointer"
+                    >
+                      Subscribe to our newsletter for promotions and updates
+                    </Label>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={isSubmitting}
+                    size="lg"
+                  >
+                    {isSubmitting ? (
+                      <span className="flex items-center">
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Sending Message...
+                      </span>
+                    ) : (
+                      <span className="flex items-center">
+                        <Send className="mr-2 h-4 w-4" />
+                        Send Message
+                      </span>
+                    )}
+                  </Button>
+                </motion.form>
+              </>
+            )}
+          </motion.div>
+
+          {/* FAQ section moved here */}
+          <motion.div
+            variants={itemVariants}
+            className="bg-card border shadow-sm p-6 sm:p-8 rounded-xl"
+          >
+            <h2 className="text-2xl font-bold mb-6">
+              Frequently Asked Questions
+            </h2>
+            <div className="space-y-6">
+              {[
+                {
+                  question: "What payment methods do you accept?",
+                  answer:
+                    "We accept cash, credit/debit cards, bank transfers, and select mobile payment options. For larger purchases, we also offer financing options.",
+                },
+                {
+                  question: "Do you offer delivery services?",
+                  answer:
+                    "Yes, we provide delivery services throughout Sri Lanka. Delivery fees vary based on location and size of the furniture. For most local deliveries, we offer same-day or next-day delivery.",
+                },
+                {
+                  question: "What is your return policy?",
+                  answer:
+                    "We offer a 14-day return policy for most items. Custom-made and clearance items are non-returnable. Items must be in their original condition and packaging.",
+                },
+                {
+                  question: "Do you offer assembly services?",
+                  answer:
+                    "Yes, our professional team offers assembly services for all furniture purchased from our store. This service is complimentary for most large items.",
+                },
+                {
+                  question: "Can you help with interior design?",
+                  answer:
+                    "Absolutely! Our experienced design consultants can help you select the right furniture for your space and provide comprehensive interior design services.",
+                },
+              ].map((faq, index) => (
+                <div
+                  key={index}
+                  className="border-b border-muted pb-4 last:border-0 last:pb-0"
+                >
+                  <h3 className="text-lg font-semibold mb-2">{faq.question}</h3>
+                  <p className="text-muted-foreground">{faq.answer}</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
         </motion.div>
       </div>
     </div>
-  )
+  );
 }
