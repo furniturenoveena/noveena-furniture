@@ -17,27 +17,26 @@ interface BentoGridConfig {
   aspectRatios: Record<BentoItemSize, string>;
 }
 
-// Updated bento grid configuration with smaller grid items
+// Updated bento grid configuration with bigger grid items
 const bentoConfig: BentoGridConfig = {
   sizes: {
-    large: "md:col-span-5 md:row-span-2", // Slightly smaller large item
-    wide: "md:col-span-6 md:row-span-1", // Wide horizontal item
-    tall: "md:col-span-3 md:row-span-2", // Narrower tall item
-    medium: "md:col-span-3 md:row-span-1", // Smaller medium item
-    small: "md:col-span-2 md:row-span-1", // Very small item
-    tiny: "md:col-span-2 md:row-span-1", // Tiny item (for dense layouts)
+    large: "md:col-span-5 md:row-span-2", // Wider but shorter
+    wide: "md:col-span-8 md:row-span-1", // Extra wide horizontal item
+    tall: "md:col-span-3 md:row-span-2", // Narrower but still tall
+    medium: "md:col-span-4 md:row-span-1", // Smaller but wider aspect
+    small: "md:col-span-2 md:row-span-1", // Smaller width
+    tiny: "md:col-span-2 md:row-span-1", // Tiny item (unchanged)
   },
   aspectRatios: {
-    large: "aspect-[16/10]", // Slightly shorter
-    wide: "aspect-[18/5]", // Wider and shorter
-    tall: "aspect-[9/14]", // Less extreme vertical
-    medium: "aspect-[4/3]", // Standard
-    small: "aspect-[1/1]", // Square
-    tiny: "aspect-[3/2]", // Small rectangle
+    large: "aspect-[16/8]", // Wider, less tall
+    wide: "aspect-[20/5]", // Extra wide panoramic
+    tall: "aspect-[12/16]", // Less tall, bit wider proportionally
+    medium: "aspect-[4/3]", // Wider aspect ratio
+    small: "aspect-[4/3]", // Wider than square
+    tiny: "aspect-[3/2]", // Small rectangle (unchanged)
   },
 };
 
-// Category interface with required properties
 interface Category {
   id: number;
   name: string;
@@ -167,7 +166,7 @@ export default function CategoryShowcase() {
       y: 50,
       scale: 0.95,
     },
-    visible: (i) => ({
+    visible: (i: number) => ({
       opacity: 1,
       y: 0,
       scale: 1,
@@ -202,27 +201,29 @@ export default function CategoryShowcase() {
           </p>
         </motion.div>
 
-        {/* Bento grid layout for categories - smaller grid items */}
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-12 gap-3 mb-16 auto-rows-[minmax(140px,_auto)]"
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
-          {/* Sort categories by position if available */}
-          {importedUsedCategories
-            .sort((a, b) => (a.position || 99) - (b.position || 99))
-            .map((category, index) => (
-              <CategoryCard
-                key={category.id}
-                category={category}
-                index={index}
-                type="imported-used"
-                config={bentoConfig}
-              />
-            ))}
-        </motion.div>
+        {/* Bento grid layout - centered with justified content */}
+        <div className="flex justify-center w-full">
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-12 gap-3 mb-16 auto-rows-[minmax(140px,_auto)] w-full max-w-7xl"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            {/* Sort categories by position if available */}
+            {importedUsedCategories
+              .sort((a, b) => (a.position || 99) - (b.position || 99))
+              .map((category, index) => (
+                <CategoryCard
+                  key={category.id}
+                  category={category}
+                  index={index}
+                  type="imported-used"
+                  config={bentoConfig}
+                />
+              ))}
+          </motion.div>
+        </div>
 
         <div className="text-center mb-16">
           <Button
@@ -238,7 +239,7 @@ export default function CategoryShowcase() {
           </Button>
         </div>
 
-        {/* Brand New Section - Uniform grid layout (reverted from bento) */}
+        {/* Brand New Section title */}
         <motion.div
           className="text-center mb-12"
           initial="hidden"
@@ -258,33 +259,31 @@ export default function CategoryShowcase() {
           </p>
         </motion.div>
 
-        <motion.div
-          ref={brandNewControlsRef}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16"
-          variants={staggerContainer}
-          initial="hidden"
-          animate={brandNewControls}
-        >
-          {/* No sorting or bento sizing for uniform grid */}
-          {brandNewProducts.map((product, index) => (
-            <motion.div
-              key={product.id}
-              custom={index}
-              variants={productCardVariants}
-              className="opacity-0"
-            >
-              <ProductCard
-                product={{
-                  ...product,
-                  // Remove bento-specific properties
-                  size: undefined,
-                  position: undefined,
-                }}
-                variants={{}}
-              />
-            </motion.div>
-          ))}
-        </motion.div>
+        {/* Brand New Products Grid - centered with justified content */}
+        <div className="flex justify-center w-full">
+          <motion.div
+            ref={brandNewControlsRef}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16 w-full max-w-7xl"
+            variants={staggerContainer}
+            initial="hidden"
+            animate={brandNewControls}
+          >
+            {/* No sorting or bento sizing for uniform grid */}
+            {brandNewProducts.map((product, index) => (
+              <motion.div
+                key={product.id}
+                custom={index}
+                variants={productCardVariants}
+                className="opacity-0"
+              >
+                <ProductCard 
+                  product={((({ size, position, ...rest }) => rest)(product))}
+                  variants={{}} 
+                />
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
 
         <div className="text-center">
           <Button
@@ -418,7 +417,9 @@ function CategoryCard({ category, index, type, config }: CategoryCardProps) {
             />
 
             <motion.div
-              className="absolute bottom-0 left-0 p-3 w-full"
+              className={`absolute bottom-0 left-0 p-4 md:p-5 w-full ${
+                category.size === 'tall' ? 'h-full flex flex-col justify-end' : ''
+              }`}
               initial="hidden"
               animate={contentControls}
               variants={{
@@ -442,7 +443,7 @@ function CategoryCard({ category, index, type, config }: CategoryCardProps) {
                     transition: { duration: 0.5, delay: 0.2 },
                   },
                 }}
-                className={`h-0.5 bg-primary/80 mb-2 rounded-full`}
+                className={`h-0.5 bg-primary/80 ${category.size === 'tall' ? 'mb-2' : 'mb-3'} rounded-full`}
               />
 
               <motion.h3
@@ -450,15 +451,15 @@ function CategoryCard({ category, index, type, config }: CategoryCardProps) {
                   hidden: { opacity: 0, y: 10 },
                   visible: { opacity: 1, y: 0 },
                 }}
-                className={`text-sm ${
+                className={`${
                   category.size === "large"
-                    ? "md:text-xl"
+                    ? "text-lg md:text-2xl"
                     : category.size === "medium"
-                    ? "md:text-lg"
-                    : "text-sm"
-                } font-bold text-white mb-0.5 font-cormorant ${
-                  category.accent
-                } group-hover:text-primary/90 transition-colors duration-300`}
+                    ? "text-base md:text-xl"
+                    : category.size === "tall"
+                    ? "text-sm md:text-lg"
+                    : "text-sm md:text-lg"
+                } font-bold text-white ${category.size === 'tall' ? 'mb-0.5' : 'mb-1'} font-cormorant ${category.accent} group-hover:text-white transition-colors duration-300`}
               >
                 {category.name}
               </motion.h3>
@@ -468,12 +469,14 @@ function CategoryCard({ category, index, type, config }: CategoryCardProps) {
                   hidden: { opacity: 0, y: 10 },
                   visible: { opacity: 1, y: 0 },
                 }}
-                className={`text-white/80 text-xs ${
+                className={`text-white/80 ${
                   category.size === "large"
-                    ? "md:line-clamp-2"
-                    : category.size === "medium" || category.size === "tall"
-                    ? "md:line-clamp-2"
-                    : "hidden md:block md:line-clamp-1"
+                    ? "text-sm md:text-base md:line-clamp-2"
+                    : category.size === "medium"
+                    ? "text-xs md:text-sm md:line-clamp-2"
+                    : category.size === "tall"
+                    ? "text-xs md:text-xs line-clamp-2 md:line-clamp-2"
+                    : "text-xs hidden md:block md:line-clamp-1"
                 } font-light`}
               >
                 {category.description}
@@ -484,12 +487,18 @@ function CategoryCard({ category, index, type, config }: CategoryCardProps) {
                   hidden: { opacity: 0, y: 10 },
                   visible: { opacity: 1, y: 0 },
                 }}
-                className="flex justify-between items-center mt-1"
+                className={`flex justify-between items-center ${
+                  category.size === "tall" ? "mt-1.5" : "mt-2"
+                }`}
               >
-                <span className="text-white/90 text-xs px-2 py-0.5 bg-black/30 rounded-full">
+                <span className={`text-white/90 ${
+                  category.size === "tall" ? "text-xs" : "text-xs md:text-sm"
+                } px-2 py-0.5 bg-black/30 rounded-full`}>
                   {category.count}
                 </span>
-                <span className="text-white flex items-center text-xs font-medium group-hover:underline relative px-2 py-0.5 overflow-hidden rounded-md group-hover:bg-white/10 transition-all duration-300">
+                <span className={`text-white flex items-center ${
+                  category.size === "tall" ? "text-xs" : "text-xs md:text-sm"
+                } font-medium group-hover:underline relative px-2 py-0.5 overflow-hidden rounded-md group-hover:bg-white/10 transition-all duration-300`}>
                   View
                   <ArrowRight className="ml-1 h-2.5 w-2.5 transition-all duration-300 group-hover:translate-x-1 group-hover:text-primary" />
                 </span>

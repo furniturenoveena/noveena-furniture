@@ -1,39 +1,20 @@
-"use client";
+"use client"
 
-import { useState, useRef } from "react";
-import { motion, useScroll, useTransform, useInView } from "framer-motion";
-import {
-  MapPin,
-  Phone,
-  Mail,
-  Clock,
-  Send,
-  CheckCircle,
-  Loader2,
-  User,
-  AtSign,
-  MessageSquare,
-  Calendar,
-  X,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import { Checkbox } from "@/components/ui/checkbox";
-import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/card";
+import { useState } from "react"
+import { motion } from "framer-motion"
+import { MapPin, Phone, Mail, Clock, Send, CheckCircle, Loader2, User, AtSign, MessageSquare, Calendar, X } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
+import { useToast } from "@/components/ui/use-toast"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Badge } from "@/components/ui/badge"
+import { cn } from "@/lib/utils"
+import { Checkbox } from "@/components/ui/checkbox"
+import Image from "next/image"
+import { Card, CardContent } from "@/components/ui/card"
 
 const socialLinks = [
   {
@@ -64,23 +45,17 @@ export default function ContactPage() {
     preferredContact: "email",
     preferredTime: "",
     newsletter: false,
-  });
+  })
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formSubmitted, setFormSubmitted] = useState(false);
-  const [activeTab, setActiveTab] = useState("contact");
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-  const ref = useRef(null);
-  const isInView = useInView(ref);
-  const { scrollYProgress } = useScroll();
-  const opacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [formSubmitted, setFormSubmitted] = useState(false)
+  const [activeTab, setActiveTab] = useState("contact")
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({})
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+    
     // Clear error for this field when user types
     if (formErrors[name]) {
       setFormErrors((prev) => ({ ...prev, [name]: "" }));
@@ -170,7 +145,6 @@ export default function ContactPage() {
         initial="hidden"
         animate="visible"
         className="mb-12 text-center"
-        style={{ opacity }}
       >
         <Badge className="mb-4 px-3 py-1 text-sm">Get In Touch</Badge>
         <h1 className="text-4xl md:text-5xl font-bold mb-4">
@@ -203,7 +177,6 @@ export default function ContactPage() {
               initial="hidden"
               animate="visible"
               className="space-y-8"
-              ref={ref}
             >
               <motion.div
                 variants={itemVariants}

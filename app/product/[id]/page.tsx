@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
@@ -40,29 +40,85 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   const [activeImageIndex, setActiveImageIndex] = useState(0)
   const [advancePayment, setAdvancePayment] = useState(30) // Default 30% advance
   const [paymentOption, setPaymentOption] = useState("advance")
-
-  // Get similar products
-  const similarProducts = products.filter((p) => p.category === product?.category && p.id !== productId).slice(0, 4)
-
-  // Mock images for the product gallery
-  const productImages = [
-    product?.image || "/placeholder.svg?height=600&width=600",
-    "/placeholder.svg?height=600&width=600",
-    "/placeholder.svg?height=600&width=600",
-    "/placeholder.svg?height=600&width=600",
-  ]
-
-  // Calculate prices based on quantity
+  const [selectedColor, setSelectedColor] = useState("default") // Default color selection
+  const [isZoomed, setIsZoomed] = useState(false)
+  const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 })
   const [currentPrice, setCurrentPrice] = useState(product?.price || 0)
   const [totalPrice, setTotalPrice] = useState(0)
   const [advanceAmount, setAdvanceAmount] = useState(0)
   const [balanceAmount, setBalanceAmount] = useState(0)
+  const imageRef = useRef<HTMLDivElement>(null)
+
+  // Enhanced furniture colors with more realistic values and images
+  const availableColors = [
+    { 
+      id: "default", 
+      name: "Natural Oak", 
+      value: "#C19A6B",
+      image: product?.image || "/placeholder.svg?height=600&width=600"
+    },
+    { 
+      id: "walnut", 
+      name: "Walnut", 
+      value: "#5D4037",
+      image: "/placeholder.svg?height=600&width=600&text=Walnut" 
+    },
+    { 
+      id: "mahogany", 
+      name: "Mahogany", 
+      value: "#4E342E",
+      image: "/placeholder.svg?height=600&width=600&text=Mahogany" 
+    },
+    { 
+      id: "ebony", 
+      name: "Ebony Black", 
+      value: "#212121",
+      image: "/placeholder.svg?height=600&width=600&text=Ebony" 
+    },
+    { 
+      id: "white", 
+      name: "White Ash", 
+      value: "#F5F5F5",
+      image: "/placeholder.svg?height=600&width=600&text=White" 
+    },
+    { 
+      id: "cherry", 
+      name: "Cherry", 
+      value: "#954535",
+      image: "/placeholder.svg?height=600&width=600&text=Cherry" 
+    },
+  ]
+
+  // Get similar products
+  const similarProducts = products.filter((p) => p.category === product?.category && p.id !== productId).slice(0, 4)
+
+  // Generate product images based on selected color
+  const selectedColorData = availableColors.find(color => color.id === selectedColor) || availableColors[0]
+  
+  // Mock images for the product gallery - now color specific
+  const productImages = [
+    selectedColorData.image,
+    `/placeholder.svg?height=600&width=600&text=${selectedColorData.name}-Side`,
+    `/placeholder.svg?height=600&width=600&text=${selectedColorData.name}-Back`,
+    `/placeholder.svg?height=600&width=600&text=${selectedColorData.name}-Detail`,
+  ]
+  
+  // Handle image zoom functionality
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!imageRef.current) return;
+    
+    const { left, top, width, height } = imageRef.current.getBoundingClientRect();
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+    
+    setZoomPosition({ x, y });
+  };
 
   useEffect(() => {
     if (!product) return
 
     // Check if product has tiered pricing
-    if (product.tieredPricing && product.tieredPricing.length > 0) {
+    if ('tieredPricing' in product && product.tieredPricing && product.tieredPricing.length > 0) {
       const tier = product.tieredPricing.find((tier) => quantity >= tier.min && quantity <= tier.max)
 
       if (tier) {
@@ -149,13 +205,19 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16">
-        {/* Product Images */}
+        {/* Product Images - Enhanced with zoom */}
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
           <div className="flex flex-col">
-            <div className="relative aspect-square bg-muted/30 rounded-lg overflow-hidden mb-4 premium-card">
+            <div 
+              ref={imageRef}
+              className="relative aspect-square bg-muted/30 rounded-lg overflow-hidden mb-4 premium-card cursor-zoom-in"
+              onMouseEnter={() => setIsZoomed(true)}
+              onMouseLeave={() => setIsZoomed(false)}
+              onMouseMove={handleMouseMove}
+            >
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={activeImageIndex}
+                  key={activeImageIndex + selectedColor} // Change key when color or image changes
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -164,15 +226,27 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                 >
                   <Image
                     src={productImages[activeImageIndex] || "/placeholder.svg"}
-                    alt={product.name}
+                    alt={`${product.name} in ${selectedColorData.name}`}
                     fill
-                    className="object-contain"
+                    className={`object-contain transition-opacity duration-300 ${isZoomed ? 'opacity-0' : 'opacity-100'}`}
                   />
+                  
+                  {isZoomed && (
+                    <div 
+                      className="absolute inset-0 overflow-hidden"
+                      style={{
+                        backgroundImage: `url(${productImages[activeImageIndex]})`,
+                        backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                        backgroundSize: '200%',
+                        backgroundRepeat: 'no-repeat'
+                      }}
+                    />
+                  )}
                 </motion.div>
               </AnimatePresence>
 
               {product.type === "Imported Used" && (
-                <div className="absolute top-4 left-4">
+                <div className="absolute top-4 left-4 z-10">
                   <Badge variant="secondary" className="bg-primary text-white">
                     Imported Used
                   </Badge>
@@ -183,9 +257,9 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             <div className="grid grid-cols-4 gap-3">
               {productImages.map((image, index) => (
                 <div
-                  key={index}
+                  key={`${selectedColor}-${index}`}
                   className={`relative aspect-square rounded-md overflow-hidden cursor-pointer border-2 transition-all duration-300 ${
-                    activeImageIndex === index ? "border-primary" : "border-transparent hover:border-primary/50"
+                    activeImageIndex === index ? "border-primary shadow-md scale-[1.02]" : "border-transparent hover:border-primary/50"
                   }`}
                   onClick={() => setActiveImageIndex(index)}
                 >
@@ -238,6 +312,56 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
           <p className="text-muted-foreground mb-6 body-elegant">{product.description}</p>
 
           <div className="space-y-6">
+            {/* Color Selection - Enhanced with visual indicators */}
+            <div>
+              <h3 className="text-base font-semibold mb-2 font-cormorant flex items-center">
+                Color
+                <span className="ml-2 text-sm font-normal text-muted-foreground">
+                  ({selectedColorData.name})
+                </span>
+              </h3>
+              <div className="flex flex-wrap gap-3 mb-2">
+                {availableColors.map((color) => (
+                  <TooltipProvider key={color.id}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+                            selectedColor === color.id
+                              ? "ring-2 ring-primary ring-offset-2 scale-110 shadow-md"
+                              : "hover:scale-105 hover:shadow-sm border border-gray-200"
+                          }`}
+                          style={{ backgroundColor: color.value }}
+                          onClick={() => {
+                            setSelectedColor(color.id);
+                            setActiveImageIndex(0); // Reset to main image when changing color
+                          }}
+                          aria-label={`Select ${color.name} color`}
+                        >
+                          {selectedColor === color.id && (
+                            <motion.div
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              className="flex items-center justify-center"
+                            >
+                              <Check className={`h-5 w-5 ${color.id === "white" ? "text-black" : "text-white"}`} />
+                            </motion.div>
+                          )}
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="bg-foreground text-background px-3 py-1.5">
+                        {color.name}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                ))}
+              </div>
+              <div className="text-xs text-muted-foreground flex items-center">
+                <Info className="h-3 w-3 mr-1" />
+                Select a color to see product in different finishes
+              </div>
+            </div>
+
             {/* Dimensions */}
             <div>
               <h3 className="text-base font-semibold mb-2 font-cormorant">Dimensions</h3>
@@ -313,14 +437,14 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
               </div>
             </div>
 
-            {/* Payment Options */}
-            <div className="border rounded-lg p-4">
+            {/* Payment Options - Enhanced UI */}
+            <div className="border rounded-lg p-4 bg-muted/5 shadow-sm">
               <h3 className="text-base font-semibold mb-3 font-cormorant">Payment Options</h3>
 
               <RadioGroup defaultValue="advance" onValueChange={setPaymentOption} className="space-y-3">
-                <div className="flex items-center space-x-2">
+                <div className={`flex items-center space-x-2 p-2 rounded-md ${paymentOption === "advance" ? "bg-primary/5" : ""}`}>
                   <RadioGroupItem value="advance" id="advance" />
-                  <Label htmlFor="advance" className="font-medium">
+                  <Label htmlFor="advance" className={`font-medium ${paymentOption === "advance" ? "text-primary" : ""}`}>
                     Advance Payment
                   </Label>
                 </div>
@@ -362,9 +486,9 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                   )}
                 </AnimatePresence>
 
-                <div className="flex items-center space-x-2">
+                <div className={`flex items-center space-x-2 p-2 rounded-md ${paymentOption === "full" ? "bg-primary/5" : ""}`}>
                   <RadioGroupItem value="full" id="full" />
-                  <Label htmlFor="full" className="font-medium">
+                  <Label htmlFor="full" className={`font-medium ${paymentOption === "full" ? "text-primary" : ""}`}>
                     Full Payment
                   </Label>
                 </div>
@@ -390,14 +514,33 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
               </RadioGroup>
             </div>
 
-            {/* Actions */}
+            {/* Actions - Enhanced with animations */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="flex-1 font-montserrat" onClick={handleBuyNow}>
-                <ShoppingCart className="mr-2 h-5 w-5" />
+              <Button 
+                size="lg" 
+                className="flex-1 font-montserrat transition-all duration-300 hover:scale-[1.02]" 
+                onClick={handleBuyNow}
+              >
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  className="mr-2"
+                >
+                  <ShoppingCart className="h-5 w-5" />
+                </motion.div>
                 Buy Now
               </Button>
-              <Button size="lg" variant="outline" className="flex-1 font-montserrat" onClick={handleAddToCart}>
-                <Heart className="mr-2 h-5 w-5" />
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="flex-1 font-montserrat transition-all duration-300 hover:bg-primary/5" 
+                onClick={handleAddToCart}
+              >
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  className="mr-2"
+                >
+                  <Heart className="h-5 w-5" />
+                </motion.div>
                 Add to Wishlist
               </Button>
             </div>
@@ -451,17 +594,34 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             carefully selected to enhance your living space with timeless elegance and superior craftsmanship.
           </p>
 
-          <div className="mt-6">
-            <h4 className="font-semibold mb-2 font-cormorant">Dimensions:</h4>
-            <ul className="list-disc pl-5 space-y-1">
-              <li>Width: {product.dimensions.width}</li>
-              <li>
-                {product.dimensions.depth
-                  ? `Depth: ${product.dimensions.depth}`
-                  : `Length: ${product.dimensions.length}`}
-              </li>
-              <li>Height: {product.dimensions.height}</li>
-            </ul>
+          <div className="mt-6 space-y-4">
+            <div>
+              <h4 className="font-semibold mb-2 font-cormorant">Dimensions:</h4>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Width: {product.dimensions.width}</li>
+                <li>
+                  {product.dimensions.depth
+                    ? `Depth: ${product.dimensions.depth}`
+                    : `Length: ${product.dimensions.length}`}
+                </li>
+                <li>Height: {product.dimensions.height}</li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-2 font-cormorant">Available Colors:</h4>
+              <div className="flex flex-wrap gap-2">
+                {availableColors.map((color) => (
+                  <div key={color.id} className="flex items-center">
+                    <div 
+                      className="w-5 h-5 rounded-full mr-1" 
+                      style={{ backgroundColor: color.value }}
+                    ></div>
+                    <span className="text-sm">{color.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </TabsContent>
 

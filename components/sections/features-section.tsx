@@ -8,7 +8,6 @@ const FeatureCard = ({ icon: Icon, title, description, index, isHovered, onHover
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-10% 0px -10% 0px" });
   
-  // Create scroll-triggered opacity and y position values
   const scrollOpacity = useTransform(
     scrollYProgress,
     [0, 0.2 + index * 0.1, 0.4 + index * 0.1],
@@ -21,7 +20,6 @@ const FeatureCard = ({ icon: Icon, title, description, index, isHovered, onHover
     [40, 20, 0]
   );
   
-  // Animation variants
   const cardVariants = {
     hidden: { opacity: 0, y: 40 },
     visible: { 
@@ -47,7 +45,6 @@ const FeatureCard = ({ icon: Icon, title, description, index, isHovered, onHover
     }
   };
   
-  // Generate stars based on index
   const starPositions = [
     { top: "-10px", right: "10px", delay: 0 },
     { top: "40%", right: "-15px", delay: 0.3 },
@@ -67,7 +64,6 @@ const FeatureCard = ({ icon: Icon, title, description, index, isHovered, onHover
       onMouseEnter={() => onHover(index)}
       onMouseLeave={() => onHover(null)}
     >
-      {/* Decorative elements with enhanced scroll animations */}
       <motion.div 
         className="absolute inset-0 border border-primary/20 rounded-2xl overflow-hidden"
         style={{
@@ -78,7 +74,6 @@ const FeatureCard = ({ icon: Icon, title, description, index, isHovered, onHover
           ),
         }}
       >
-        {/* Animated gradient border effect on scroll */}
         <motion.div
           className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/30 to-primary/0"
           style={{
@@ -96,7 +91,6 @@ const FeatureCard = ({ icon: Icon, title, description, index, isHovered, onHover
         />
       </motion.div>
       
-      {/* Enhanced star animations that appear on scroll and remain during hover */}
       {starPositions.map((pos, i) => (
         <motion.div
           key={i}
@@ -122,7 +116,6 @@ const FeatureCard = ({ icon: Icon, title, description, index, isHovered, onHover
         >
           <Star className="h-3 w-3 text-primary/70 fill-primary/30" />
           
-          {/* Add pulsing effect when in view */}
           <motion.div
             className="absolute inset-0 bg-primary/10 rounded-full blur-md"
             animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0.6, 0.3] }}
@@ -136,7 +129,6 @@ const FeatureCard = ({ icon: Icon, title, description, index, isHovered, onHover
       ))}
       
       <div className="relative z-10 flex flex-col items-center text-center">
-        {/* Icon container with enhanced scroll animations */}
         <motion.div 
           className={`p-5 rounded-full mb-6 relative ${isHovered === index ? 'bg-primary/30' : 'bg-primary/10'}`}
           variants={iconVariants}
@@ -159,7 +151,6 @@ const FeatureCard = ({ icon: Icon, title, description, index, isHovered, onHover
             ),
           }}
         >
-          {/* Fix: Added position and z-index to ensure icon stays visible */}
           <motion.div 
             className="absolute inset-0 rounded-full border border-primary/40 z-10"
             animate={{ 
@@ -173,7 +164,6 @@ const FeatureCard = ({ icon: Icon, title, description, index, isHovered, onHover
             }}
           />
           
-          {/* Enhanced icon visibility on hover */}
           <AnimatePresence>
             {isHovered === index && (
               <motion.div
@@ -186,7 +176,6 @@ const FeatureCard = ({ icon: Icon, title, description, index, isHovered, onHover
             )}
           </AnimatePresence>
           
-          {/* Add scroll-triggered rotation to icons */}
           <motion.div 
             className="relative z-30"
             animate={{ 
@@ -229,7 +218,6 @@ const FeatureCard = ({ icon: Icon, title, description, index, isHovered, onHover
           {description}
         </motion.p>
         
-        {/* Show feature benefits when hovered */}
         <AnimatePresence>
           {isHovered === index && (
             <motion.div 
@@ -316,36 +304,29 @@ export default function FeaturesSection() {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef(null);
   
-  // Enhanced scroll tracking
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "end start"]
   });
   
-  // Create parallax effects based on scroll position
   const scrollOpacityBg = useTransform(scrollYProgress, [0, 0.2, 0.8], [0, 1, 1]);
   const scrollScaleBg = useTransform(scrollYProgress, [0, 0.2, 0.8], [0.8, 1, 1.05]);
   
-  // Parallax effect for background elements
   const y = useMotionValue(0);
   const x = useMotionValue(0);
   
-  // Handle mouse movement for interactive background
   const handleMouseMove = (e) => {
     const rect = sectionRef.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
     
-    // Calculate distance from center (normalized to -1 to 1)
     const distanceX = (e.clientX - centerX) / (rect.width / 2);
     const distanceY = (e.clientY - centerY) / (rect.height / 2);
     
-    // Update motion values with dampening
     x.set(distanceX * -20);
     y.set(distanceY * -20);
   };
   
-  // Add scroll listener for additional effects
   useEffect(() => {
     const handleScroll = () => {
       if (sectionRef.current) {
@@ -359,14 +340,13 @@ export default function FeaturesSection() {
     };
 
     window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Initial check
+    handleScroll();
     
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
   
-  // Feature data
   const features = [
     {
       icon: Truck,
@@ -385,7 +365,6 @@ export default function FeaturesSection() {
     }
   ];
   
-  // Heading animation variants
   const headingVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { 
@@ -398,7 +377,6 @@ export default function FeaturesSection() {
     }
   };
   
-  // Line animation variants
   const lineVariants = {
     hidden: { width: "0%" },
     visible: { 
@@ -410,7 +388,6 @@ export default function FeaturesSection() {
     }
   };
   
-  // Background decorations
   const decorations = [
     { top: "10%", left: "5%", size: "150px", delay: 0.3, rotate: 15 },
     { top: "70%", left: "2%", size: "100px", delay: 0.5, rotate: -20 },
@@ -421,14 +398,13 @@ export default function FeaturesSection() {
   return (
     <motion.section 
       ref={sectionRef}
-      className="py-24 relative overflow-hidden bg-gradient-to-b from-secondary/30 to-secondary/60"
+      className="py-24 relative overflow-hidden bg-background"
       onMouseMove={handleMouseMove}
       style={{ 
         opacity: scrollOpacityBg,
         scale: scrollScaleBg
       }}
     >
-      {/* Background decorative elements with scroll-based animations */}
       {decorations.map((dec, i) => (
         <motion.div
           key={i}
@@ -455,7 +431,6 @@ export default function FeaturesSection() {
       ))}
       
       <div className="container mx-auto px-4 relative z-10">
-        {/* Section header with scroll-based reveal */}
         <div className="text-center mb-16">
           <motion.p 
             className="text-primary font-medium tracking-wider uppercase text-sm mb-3"
@@ -468,7 +443,7 @@ export default function FeaturesSection() {
           </motion.p>
           
           <motion.h2 
-            className="text-3xl md:text-4xl font-bold font-italiana mb-5"
+            className="text-3xl md:text-4xl font-bold font-italiana mb-5 text-foreground"
             style={{
               opacity: useTransform(scrollYProgress, [0, 0.15, 0.25], [0, 0, 1]),
               y: useTransform(scrollYProgress, [0, 0.15, 0.25], [30, 15, 0])
@@ -489,7 +464,7 @@ export default function FeaturesSection() {
           </div>
           
           <motion.p
-            className="max-w-2xl mx-auto text-muted-foreground mt-6"
+            className="max-w-2xl mx-auto text-foreground/80 mt-6"
             style={{
               opacity: useTransform(scrollYProgress, [0, 0.25, 0.35], [0, 0, 1]),
               y: useTransform(scrollYProgress, [0, 0.25, 0.35], [20, 10, 0])
@@ -499,7 +474,6 @@ export default function FeaturesSection() {
           </motion.p>
         </div>
         
-        {/* Feature cards with scroll-based animations */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <AnimatePresence>
             {features.map((feature, index) => (
@@ -518,9 +492,8 @@ export default function FeaturesSection() {
         </div>
       </div>
       
-      {/* Bottom decorative gradient */}
       <motion.div 
-        className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-secondary to-transparent"
+        className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent"
         style={{
           opacity: useTransform(scrollYProgress, [0.6, 0.8], [0, 1])
         }}
