@@ -10,28 +10,27 @@ import AboutSection from "@/components/sections/about-section";
 import TestimonialsSection from "@/components/sections/testimonials-section";
 import VisualizationSection from "@/components/sections/visualization-section";
 import CTASection from "@/components/sections/cta-section";
+import { motion } from "framer-motion";
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
-  
+
   useEffect(() => {
     setMounted(true);
-    
-    // Instead of hiding scrollbar, set proper viewport dimensions
+
     const setViewportHeight = () => {
-      // Set a CSS variable for the viewport height
       document.documentElement.style.setProperty(
         '--viewport-height', 
         `${window.innerHeight}px`
       );
     };
-    
+
     // Initial call to set height
     setViewportHeight();
-    
+
     // Update on window resize
     window.addEventListener('resize', setViewportHeight);
-    
+
     // Add styles for proper dimension control
     const style = document.createElement('style');
     style.textContent = `
@@ -54,9 +53,16 @@ export default function Home() {
         max-width: 100vw;
         overflow-x: hidden;
       }
+
+      @media (max-width: 640px) {
+        section {
+          padding-left: 1rem;
+          padding-right: 1rem;
+        }
+      }
     `;
     document.head.appendChild(style);
-    
+
     return () => {
       // Clean up
       window.removeEventListener('resize', setViewportHeight);
@@ -72,7 +78,7 @@ export default function Home() {
   }
 
   return (
-    <div className="pt-16 overflow-x-hidden">
+    <div className="pt-16 md:pt-16 overflow-x-hidden">
       {/* Hero Section */}
       <HeroSection />
 
@@ -80,25 +86,87 @@ export default function Home() {
       <FeaturesSection />
 
       {/* Main Categories Showcase */}
-      <CategoryShowcase />
+      <div className="px-4 sm:px-6 md:px-8">
+        <CategoryShowcase />
+      </div>
 
       {/* Featured Products Section */}
-      <FeaturedProductsSection />
+      <div className="px-4 sm:px-6 md:px-8">
+        <FeaturedProductsSection />
+      </div>
 
       {/* Pricing Tiers Section */}
-      <PricingTiersSection />
+      <div className="px-4 sm:px-6 md:px-8">
+        <PricingTiersSection />
+      </div>
 
       {/* About Section */}
-      <AboutSection />
+      <div className="px-4 sm:px-6 md:px-8">
+        <AboutSection />
+      </div>
 
-      {/* Testimonials Section */}
-      <TestimonialsSection />
+      {/* Section Divider */}
+      <div className="w-full flex justify-center my-8 md:my-16">
+        <div className="w-2/3 sm:w-1/2 md:w-1/3 h-0.5 bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+      </div>
 
-      {/* 3D Furniture Showcase */}
-      <VisualizationSection />
+      {/* Testimonials Section with animation */}
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8 }}
+        className="relative z-10 px-4 sm:px-6 md:px-8"
+      >
+        <TestimonialsSection />
+      </motion.div>
 
-      {/* CTA Section */}
-      <CTASection />
+      {/* Section Divider */}
+      <div className="w-full flex justify-center my-8 md:my-16">
+        <div className="w-2/3 sm:w-1/2 md:w-1/3 h-0.5 bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+      </div>
+
+      {/* 3D Furniture Showcase with animation */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 1.2 }}
+        className="relative bg-gradient-to-b from-slate-50 to-white py-8 md:py-16"
+      >
+        <div className="container mx-auto px-4 sm:px-6 md:px-8">
+          <VisualizationSection />
+        </div>
+      </motion.div>
+
+      {/* CTA Section with enhanced layout */}
+      <div className="relative mt-10 md:mt-20 mb-8 md:mb-12">
+        <div className="absolute inset-0 bg-gray-50 transform -skew-y-2 z-0"></div>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="relative z-10 py-8 md:py-16"
+        >
+          <div className="container mx-auto px-4 sm:px-6 md:px-8">
+            <CTASection />
+          </div>
+        </motion.div>
+      </div>
+      
+      {/* Scroll to top button */}
+      <div className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-50">
+        <button 
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="p-2 md:p-3 rounded-full bg-primary/90 text-white shadow-lg hover:bg-primary transition-all"
+          aria-label="Scroll to top"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" className="md:w-6 md:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+          </svg>
+        </button>
+      </div>
     </div>
   );
 }

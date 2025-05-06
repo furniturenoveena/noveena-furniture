@@ -1,3 +1,24 @@
+/* Add at the top of your globals.css file */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+
+/* Prevent content overflow */
+* {
+  box-sizing: border-box;
+}
+
+/* Ensure all sections stay within viewport */
+section {
+  width: 100vw;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
