@@ -54,9 +54,11 @@ const importedUsedCategories: Category[] = [
   {
     id: 1,
     name: "Living Room",
-    image: "/placeholder.svg?height=300&width=400",
+    image:
+      "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     count: 42,
-    description: "Elegant imported living room furniture with character and history",
+    description:
+      "Elegant imported living room furniture with character and history",
     accent: "accent-living",
     size: "large",
     position: 1, // Featured item
@@ -64,7 +66,8 @@ const importedUsedCategories: Category[] = [
   {
     id: 2,
     name: "Dining Room",
-    image: "/placeholder.svg?height=300&width=400",
+    image:
+      "https://images.unsplash.com/photo-1602872029708-84d970d3382b?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     count: 28,
     description: "Classic dining sets that bring sophistication to your meals",
     accent: "accent-dining",
@@ -74,7 +77,8 @@ const importedUsedCategories: Category[] = [
   {
     id: 3,
     name: "Bedroom",
-    image: "/placeholder.svg?height=300&width=400",
+    image:
+      "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     count: 35,
     description: "Premium bedroom furniture for ultimate comfort and style",
     accent: "accent-bedroom",
@@ -84,7 +88,8 @@ const importedUsedCategories: Category[] = [
   {
     id: 4,
     name: "Office",
-    image: "/placeholder.svg?height=300&width=400",
+    image:
+      "https://plus.unsplash.com/premium_photo-1670315264879-59cc6b15db5f?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     count: 18,
     description: "Professional office furniture with timeless appeal",
     accent: "accent-office",
@@ -268,14 +273,14 @@ export default function CategoryShowcase() {
               variants={productCardVariants}
               className="opacity-0"
             >
-              <ProductCard 
+              <ProductCard
                 product={{
                   ...product,
                   // Remove bento-specific properties
                   size: undefined,
-                  position: undefined
+                  position: undefined,
                 }}
-                variants={{}} 
+                variants={{}}
               />
             </motion.div>
           ))}
@@ -451,7 +456,9 @@ function CategoryCard({ category, index, type, config }: CategoryCardProps) {
                     : category.size === "medium"
                     ? "md:text-lg"
                     : "text-sm"
-                } font-bold text-white mb-0.5 font-cormorant ${category.accent} group-hover:text-primary/90 transition-colors duration-300`}
+                } font-bold text-white mb-0.5 font-cormorant ${
+                  category.accent
+                } group-hover:text-primary/90 transition-colors duration-300`}
               >
                 {category.name}
               </motion.h3>

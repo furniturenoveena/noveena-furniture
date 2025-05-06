@@ -29,7 +29,8 @@ const featuredProducts = [
     id: 1,
     name: "Elegant Leather Sofa",
     price: 189000,
-    image: "/placeholder.svg?height=400&width=600",
+    image:
+      "https://images.unsplash.com/photo-1567016432779-094069958ea5?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     category: "Living Room",
     type: "Brand New",
     rating: 4.9,
@@ -39,7 +40,8 @@ const featuredProducts = [
     id: 2,
     name: "Vintage Dining Table",
     price: 156000,
-    image: "/placeholder.svg?height=400&width=600",
+    image:
+      "https://images.unsplash.com/photo-1604578762246-41134e37f9cc?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     category: "Dining",
     type: "Imported Used",
     rating: 4.7,
@@ -53,7 +55,8 @@ const featuredProducts = [
     id: 3,
     name: "Modern Coffee Table",
     price: 48000,
-    image: "/placeholder.svg?height=400&width=600",
+    image:
+      "https://plus.unsplash.com/premium_photo-1680546330888-f995d2d64571?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     category: "Living Room",
     type: "Brand New",
     rating: 4.8,
@@ -62,7 +65,8 @@ const featuredProducts = [
     id: 4,
     name: "Premium Queen Bed",
     price: 220000,
-    image: "/placeholder.svg?height=400&width=600",
+    image:
+      "https://images.unsplash.com/photo-1634344656611-0773d8dbbe2c?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     category: "Bedroom",
     type: "Imported Used",
     rating: 5.0,
@@ -115,11 +119,7 @@ export default function FeaturedProductsSection() {
           animate={controls}
         >
           {featuredProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              variants={fadeIn}
-            />
+            <ProductCard key={product.id} product={product} variants={fadeIn} />
           ))}
         </motion.div>
 
