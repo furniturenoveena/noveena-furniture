@@ -158,54 +158,58 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-16 mt-16">
+    <div className="container mx-auto px-4 py-8 md:py-16 mt-8 md:mt-16">
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="mb-12 text-center"
+        className="mb-8 md:mb-12 text-center"
       >
         <Badge className="mb-4 px-3 py-1 text-sm">Get In Touch</Badge>
-        <h1 className="text-4xl md:text-5xl font-bold mb-4">
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">
           Contact Noveena Furniture
         </h1>
-        <p className="text-muted-foreground max-w-2xl mx-auto">
+        <p className="text-muted-foreground max-w-2xl mx-auto text-sm md:text-base">
           Have questions about our products or services? We're here to help and
           eager to hear from you.
         </p>
       </motion.div>
 
-      <div className="grid lg:grid-cols-2 gap-12 items-start">
+      <div className="grid lg:grid-cols-2 gap-6 md:gap-12 items-start">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="space-y-8"
+          className="space-y-6 md:space-y-8"
         >
           <motion.div
             variants={itemVariants}
-            className="bg-primary/5 p-6 rounded-lg border border-primary/10"
+            className="bg-primary/5 p-4 md:p-6 rounded-lg border border-primary/10"
           >
-            <h2 className="text-2xl font-semibold mb-6">How to Reach Us</h2>
+            <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6">
+              How to Reach Us
+            </h2>
 
-            <div className="space-y-6">
+            <div className="space-y-4 md:space-y-6">
               <motion.div
                 variants={itemVariants}
-                className="flex items-start space-x-4 group"
+                className="flex items-start space-x-3 md:space-x-4 group"
               >
-                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
-                  <MapPin className="h-5 w-5" />
+                <div className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors flex-shrink-0">
+                  <MapPin className="h-4 w-4 md:h-5 md:w-5" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg">Visit Our Showroom</h3>
-                  <p className="text-muted-foreground">
+                  <h3 className="font-semibold text-base md:text-lg">
+                    Visit Our Showroom
+                  </h3>
+                  <p className="text-muted-foreground text-sm md:text-base">
                     337 Kaduwela Rd, Thalangama Koswatta
                   </p>
                   <a
                     href="https://maps.app.goo.gl/EzF1nU5qdPDaxnjLA"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-primary hover:underline mt-1 inline-block"
+                    className="text-xs md:text-sm text-primary hover:underline mt-1 inline-block"
                   >
                     View on Google Maps
                   </a>
@@ -214,14 +218,16 @@ export default function ContactPage() {
 
               <motion.div
                 variants={itemVariants}
-                className="flex items-start space-x-4 group"
+                className="flex items-start space-x-3 md:space-x-4 group"
               >
-                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
-                  <Phone className="h-5 w-5" />
+                <div className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors flex-shrink-0">
+                  <Phone className="h-4 w-4 md:h-5 md:w-5" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg">Call Us</h3>
-                  <p className="text-muted-foreground">
+                  <h3 className="font-semibold text-base md:text-lg">
+                    Call Us
+                  </h3>
+                  <p className="text-muted-foreground text-sm md:text-base">
                     <a
                       href="tel:+94779134361"
                       className="hover:text-primary transition-colors"
@@ -229,7 +235,7 @@ export default function ContactPage() {
                       +94 77 913 4361
                     </a>
                   </p>
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <p className="text-xs md:text-sm text-muted-foreground mt-1">
                     Our customer support is available during business hours
                   </p>
                 </div>
@@ -237,14 +243,16 @@ export default function ContactPage() {
 
               <motion.div
                 variants={itemVariants}
-                className="flex items-start space-x-4 group"
+                className="flex items-start space-x-3 md:space-x-4 group"
               >
-                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
-                  <Mail className="h-5 w-5" />
+                <div className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors flex-shrink-0">
+                  <Mail className="h-4 w-4 md:h-5 md:w-5" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg">Email Us</h3>
-                  <p className="text-muted-foreground">
+                  <h3 className="font-semibold text-base md:text-lg">
+                    Email Us
+                  </h3>
+                  <p className="text-muted-foreground text-sm md:text-base break-all">
                     <a
                       href="mailto:noveenafurniture@gmail.com"
                       className="hover:text-primary transition-colors"
@@ -252,7 +260,7 @@ export default function ContactPage() {
                       noveenafurniture@gmail.com
                     </a>
                   </p>
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <p className="text-xs md:text-sm text-muted-foreground mt-1">
                     We typically respond within 24 hours
                   </p>
                 </div>
@@ -260,14 +268,16 @@ export default function ContactPage() {
 
               <motion.div
                 variants={itemVariants}
-                className="flex items-start space-x-4 group"
+                className="flex items-start space-x-3 md:space-x-4 group"
               >
-                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
-                  <Clock className="h-5 w-5" />
+                <div className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors flex-shrink-0">
+                  <Clock className="h-4 w-4 md:h-5 md:w-5" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg">Opening Hours</h3>
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-muted-foreground">
+                  <h3 className="font-semibold text-base md:text-lg">
+                    Opening Hours
+                  </h3>
+                  <div className="grid grid-cols-2 gap-x-3 md:gap-x-4 gap-y-0.5 md:gap-y-1 text-muted-foreground text-xs md:text-sm">
                     <span>Monday - Friday:</span>
                     <span>9:00 AM - 7:00 PM</span>
                     <span>Saturday:</span>
@@ -279,23 +289,25 @@ export default function ContactPage() {
               </motion.div>
             </div>
 
-            <div className="mt-8">
-              <h3 className="font-semibold text-lg mb-4">Connect With Us</h3>
-              <div className="flex space-x-6">
+            <div className="mt-6 md:mt-8">
+              <h3 className="font-semibold text-base md:text-lg mb-3 md:mb-4">
+                Connect With Us
+              </h3>
+              <div className="flex space-x-4 md:space-x-6">
                 {socialLinks.map((social) => (
                   <a
                     key={social.name}
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-background h-10 w-10 rounded-full flex items-center justify-center shadow-sm hover:bg-primary/10 transition-colors"
+                    className="bg-background h-8 w-8 md:h-10 md:w-10 rounded-full flex items-center justify-center shadow-sm hover:bg-primary/10 transition-colors"
                     aria-label={social.name}
                   >
                     <span className="sr-only">{social.name}</span>
                     <img
                       src={social.icon}
                       alt={social.name}
-                      className="h-8 w-8 object-contain"
+                      className="h-6 w-6 md:h-8 md:w-8 object-contain"
                     />
                   </a>
                 ))}
@@ -306,7 +318,7 @@ export default function ContactPage() {
           {/* Map */}
           <motion.div
             variants={itemVariants}
-            className="relative h-[350px] rounded-lg overflow-hidden border border-muted"
+            className="relative h-[200px] sm:h-[250px] md:h-[350px] rounded-lg overflow-hidden border border-muted"
           >
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3960.859297243933!2d79.93040177475686!3d6.907423093091964!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae2574e59f5e2c5%3A0xffbb01e9e79542a4!2swww.homestar.lk!5e0!3m2!1sen!2slk!4v1746506676252!5m2!1sen!2slk"
@@ -316,6 +328,7 @@ export default function ContactPage() {
               allowFullScreen={false}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
+              className="w-full h-full"
             ></iframe>
           </motion.div>
         </motion.div>
@@ -324,25 +337,25 @@ export default function ContactPage() {
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="space-y-8"
+          className="space-y-6 md:space-y-8"
         >
           <motion.div
             variants={itemVariants}
-            className="bg-card border shadow-sm p-6 sm:p-8 rounded-xl"
+            className="bg-card border shadow-sm p-4 sm:p-6 md:p-8 rounded-xl"
           >
             {formSubmitted ? (
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="flex flex-col items-center justify-center h-full py-10 text-center"
+                className="flex flex-col items-center justify-center h-full py-6 md:py-10 text-center"
               >
-                <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
-                  <CheckCircle className="h-10 w-10" />
+                <div className="h-16 w-16 md:h-20 md:w-20 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4 md:mb-6">
+                  <CheckCircle className="h-8 w-8 md:h-10 md:w-10" />
                 </div>
-                <h2 className="text-2xl font-bold mb-4">
+                <h2 className="text-xl md:text-2xl font-bold mb-2 md:mb-4">
                   Message Sent Successfully!
                 </h2>
-                <p className="text-muted-foreground max-w-md mb-8">
+                <p className="text-muted-foreground max-w-md mb-6 md:mb-8 text-sm md:text-base">
                   Thank you for contacting us. We've received your inquiry and a
                   member of our team will get back to you shortly.
                 </p>
@@ -355,10 +368,15 @@ export default function ContactPage() {
               <>
                 <motion.div
                   variants={itemVariants}
-                  className="flex items-center justify-between mb-6"
+                  className="flex items-center justify-between mb-4 md:mb-6"
                 >
-                  <h2 className="text-2xl font-bold">Send Us a Message</h2>
-                  <Badge variant="outline" className="font-normal">
+                  <h2 className="text-xl md:text-2xl font-bold">
+                    Send Us a Message
+                  </h2>
+                  <Badge
+                    variant="outline"
+                    className="font-normal text-xs whitespace-nowrap"
+                  >
                     We reply within 24hrs
                   </Badge>
                 </motion.div>
@@ -366,12 +384,15 @@ export default function ContactPage() {
                 <motion.form
                   variants={itemVariants}
                   onSubmit={handleSubmit}
-                  className="space-y-6"
+                  className="space-y-4 md:space-y-6"
                 >
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name" className="flex items-center">
-                        <User className="h-3.5 w-3.5 mr-1.5 opacity-70" />
+                  <div className="grid xs:grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+                    <div className="space-y-1 md:space-y-2">
+                      <Label
+                        htmlFor="name"
+                        className="flex items-center text-sm"
+                      >
+                        <User className="h-3 w-3 md:h-3.5 md:w-3.5 mr-1.5 opacity-70" />
                         Your Name
                       </Label>
                       <Input
@@ -381,6 +402,7 @@ export default function ContactPage() {
                         value={formData.name}
                         onChange={handleChange}
                         className={cn(
+                          "text-sm h-9 md:h-10",
                           formErrors.name &&
                             "border-destructive focus-visible:ring-destructive"
                         )}
@@ -391,9 +413,12 @@ export default function ContactPage() {
                         </p>
                       )}
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email" className="flex items-center">
-                        <AtSign className="h-3.5 w-3.5 mr-1.5 opacity-70" />
+                    <div className="space-y-1 md:space-y-2">
+                      <Label
+                        htmlFor="email"
+                        className="flex items-center text-sm"
+                      >
+                        <AtSign className="h-3 w-3 md:h-3.5 md:w-3.5 mr-1.5 opacity-70" />
                         Email Address
                       </Label>
                       <Input
@@ -404,6 +429,7 @@ export default function ContactPage() {
                         value={formData.email}
                         onChange={handleChange}
                         className={cn(
+                          "text-sm h-9 md:h-10",
                           formErrors.email &&
                             "border-destructive focus-visible:ring-destructive"
                         )}
@@ -416,10 +442,13 @@ export default function ContactPage() {
                     </div>
                   </div>
 
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="phone" className="flex items-center">
-                        <Phone className="h-3.5 w-3.5 mr-1.5 opacity-70" />
+                  <div className="grid xs:grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+                    <div className="space-y-1 md:space-y-2">
+                      <Label
+                        htmlFor="phone"
+                        className="flex items-center text-sm"
+                      >
+                        <Phone className="h-3 w-3 md:h-3.5 md:w-3.5 mr-1.5 opacity-70" />
                         Phone Number
                       </Label>
                       <Input
@@ -429,6 +458,7 @@ export default function ContactPage() {
                         value={formData.phone}
                         onChange={handleChange}
                         className={cn(
+                          "text-sm h-9 md:h-10",
                           formErrors.phone &&
                             "border-destructive focus-visible:ring-destructive"
                         )}
@@ -439,9 +469,12 @@ export default function ContactPage() {
                         </p>
                       )}
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="subject" className="flex items-center">
-                        <MessageSquare className="h-3.5 w-3.5 mr-1.5 opacity-70" />
+                    <div className="space-y-1 md:space-y-2">
+                      <Label
+                        htmlFor="subject"
+                        className="flex items-center text-sm"
+                      >
+                        <MessageSquare className="h-3 w-3 md:h-3.5 md:w-3.5 mr-1.5 opacity-70" />
                         Subject
                       </Label>
                       <Select
@@ -452,6 +485,7 @@ export default function ContactPage() {
                       >
                         <SelectTrigger
                           className={cn(
+                            "text-sm h-9 md:h-10",
                             formErrors.subject &&
                               "border-destructive focus-visible:ring-destructive"
                           )}
@@ -485,8 +519,8 @@ export default function ContactPage() {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label className="flex items-center">
+                  <div className="space-y-1 md:space-y-2">
+                    <Label className="flex items-center text-sm">
                       Preferred Contact Method
                     </Label>
                     <div className="flex space-x-4">
@@ -503,11 +537,11 @@ export default function ContactPage() {
                               e.target.value
                             )
                           }
-                          className="text-primary focus:ring-primary"
+                          className="text-primary focus:ring-primary h-4 w-4"
                         />
                         <Label
                           htmlFor="email-contact"
-                          className="text-sm cursor-pointer"
+                          className="text-xs md:text-sm cursor-pointer"
                         >
                           Email
                         </Label>
@@ -525,11 +559,11 @@ export default function ContactPage() {
                               e.target.value
                             )
                           }
-                          className="text-primary focus:ring-primary"
+                          className="text-primary focus:ring-primary h-4 w-4"
                         />
                         <Label
                           htmlFor="phone-contact"
-                          className="text-sm cursor-pointer"
+                          className="text-xs md:text-sm cursor-pointer"
                         >
                           Phone
                         </Label>
@@ -537,12 +571,12 @@ export default function ContactPage() {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-1 md:space-y-2">
                     <Label
                       htmlFor="preferredTime"
-                      className="flex items-center"
+                      className="flex items-center text-sm"
                     >
-                      <Calendar className="h-3.5 w-3.5 mr-1.5 opacity-70" />
+                      <Calendar className="h-3 w-3 md:h-3.5 md:w-3.5 mr-1.5 opacity-70" />
                       Best Time to Contact
                     </Label>
                     <Select
@@ -551,7 +585,7 @@ export default function ContactPage() {
                         handleSelectChange("preferredTime", value)
                       }
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="text-sm h-9 md:h-10">
                         <SelectValue placeholder="Select preferred time (optional)" />
                       </SelectTrigger>
                       <SelectContent>
@@ -571,9 +605,12 @@ export default function ContactPage() {
                     </Select>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="message" className="flex items-center">
-                      <MessageSquare className="h-3.5 w-3.5 mr-1.5 opacity-70" />
+                  <div className="space-y-1 md:space-y-2">
+                    <Label
+                      htmlFor="message"
+                      className="flex items-center text-sm"
+                    >
+                      <MessageSquare className="h-3 w-3 md:h-3.5 md:w-3.5 mr-1.5 opacity-70" />
                       Your Message
                     </Label>
                     <Textarea
@@ -582,8 +619,9 @@ export default function ContactPage() {
                       placeholder="Tell us about your inquiry, questions, or special requirements..."
                       value={formData.message}
                       onChange={handleChange}
-                      rows={5}
+                      rows={4}
                       className={cn(
+                        "text-sm resize-y min-h-[100px]",
                         formErrors.message &&
                           "border-destructive focus-visible:ring-destructive"
                       )}
@@ -595,17 +633,18 @@ export default function ContactPage() {
                     )}
                   </div>
 
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-start space-x-2">
                     <Checkbox
                       id="newsletter"
                       checked={formData.newsletter}
                       onCheckedChange={(checked) =>
                         handleCheckboxChange("newsletter", checked as boolean)
                       }
+                      className="mt-0.5"
                     />
                     <Label
                       htmlFor="newsletter"
-                      className="text-sm cursor-pointer"
+                      className="text-xs md:text-sm cursor-pointer"
                     >
                       Subscribe to our newsletter for promotions and updates
                     </Label>
@@ -613,7 +652,7 @@ export default function ContactPage() {
 
                   <Button
                     type="submit"
-                    className="w-full"
+                    className="w-full h-10 md:h-12"
                     disabled={isSubmitting}
                     size="lg"
                   >
@@ -634,15 +673,15 @@ export default function ContactPage() {
             )}
           </motion.div>
 
-          {/* FAQ section moved here */}
+          {/* FAQ section */}
           <motion.div
             variants={itemVariants}
-            className="bg-card border shadow-sm p-6 sm:p-8 rounded-xl"
+            className="bg-card border shadow-sm p-4 sm:p-6 md:p-8 rounded-xl"
           >
-            <h2 className="text-2xl font-bold mb-6">
+            <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">
               Frequently Asked Questions
             </h2>
-            <div className="space-y-6">
+            <div className="space-y-4 md:space-y-6">
               {[
                 {
                   question: "What payment methods do you accept?",
@@ -672,10 +711,14 @@ export default function ContactPage() {
               ].map((faq, index) => (
                 <div
                   key={index}
-                  className="border-b border-muted pb-4 last:border-0 last:pb-0"
+                  className="border-b border-muted pb-3 md:pb-4 last:border-0 last:pb-0"
                 >
-                  <h3 className="text-lg font-semibold mb-2">{faq.question}</h3>
-                  <p className="text-muted-foreground">{faq.answer}</p>
+                  <h3 className="text-base md:text-lg font-semibold mb-1 md:mb-2">
+                    {faq.question}
+                  </h3>
+                  <p className="text-muted-foreground text-xs md:text-sm">
+                    {faq.answer}
+                  </p>
                 </div>
               ))}
             </div>
