@@ -7,14 +7,14 @@ import { ArrowLeft, ArrowRight, Quote } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 // Import Swiper components
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination, Navigation, EffectFade } from 'swiper/modules';
-import { Swiper as SwiperType } from 'swiper';
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Navigation, EffectFade } from "swiper/modules";
+import { Swiper as SwiperType } from "swiper";
 
 // Import Swiper styles
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/effect-fade';
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/effect-fade";
 
 // Define interface for testimonial item
 interface TestimonialItem {
@@ -32,28 +32,28 @@ export default function TestimonialsSection() {
   // Animation variants
   const fadeUpVariants = {
     hidden: { opacity: 0, y: 30 },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
-      transition: { 
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
         duration: 0.6,
-        ease: [0.22, 1, 0.36, 1]  // Custom cubic-bezier easing
-      }
-    }
+        ease: [0.22, 1, 0.36, 1], // Custom cubic-bezier easing
+      },
+    },
   };
-  
+
   const quoteIconVariants = {
     hidden: { opacity: 0, scale: 0.5 },
-    visible: { 
-      opacity: 1, 
-      scale: 1, 
-      transition: { 
-        type: "spring", 
-        stiffness: 200, 
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 200,
         damping: 15,
-        delay: 0.3 
-      }
-    }
+        delay: 0.3,
+      },
+    },
   };
 
   const staggerContainerVariants = {
@@ -62,9 +62,9 @@ export default function TestimonialsSection() {
       opacity: 1,
       transition: {
         staggerChildren: 0.1,
-        delayChildren: 0.3
-      }
-    }
+        delayChildren: 0.3,
+      },
+    },
   };
 
   // Testimonials data
@@ -73,26 +73,29 @@ export default function TestimonialsSection() {
       id: 1,
       name: "Sarah Johnson",
       title: "Interior Designer",
-      image: "/placeholder-user.jpg",
-      content: "The craftsmanship of Noveena's furniture is exceptional. I've incorporated their pieces into multiple client projects, and the feedback has always been overwhelmingly positive. The attention to detail and quality of materials truly sets them apart.",
-      rating: 5
+      image: "https://randomuser.me/api/portraits/women/35.jpg",
+      content:
+        "The craftsmanship of Noveena's furniture is exceptional. I've incorporated their pieces into multiple client projects, and the feedback has always been overwhelmingly positive. The attention to detail and quality of materials truly sets them apart.",
+      rating: 5,
     },
     {
       id: 2,
       name: "David Chen",
       title: "Homeowner",
-      image: "/placeholder-user.jpg",
-      content: "We furnished our entire living room with Noveena pieces, and the quality has exceeded our expectations. The customer service was outstanding from selection to delivery. Three years later, everything still looks as beautiful as the day it arrived.",
-      rating: 5
+      image: "https://randomuser.me/api/portraits/men/81.jpg",
+      content:
+        "We furnished our entire living room with Noveena pieces, and the quality has exceeded our expectations. The customer service was outstanding from selection to delivery. Three years later, everything still looks as beautiful as the day it arrived.",
+      rating: 5,
     },
     {
       id: 3,
       name: "Amara Perera",
       title: "Boutique Hotel Owner",
-      image: "/placeholder-user.jpg",
-      content: "Our guests frequently comment on our beautiful furniture. Working with Noveena allowed us to create a unique aesthetic that perfectly balances luxury and comfort. Their team was professional and accommodating throughout the entire process.",
-      rating: 5
-    }
+      image: "https://randomuser.me/api/portraits/men/92.jpg",
+      content:
+        "Our guests frequently comment on our beautiful furniture. Working with Noveena allowed us to create a unique aesthetic that perfectly balances luxury and comfort. Their team was professional and accommodating throughout the entire process.",
+      rating: 5,
+    },
   ];
 
   // Render star rating
@@ -114,7 +117,7 @@ export default function TestimonialsSection() {
             className={`${i < rating ? "text-amber-500" : "text-muted"} mr-1`}
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3 + (i * 0.1), duration: 0.3 }}
+            transition={{ delay: 0.3 + i * 0.1, duration: 0.3 }}
           >
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
           </motion.svg>
@@ -127,23 +130,23 @@ export default function TestimonialsSection() {
     <section className="py-20 relative overflow-hidden">
       {/* Background decorations */}
       <div className="absolute inset-0 bg-gradient-to-br from-muted/30 to-background z-0"></div>
-      
+
       {/* Animated decorative elements */}
-      <motion.div 
+      <motion.div
         className="absolute top-20 left-10 opacity-20 w-64 h-64 rounded-full border border-primary/30"
         initial={{ scale: 0.8, opacity: 0 }}
         whileInView={{ scale: 1, opacity: 0.2 }}
         viewport={{ once: true }}
         transition={{ duration: 1.5, ease: "easeOut" }}
       ></motion.div>
-      <motion.div 
+      <motion.div
         className="absolute bottom-10 right-20 opacity-10 w-80 h-80 rounded-full border-2 border-primary/20"
         initial={{ scale: 0.8, opacity: 0 }}
         whileInView={{ scale: 1, opacity: 0.1 }}
         viewport={{ once: true }}
         transition={{ duration: 1.8, ease: "easeOut", delay: 0.2 }}
       ></motion.div>
-      <motion.div 
+      <motion.div
         className="absolute top-40 right-32 w-8 h-8 opacity-20 bg-primary/20 rounded-full"
         initial={{ y: -20, opacity: 0 }}
         whileInView={{ y: 0, opacity: 0.2 }}
@@ -159,7 +162,7 @@ export default function TestimonialsSection() {
           whileInView="visible"
           viewport={{ once: true }}
         >
-          <motion.span 
+          <motion.span
             className="text-primary font-montserrat text-sm tracking-wider uppercase bg-primary/5 px-4 py-2 rounded-full"
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -168,7 +171,7 @@ export default function TestimonialsSection() {
           >
             Client Testimonials
           </motion.span>
-          <motion.h2 
+          <motion.h2
             className="text-3xl md:text-4xl font-bold mt-4 mb-4 font-playfair"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -177,14 +180,14 @@ export default function TestimonialsSection() {
           >
             Words from Our Clients
           </motion.h2>
-          <motion.div 
+          <motion.div
             className="w-24 h-1 bg-primary/30 mx-auto mb-6"
             initial={{ width: 0, opacity: 0 }}
             whileInView={{ width: 96, opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.3 }}
           ></motion.div>
-          <motion.p 
+          <motion.p
             className="text-muted-foreground max-w-2xl mx-auto body-elegant text-lg"
             variants={fadeUpVariants}
             initial="hidden"
@@ -192,7 +195,7 @@ export default function TestimonialsSection() {
             viewport={{ once: true }}
             transition={{ delay: 0.3 }}
           >
-            Our reputation speaks through the experiences of our valued clients. 
+            Our reputation speaks through the experiences of our valued clients.
             Discover why they choose Noveena Furniture for their spaces.
           </motion.p>
         </motion.div>
@@ -226,7 +229,7 @@ export default function TestimonialsSection() {
             >
               {testimonials.map((testimonial) => (
                 <SwiperSlide key={testimonial.id}>
-                  <motion.div 
+                  <motion.div
                     className="bg-card/50 backdrop-blur-sm p-6 md:p-8 rounded-xl border border-muted/40 shadow-md relative overflow-hidden"
                     variants={staggerContainerVariants}
                     initial="hidden"
@@ -234,10 +237,10 @@ export default function TestimonialsSection() {
                     viewport={{ once: true, margin: "-100px" }}
                   >
                     <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-50"></div>
-                    
+
                     <div className="relative z-10">
                       <div className="flex flex-col md:flex-row md:items-center gap-6 mb-6">
-                        <motion.div 
+                        <motion.div
                           className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-primary/30"
                           initial={{ opacity: 0, scale: 0.8, x: -20 }}
                           whileInView={{ opacity: 1, scale: 1, x: 0 }}
@@ -251,9 +254,9 @@ export default function TestimonialsSection() {
                             className="object-cover"
                           />
                         </motion.div>
-                        
+
                         <div>
-                          <motion.div 
+                          <motion.div
                             initial={{ opacity: 0, y: 10 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
@@ -261,8 +264,8 @@ export default function TestimonialsSection() {
                           >
                             {renderRating(testimonial.rating)}
                           </motion.div>
-                          
-                          <motion.h3 
+
+                          <motion.h3
                             className="text-xl font-bold font-cormorant mb-1"
                             initial={{ opacity: 0, y: 10 }}
                             whileInView={{ opacity: 1, y: 0 }}
@@ -271,8 +274,8 @@ export default function TestimonialsSection() {
                           >
                             {testimonial.name}
                           </motion.h3>
-                          
-                          <motion.p 
+
+                          <motion.p
                             className="text-sm text-muted-foreground"
                             initial={{ opacity: 0, y: 10 }}
                             whileInView={{ opacity: 1, y: 0 }}
@@ -283,8 +286,8 @@ export default function TestimonialsSection() {
                           </motion.p>
                         </div>
                       </div>
-                      
-                      <motion.p 
+
+                      <motion.p
                         className="body-elegant text-lg leading-relaxed relative pl-6 border-l-2 border-primary/30 italic"
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -298,7 +301,7 @@ export default function TestimonialsSection() {
                 </SwiperSlide>
               ))}
             </Swiper>
-            
+
             {/* Custom navigation buttons */}
             <div className="flex justify-center mt-4 gap-4">
               <motion.button
