@@ -282,7 +282,7 @@ export default function AboutPage() {
             >
               <div className="relative h-[400px] md:h-[500px] rounded-2xl overflow-hidden shadow-2xl">
                 <Image
-                  src="/placeholder.svg?height=600&width=1200"
+                  src="https://images.unsplash.com/photo-1600121848594-d8644e57abab?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                   alt="Noveena Furniture Showroom"
                   fill
                   className="object-cover"
@@ -316,7 +316,7 @@ export default function AboutPage() {
 
           {/* Scroll indicator */}
           <motion.div
-            className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center"
+            className="absolute bottom-8 lg:-bottom-16 left-1/2 transform -translate-x-1/2 flex flex-col items-center"
             initial={{ opacity: 0, y: -10 }}
             animate={heroInView ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
             transition={{ delay: 1.2, duration: 0.5 }}

@@ -1,5 +1,6 @@
 /* Add at the top of your globals.css file */
-html, body {
+html,
+body {
   overflow-x: hidden;
   width: 100%;
   position: relative;
@@ -183,7 +184,12 @@ section {
 
   /* Animations */
   .hero-section {
-    background-image: linear-gradient(to right, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.3)), url("/hero-bg.jpg");
+    background-image: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0.6),
+        rgba(0, 0, 0, 0.3)
+      ),
+      url("https://res.cloudinary.com/do08c2xq5/image/upload/v1746532601/hero-bg_stoc1j.webp");
     background-size: cover;
     background-position: center;
   }

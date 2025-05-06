@@ -276,9 +276,9 @@ export default function CategoryShowcase() {
                 variants={productCardVariants}
                 className="opacity-0"
               >
-                <ProductCard 
-                  product={((({ size, position, ...rest }) => rest)(product))}
-                  variants={{}} 
+                <ProductCard
+                  product={(({ size, position, ...rest }) => rest)(product)}
+                  variants={{}}
                 />
               </motion.div>
             ))}
@@ -418,7 +418,9 @@ function CategoryCard({ category, index, type, config }: CategoryCardProps) {
 
             <motion.div
               className={`absolute bottom-0 left-0 p-4 md:p-5 w-full ${
-                category.size === 'tall' ? 'h-full flex flex-col justify-end' : ''
+                category.size === "tall"
+                  ? "h-full flex flex-col justify-end"
+                  : ""
               }`}
               initial="hidden"
               animate={contentControls}
@@ -443,7 +445,9 @@ function CategoryCard({ category, index, type, config }: CategoryCardProps) {
                     transition: { duration: 0.5, delay: 0.2 },
                   },
                 }}
-                className={`h-0.5 bg-primary/80 ${category.size === 'tall' ? 'mb-2' : 'mb-3'} rounded-full`}
+                className={`h-0.5 bg-primary/80 ${
+                  category.size === "tall" ? "mb-2" : "mb-3"
+                } rounded-full`}
               />
 
               <motion.h3
@@ -459,7 +463,11 @@ function CategoryCard({ category, index, type, config }: CategoryCardProps) {
                     : category.size === "tall"
                     ? "text-sm md:text-lg"
                     : "text-sm md:text-lg"
-                } font-bold text-white ${category.size === 'tall' ? 'mb-0.5' : 'mb-1'} font-cormorant ${category.accent} group-hover:text-white transition-colors duration-300`}
+                } font-bold text-white ${
+                  category.size === "tall" ? "mb-0.5" : "mb-1"
+                } font-cormorant ${
+                  category.accent
+                } group-hover:text-white transition-colors duration-300`}
               >
                 {category.name}
               </motion.h3>
@@ -491,14 +499,18 @@ function CategoryCard({ category, index, type, config }: CategoryCardProps) {
                   category.size === "tall" ? "mt-1.5" : "mt-2"
                 }`}
               >
-                <span className={`text-white/90 ${
-                  category.size === "tall" ? "text-xs" : "text-xs md:text-sm"
-                } px-2 py-0.5 bg-black/30 rounded-full`}>
+                <span
+                  className={`text-white/90 ${
+                    category.size === "tall" ? "text-xs" : "text-xs md:text-sm"
+                  } px-2 py-0.5 bg-black/30 rounded-full`}
+                >
                   {category.count}
                 </span>
-                <span className={`text-white flex items-center ${
-                  category.size === "tall" ? "text-xs" : "text-xs md:text-sm"
-                } font-medium group-hover:underline relative px-2 py-0.5 overflow-hidden rounded-md group-hover:bg-white/10 transition-all duration-300`}>
+                <span
+                  className={`text-white flex items-center ${
+                    category.size === "tall" ? "text-xs" : "text-xs md:text-sm"
+                  } font-medium group-hover:underline relative px-2 py-0.5 overflow-hidden rounded-md group-hover:bg-white/10 transition-all duration-300`}
+                >
                   View
                   <ArrowRight className="ml-1 h-2.5 w-2.5 transition-all duration-300 group-hover:translate-x-1 group-hover:text-primary" />
                 </span>

@@ -171,11 +171,11 @@ export default function CTASection() {
                   className="bg-primary text-primary-foreground hover:bg-primary/90 relative overflow-hidden group"
                 >
                   <Link href="/contact">
-                    <span className="relative z-10 flex items-center">
+                    <span className="relative z-10 flex items-center group-hover:text-primary">
                       Request Consultation
                       <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                     </span>
-                    <span className="absolute inset-0 bg-gradient-to-r from-primary to-primary/80 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"></span>
+                    <span className="absolute inset-0 bg-gradient-to-r from-white to-gray-100 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"></span>
                   </Link>
                 </Button>
 
