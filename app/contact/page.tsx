@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useRef } from "react"
-import { motion, useScroll, useTransform, useInView } from "framer-motion"
+import { useState } from "react"
+import { motion } from "framer-motion"
 import { MapPin, Phone, Mail, Clock, Send, CheckCircle, Loader2, User, AtSign, MessageSquare, Calendar, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -39,10 +39,6 @@ export default function ContactPage() {
   const [formSubmitted, setFormSubmitted] = useState(false)
   const [activeTab, setActiveTab] = useState("contact")
   const [formErrors, setFormErrors] = useState<Record<string, string>>({})
-  const ref = useRef(null)
-  const isInView = useInView(ref)
-  const { scrollYProgress } = useScroll()
-  const opacity = useTransform(scrollYProgress, [0, 1], [0, 1])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -136,7 +132,6 @@ export default function ContactPage() {
         initial="hidden"
         animate="visible"
         className="mb-12 text-center"
-        style={{ opacity }}
       >
         <Badge className="mb-4 px-3 py-1 text-sm">Get In Touch</Badge>
         <h1 className="text-4xl md:text-5xl font-bold mb-4">Contact Noveena Furniture</h1>
@@ -161,7 +156,6 @@ export default function ContactPage() {
               initial="hidden"
               animate="visible"
               className="space-y-8"
-              ref={ref}
             >
               <motion.div variants={itemVariants} className="bg-primary/5 p-6 rounded-lg border border-primary/10">
                 <h2 className="text-2xl font-semibold mb-6">How to Reach Us</h2>

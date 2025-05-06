@@ -118,24 +118,6 @@ export default function ProductCard({ product, variants, className }: ProductCar
 
           {/* Elegant gradient overlay on hover */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 ease-in-out">
-            <div className="absolute top-4 left-4 flex flex-col gap-2">
-              <Badge 
-                variant="secondary" 
-                className="bg-gradient-to-r from-primary to-primary/80 text-white hover:bg-primary/90 shadow-md backdrop-blur-sm"
-              >
-                {product.type}
-              </Badge>
-
-              {product.discountPercentage && (
-                <Badge 
-                  variant="secondary" 
-                  className="bg-gradient-to-r from-accent-dining to-accent-dining/80 text-white shadow-md backdrop-blur-sm"
-                >
-                  {product.discountPercentage}% OFF
-                </Badge>
-              )}
-            </div>
-
             <motion.div 
               className="absolute top-4 right-4"
               initial={{ opacity: 0, scale: 0.8 }}
@@ -202,6 +184,40 @@ export default function ProductCard({ product, variants, className }: ProductCar
                 </TooltipProvider>
               </motion.div>
             </div>
+          </div>
+
+          {/* Type badge with improved visibility - moved outside the overlay for better visibility */}
+          <div className="absolute top-4 left-4 flex flex-col gap-2">
+            <Badge 
+              variant="secondary" 
+              className={`${
+                product.type === "Brand New" 
+                  ? "bg-emerald-100 text-emerald-800 border border-emerald-200" 
+                  : "bg-blue-100 text-blue-800 border border-blue-200"
+              } shadow-sm font-medium`}
+            >
+              {product.type === "Brand New" && "✨ "}
+              {product.type === "Imported Used" && "🏛️ "}
+              {product.type}
+            </Badge>
+
+            {product.discountPercentage && (
+              <Badge 
+                variant="secondary" 
+                className="bg-amber-100 text-amber-800 border border-amber-200 shadow-sm font-medium"
+              >
+                🏷️ {product.discountPercentage}% OFF
+              </Badge>
+            )}
+            
+            {product.tieredPricing && !product.discountPercentage && (
+              <Badge
+                variant="secondary"
+                className="bg-purple-100 text-purple-800 border border-purple-200 shadow-sm font-medium"
+              >
+                📦 Bulk Discount
+              </Badge>
+            )}
           </div>
         </div>
 

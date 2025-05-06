@@ -265,7 +265,16 @@ export default function Navbar() {
               <span className="sr-only">Search</span>
             </Button>
 
-            <ThemeToggle scrolled={scrolled} />
+            {/* Ensure ThemeToggle icon is always visible with consistent color */}
+            <div
+
+              style={{
+                // Force proper contrast for the icon regardless of scroll position
+                padding: !scrolled ? "2px" : "0"
+              }}
+            >
+              <ThemeToggle />
+            </div>
 
             <Button
               variant="outline"
