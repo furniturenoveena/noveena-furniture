@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
+import { CloudinaryUpload } from "@/components/ui/cloudinary-upload";
 
 interface Category {
   id: string;
@@ -81,6 +82,13 @@ export default function EditCategoryPage({
     setFormData((prev) => ({
       ...prev,
       [name]: value,
+    }));
+  };
+
+  const handleImageChange = (url: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      image: url,
     }));
   };
 
@@ -195,13 +203,10 @@ export default function EditCategoryPage({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="image">Image URL</Label>
-              <Input
-                id="image"
-                name="image"
+              <CloudinaryUpload
                 value={formData.image}
-                onChange={handleInputChange}
-                placeholder="https://example.com/image.jpg"
+                onChange={handleImageChange}
+                label="Category Image"
               />
             </div>
 

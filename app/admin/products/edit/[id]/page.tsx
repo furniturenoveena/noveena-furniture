@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { PlusCircle, X, Loader2 } from "lucide-react";
+import { CloudinaryUpload } from "@/components/ui/cloudinary-upload";
 
 interface Category {
   id: string;
@@ -153,6 +154,20 @@ export default function EditProductPage({
     setFormData((prev) => ({
       ...prev,
       [name]: value,
+    }));
+  };
+
+  const handleImageChange = (url: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      image: url,
+    }));
+  };
+
+  const handleColorImageChange = (url: string) => {
+    setNewColor((prev) => ({
+      ...prev,
+      image: url,
     }));
   };
 
@@ -418,13 +433,10 @@ export default function EditProductPage({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="image">Image URL</Label>
-              <Input
-                id="image"
-                name="image"
+              <CloudinaryUpload
                 value={formData.image}
-                onChange={handleInputChange}
-                placeholder="https://example.com/image.jpg"
+                onChange={handleImageChange}
+                label="Product Image"
               />
             </div>
           </CardContent>
@@ -652,28 +664,20 @@ export default function EditProductPage({
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="color-image">
-                    Color Image URL (Optional)
-                  </Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="color-image"
-                      value={newColor.image}
-                      onChange={(e) =>
-                        setNewColor({ ...newColor, image: e.target.value })
-                      }
-                      placeholder="https://example.com/image.jpg"
-                      className="flex-grow"
-                    />
-                    <Button
-                      type="button"
-                      onClick={addColor}
-                      variant="secondary"
-                    >
-                      <PlusCircle className="mr-2 h-4 w-4" />
-                      Add
-                    </Button>
-                  </div>
+                  <CloudinaryUpload
+                    value={newColor.image}
+                    onChange={handleColorImageChange}
+                    label="Color Image"
+                  />
+                  <Button
+                    type="button"
+                    onClick={addColor}
+                    variant="secondary"
+                    className="w-full mt-2"
+                  >
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Add Color
+                  </Button>
                 </div>
               </div>
 
