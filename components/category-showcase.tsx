@@ -6,8 +6,7 @@ import Image from "next/image";
 import { motion, useAnimation, useInView } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import ProductCard from "@/components/product-card";
-import { products } from "@/lib/data";
+import { Category as PrismaCategory, Product } from "@/lib/generated/prisma";
 
 // Define grid item size types with more granular options
 type BentoItemSize = "large" | "medium" | "small" | "wide" | "tall" | "tiny";
@@ -37,85 +36,19 @@ const bentoConfig: BentoGridConfig = {
   },
 };
 
-interface Category {
-  id: number;
-  name: string;
-  image: string;
-  count: number;
-  description: string;
-  accent: string;
-  size: BentoItemSize;
-  position?: number; // Optional position in grid for precise layout control
+interface Category extends PrismaCategory {
+  products: Product[];
+  _count: { products: number };
 }
 
-// Organized category data with intentional layout
-const importedUsedCategories: Category[] = [
-  {
-    id: 1,
-    name: "Living Room",
-    image:
-      "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    count: 42,
-    description:
-      "Elegant imported living room furniture with character and history",
-    accent: "accent-living",
-    size: "large",
-    position: 1, // Featured item
-  },
-  {
-    id: 2,
-    name: "Dining Room",
-    image:
-      "https://images.unsplash.com/photo-1602872029708-84d970d3382b?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    count: 28,
-    description: "Classic dining sets that bring sophistication to your meals",
-    accent: "accent-dining",
-    size: "tall",
-    position: 2,
-  },
-  {
-    id: 3,
-    name: "Bedroom",
-    image:
-      "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    count: 35,
-    description: "Premium bedroom furniture for ultimate comfort and style",
-    accent: "accent-bedroom",
-    size: "medium",
-    position: 3,
-  },
-  {
-    id: 4,
-    name: "Office",
-    image:
-      "https://plus.unsplash.com/premium_photo-1670315264879-59cc6b15db5f?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    count: 18,
-    description: "Professional office furniture with timeless appeal",
-    accent: "accent-office",
-    size: "medium",
-    position: 4,
-  },
-];
+// Define component props interface
+interface CategoryShowcaseProps {
+  importedUsedCategories: Category[];
+}
 
-// Map brand new products to bento grid items with proper sizing
-const brandNewProducts = products
-  .filter((product) => product.type === "Brand New")
-  .slice(0, 4)
-  .map((product, index) => ({
-    ...product,
-    // Assign different sizes for visual interest in the bento grid
-    size:
-      index === 0
-        ? ("large" as BentoItemSize)
-        : index === 1
-        ? ("tall" as BentoItemSize)
-        : index === 2
-        ? ("medium" as BentoItemSize)
-        : ("medium" as BentoItemSize),
-    position: index + 1,
-  }));
-
-export default function CategoryShowcase() {
+export default function CategoryShowcase({
+  importedUsedCategories,
+}: CategoryShowcaseProps) {
   // Animation controls for better sequence control
   const brandNewControlsRef = useRef(null);
   const isBrandNewInView = useInView(brandNewControlsRef, {
@@ -159,23 +92,12 @@ export default function CategoryShowcase() {
     },
   };
 
-  // Product card animation variants
-  const productCardVariants = {
-    hidden: {
-      opacity: 0,
-      y: 50,
-      scale: 0.95,
-    },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        duration: 0.7,
-        ease: [0.22, 1, 0.36, 1],
-        delay: i * 0.2, // Increased delay for more noticeable sequence
-      },
-    }),
+  // Function to determine size based on index
+  const getSizeByIndex = (index: number): BentoItemSize => {
+    if (index === 0) return "large";
+    if (index === 1) return "tall";
+    if (index === 2 || index === 3) return "medium";
+    return "small"; // Default size for remaining categories (3 in a row)
   };
 
   return (
@@ -210,18 +132,17 @@ export default function CategoryShowcase() {
             whileInView="visible"
             viewport={{ once: true }}
           >
-            {/* Sort categories by position if available */}
-            {importedUsedCategories
-              .sort((a, b) => (a.position || 99) - (b.position || 99))
-              .map((category, index) => (
-                <CategoryCard
-                  key={category.id}
-                  category={category}
-                  index={index}
-                  type="imported-used"
-                  config={bentoConfig}
-                />
-              ))}
+            {/* Map categories with dynamic sizing based on index */}
+            {importedUsedCategories.map((category, index) => (
+              <CategoryCard
+                key={category.id}
+                category={category}
+                index={index}
+                type="imported-used"
+                config={bentoConfig}
+                size={getSizeByIndex(index)}
+              />
+            ))}
           </motion.div>
         </div>
 
@@ -238,89 +159,27 @@ export default function CategoryShowcase() {
             </Link>
           </Button>
         </div>
-
-        {/* Brand New Section title */}
-        <motion.div
-          className="text-center mb-12"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={fadeIn}
-        >
-          <span className="text-primary font-montserrat text-sm tracking-wider uppercase">
-            Contemporary Designs
-          </span>
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 font-playfair">
-            Brand New Furniture
-          </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto body-elegant text-lg">
-            Explore our latest collection of brand new furniture crafted with
-            premium materials and modern sensibility.
-          </p>
-        </motion.div>
-
-        {/* Brand New Products Grid - centered with justified content */}
-        <div className="flex justify-center w-full">
-          <motion.div
-            ref={brandNewControlsRef}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16 w-full max-w-7xl"
-            variants={staggerContainer}
-            initial="hidden"
-            animate={brandNewControls}
-          >
-            {/* No sorting or bento sizing for uniform grid */}
-            {brandNewProducts.map((product, index) => (
-              <motion.div
-                key={product.id}
-                custom={index}
-                variants={productCardVariants}
-                className="opacity-0"
-              >
-                <ProductCard
-                  product={(({ size, position, ...rest }) => rest)(product)}
-                  variants={{}}
-                />
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-
-        <div className="text-center">
-          <Button
-            asChild
-            variant="outline"
-            size="lg"
-            className="font-montserrat"
-          >
-            <Link href="/category/brand-new">
-              View All Brand New Furniture
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
       </div>
     </section>
   );
 }
 
-// Updated interface with config param
+// Updated interface with size param instead of category containing size
 interface CategoryCardProps {
-  category: {
-    id: number;
-    name: string;
-    image: string;
-    count: number;
-    description: string;
-    accent: string;
-    size: BentoItemSize;
-    position?: number;
-  };
+  category: Category & { _count: { products: number } };
   index: number;
   type: string;
   config: BentoGridConfig;
+  size: BentoItemSize; // Size is now passed as a prop instead of from category
 }
 
-function CategoryCard({ category, index, type, config }: CategoryCardProps) {
+function CategoryCard({
+  category,
+  index,
+  type,
+  config,
+  size,
+}: CategoryCardProps) {
   const href = `/category/${type}/${category.name
     .toLowerCase()
     .replace(" ", "-")}`;
@@ -352,9 +211,9 @@ function CategoryCard({ category, index, type, config }: CategoryCardProps) {
     }
   }, [cardInView, controls, imageControls, contentControls, index]);
 
-  // Get grid classes from config
-  const gridClass = config.sizes[category.size];
-  const aspectClass = config.aspectRatios[category.size];
+  // Get grid classes from config using the passed size prop
+  const gridClass = config.sizes[size];
+  const aspectClass = config.aspectRatios[size];
 
   return (
     <motion.div
@@ -418,9 +277,7 @@ function CategoryCard({ category, index, type, config }: CategoryCardProps) {
 
             <motion.div
               className={`absolute bottom-0 left-0 p-4 md:p-5 w-full ${
-                category.size === "tall"
-                  ? "h-full flex flex-col justify-end"
-                  : ""
+                size === "tall" ? "h-full flex flex-col justify-end" : ""
               }`}
               initial="hidden"
               animate={contentControls}
@@ -446,7 +303,7 @@ function CategoryCard({ category, index, type, config }: CategoryCardProps) {
                   },
                 }}
                 className={`h-0.5 bg-primary/80 ${
-                  category.size === "tall" ? "mb-2" : "mb-3"
+                  size === "tall" ? "mb-2" : "mb-3"
                 } rounded-full`}
               />
 
@@ -456,18 +313,16 @@ function CategoryCard({ category, index, type, config }: CategoryCardProps) {
                   visible: { opacity: 1, y: 0 },
                 }}
                 className={`${
-                  category.size === "large"
+                  size === "large"
                     ? "text-lg md:text-2xl"
-                    : category.size === "medium"
+                    : size === "medium"
                     ? "text-base md:text-xl"
-                    : category.size === "tall"
+                    : size === "tall"
                     ? "text-sm md:text-lg"
                     : "text-sm md:text-lg"
                 } font-bold text-white ${
-                  category.size === "tall" ? "mb-0.5" : "mb-1"
-                } font-cormorant ${
-                  category.accent
-                } group-hover:text-white transition-colors duration-300`}
+                  size === "tall" ? "mb-0.5" : "mb-1"
+                } font-cormorant group-hover:text-white transition-colors duration-300`}
               >
                 {category.name}
               </motion.h3>
@@ -478,11 +333,11 @@ function CategoryCard({ category, index, type, config }: CategoryCardProps) {
                   visible: { opacity: 1, y: 0 },
                 }}
                 className={`text-white/80 ${
-                  category.size === "large"
+                  size === "large"
                     ? "text-sm md:text-base md:line-clamp-2"
-                    : category.size === "medium"
+                    : size === "medium"
                     ? "text-xs md:text-sm md:line-clamp-2"
-                    : category.size === "tall"
+                    : size === "tall"
                     ? "text-xs md:text-xs line-clamp-2 md:line-clamp-2"
                     : "text-xs hidden md:block md:line-clamp-1"
                 } font-light`}
@@ -496,19 +351,19 @@ function CategoryCard({ category, index, type, config }: CategoryCardProps) {
                   visible: { opacity: 1, y: 0 },
                 }}
                 className={`flex justify-between items-center ${
-                  category.size === "tall" ? "mt-1.5" : "mt-2"
+                  size === "tall" ? "mt-1.5" : "mt-2"
                 }`}
               >
                 <span
                   className={`text-white/90 ${
-                    category.size === "tall" ? "text-xs" : "text-xs md:text-sm"
+                    size === "tall" ? "text-xs" : "text-xs md:text-sm"
                   } px-2 py-0.5 bg-black/30 rounded-full`}
                 >
-                  {category.count}
+                  {category._count.products}
                 </span>
                 <span
                   className={`text-white flex items-center ${
-                    category.size === "tall" ? "text-xs" : "text-xs md:text-sm"
+                    size === "tall" ? "text-xs" : "text-xs md:text-sm"
                   } font-medium group-hover:underline relative px-2 py-0.5 overflow-hidden rounded-md group-hover:bg-white/10 transition-all duration-300`}
                 >
                   View

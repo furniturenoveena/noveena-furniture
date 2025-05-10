@@ -1,20 +1,30 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect } from "react"
-import { usePathname, useRouter } from "next/navigation"
-import Link from "next/link"
-import { LayoutDashboard, Package, Users, Settings, LogOut, Menu, X, ChevronDown, ShoppingCart } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { cn } from "@/lib/utils"
+import { useState, useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
+import {
+  LayoutDashboard,
+  Package,
+  Users,
+  Settings,
+  LogOut,
+  Menu,
+  X,
+  ChevronDown,
+  ShoppingCart,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 
 interface NavItem {
-  title: string
-  href: string
-  icon: React.ElementType
-  submenu?: NavItem[]
+  title: string;
+  href: string;
+  icon: React.ElementType;
+  submenu?: NavItem[];
 }
 
 const navItems: NavItem[] = [
@@ -38,9 +48,21 @@ const navItems: NavItem[] = [
         href: "/admin/products/new",
         icon: Package,
       },
+    ],
+  },
+  {
+    title: "Categories",
+    href: "/admin/categories",
+    icon: Package,
+    submenu: [
       {
         title: "Categories",
-        href: "/admin/products/categories",
+        href: "/admin/categories",
+        icon: Package,
+      },
+      {
+        title: "Add New Category",
+        href: "/admin/categories/new",
         icon: Package,
       },
     ],
@@ -50,56 +72,48 @@ const navItems: NavItem[] = [
     href: "/admin/orders",
     icon: ShoppingCart,
   },
-  {
-    title: "Customers",
-    href: "/admin/customers",
-    icon: Users,
-  },
-  {
-    title: "Settings",
-    href: "/admin/settings",
-    icon: Settings,
-  },
-]
+];
 
 export default function AdminLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
-  const pathname = usePathname()
-  const router = useRouter()
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({})
+  const pathname = usePathname();
+  const router = useRouter();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>(
+    {}
+  );
 
   useEffect(() => {
     // Close mobile menu when route changes
-    setIsMobileMenuOpen(false)
-  }, [pathname])
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
 
   // If not on admin login page, check if user is logged in
   useEffect(() => {
     // This is a placeholder for actual auth logic
     // In a real app, you would check if the user is authenticated
-    const isAuthenticated = true // Mock authentication
-    const isLoginPage = pathname === "/admin/login"
+    const isAuthenticated = true; // Mock authentication
+    const isLoginPage = pathname === "/admin/login";
 
     if (!isAuthenticated && !isLoginPage) {
-      router.push("/admin/login")
+      router.push("/admin/login");
     }
-  }, [pathname, router])
+  }, [pathname, router]);
 
   // Skip layout on login page
   if (pathname === "/admin/login") {
-    return <>{children}</>
+    return <>{children}</>;
   }
 
   const toggleSubmenu = (title: string) => {
     setExpandedItems((prev) => ({
       ...prev,
       [title]: !prev[title],
-    }))
-  }
+    }));
+  };
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -113,7 +127,11 @@ export default function AdminLayout({
               className="mr-2 md:hidden"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
-              {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isMobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
               <span className="sr-only">Toggle Menu</span>
             </Button>
             <Link href="/admin/dashboard" className="flex items-center gap-2">
@@ -136,7 +154,7 @@ export default function AdminLayout({
         <aside
           className={cn(
             "fixed inset-y-0 left-0 z-30 mt-16 hidden w-64 flex-col border-r bg-background md:flex",
-            isMobileMenuOpen && "flex",
+            isMobileMenuOpen && "flex"
           )}
         >
           <ScrollArea className="flex-1 py-4">
@@ -149,7 +167,8 @@ export default function AdminLayout({
                         variant="ghost"
                         className={cn(
                           "relative flex h-10 w-full justify-between",
-                          pathname.startsWith(item.href) && "bg-muted font-medium",
+                          pathname.startsWith(item.href) &&
+                            "bg-muted font-medium"
                         )}
                         onClick={() => toggleSubmenu(item.title)}
                       >
@@ -158,7 +177,10 @@ export default function AdminLayout({
                           {item.title}
                         </div>
                         <ChevronDown
-                          className={cn("h-4 w-4 transition-transform", expandedItems[item.title] && "rotate-180")}
+                          className={cn(
+                            "h-4 w-4 transition-transform",
+                            expandedItems[item.title] && "rotate-180"
+                          )}
                         />
                       </Button>
 
@@ -169,7 +191,11 @@ export default function AdminLayout({
                               key={subItem.title}
                               variant="ghost"
                               asChild
-                              className={cn("justify-start", pathname === subItem.href && "bg-muted font-medium")}
+                              className={cn(
+                                "justify-start",
+                                pathname === subItem.href &&
+                                  "bg-muted font-medium"
+                              )}
                             >
                               <Link href={subItem.href}>
                                 <subItem.icon className="mr-2 h-4 w-4" />
@@ -184,7 +210,10 @@ export default function AdminLayout({
                     <Button
                       variant="ghost"
                       asChild
-                      className={cn("justify-start", pathname === item.href && "bg-muted font-medium")}
+                      className={cn(
+                        "justify-start",
+                        pathname === item.href && "bg-muted font-medium"
+                      )}
                     >
                       <Link href={item.href}>
                         <item.icon className="mr-2 h-5 w-5" />
@@ -204,5 +233,5 @@ export default function AdminLayout({
         </main>
       </div>
     </div>
-  )
+  );
 }

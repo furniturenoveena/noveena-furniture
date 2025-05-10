@@ -1,15 +1,33 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import Image from "next/image"
-import { Edit, Trash2, Plus, Search, MoreHorizontal } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent } from "@/components/ui/card"
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { Edit, Trash2, Plus, Search, MoreHorizontal } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -17,44 +35,174 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Badge } from "@/components/ui/badge"
-import { useToast } from "@/components/ui/use-toast"
-import { products } from "@/lib/data"
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/components/ui/use-toast";
+import { Loader2 } from "lucide-react";
+
+// Product type definition based on Prisma schema
+interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  discountPercentage?: number;
+  rating: number;
+  image: string;
+  dimensions: {
+    width: string;
+    height: string;
+    length: string;
+  };
+  features: string[];
+  tieredPricing: {
+    min: number;
+    max: number;
+    price: number;
+  }[];
+  colors: {
+    id: string;
+    name: string;
+    value: string;
+    image: string;
+  }[];
+  categoryId: string;
+  category?: {
+    id: string;
+    name: string;
+    type: "IMPORTED_USED" | "BRAND_NEW";
+  };
+  createdAt: string;
+  updatedAt: string;
+}
 
 export default function ProductsPage() {
-  const { toast } = useToast()
-  const [searchQuery, setSearchQuery] = useState("")
-  const [categoryFilter, setCategoryFilter] = useState<string>("all")
-  const [typeFilter, setTypeFilter] = useState<string>("all")
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [productToDelete, setProductToDelete] = useState<number | null>(null)
+  const { toast } = useToast();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<string | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
+    []
+  );
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Get unique categories and types for filters
-  const categories = Array.from(new Set(products.map((product) => product.category)))
-  const types = Array.from(new Set(products.map((product) => product.type)))
+  // Fetch products and categories
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        // Fetch products with category information
+        const productRes = await fetch("/api/products?includeCategory=true");
+        const productData = await productRes.json();
+
+        if (productData.success) {
+          setProducts(productData.data);
+        } else {
+          toast({
+            title: "Error",
+            description: "Failed to fetch products. Please try again.",
+            variant: "destructive",
+          });
+        }
+
+        // Fetch categories
+        const categoryRes = await fetch("/api/categories");
+        const categoryData = await categoryRes.json();
+
+        if (categoryData.success) {
+          setCategories(
+            categoryData.data.map((cat: any) => ({
+              id: cat.id,
+              name: cat.name,
+            }))
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        toast({
+          title: "Error",
+          description: "Failed to fetch data. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [toast]);
+
+  // Get unique types from products for filters
+  const types = Array.from(
+    new Set(
+      products.map((product) => product.category?.type || "").filter(Boolean)
+    )
+  );
 
   // Filter products based on search query and filters
   const filteredProducts = products.filter((product) => {
-    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesCategory = categoryFilter === "all" || product.category === categoryFilter
-    const matchesType = typeFilter === "all" || product.type === typeFilter
-    return matchesSearch && matchesCategory && matchesType
-  })
+    const matchesSearch = product.name
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const matchesCategory =
+      categoryFilter === "all" || product.categoryId === categoryFilter;
+    const matchesType =
+      typeFilter === "all" || product.category?.type === typeFilter;
+    return matchesSearch && matchesCategory && matchesType;
+  });
 
-  const handleDeleteClick = (productId: number) => {
-    setProductToDelete(productId)
-    setIsDeleteDialogOpen(true)
-  }
+  const handleDeleteClick = (productId: string) => {
+    setProductToDelete(productId);
+    setIsDeleteDialogOpen(true);
+  };
 
-  const confirmDelete = () => {
-    // In a real app, you would make an API call to delete the product
-    toast({
-      title: "Product Deleted",
-      description: "The product has been successfully deleted.",
-    })
-    setIsDeleteDialogOpen(false)
-    setProductToDelete(null)
+  const confirmDelete = async () => {
+    if (!productToDelete) return;
+
+    try {
+      const response = await fetch(`/api/products?id=${productToDelete}`, {
+        method: "DELETE",
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast({
+          title: "Product Deleted",
+          description: "The product has been successfully deleted.",
+        });
+        // Remove the deleted product from the state
+        setProducts(products.filter((p) => p.id !== productToDelete));
+      } else {
+        toast({
+          title: "Error",
+          description: data.error || "Failed to delete product",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      toast({
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleteDialogOpen(false);
+      setProductToDelete(null);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="mt-4 text-muted-foreground">Loading products...</p>
+      </div>
+    );
   }
 
   return (
@@ -90,8 +238,8 @@ export default function ProductsPage() {
                 <SelectContent>
                   <SelectItem value="all">All Categories</SelectItem>
                   {categories.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -106,7 +254,7 @@ export default function ProductsPage() {
                   <SelectItem value="all">All Types</SelectItem>
                   {types.map((type) => (
                     <SelectItem key={type} value={type}>
-                      {type}
+                      {type === "IMPORTED_USED" ? "Imported/Used" : "Brand New"}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -124,17 +272,19 @@ export default function ProductsPage() {
               <TableRow>
                 <TableHead className="w-[80px]">Image</TableHead>
                 <TableHead>Name</TableHead>
-                <TableHead>Type</TableHead>
                 <TableHead>Category</TableHead>
+                <TableHead>Type</TableHead>
                 <TableHead>Price</TableHead>
-                <TableHead className="text-center">Status</TableHead>
                 <TableHead className="text-right w-[100px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredProducts.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                  <TableCell
+                    colSpan={6}
+                    className="text-center py-8 text-muted-foreground"
+                  >
                     No products found matching your criteria.
                   </TableCell>
                 </TableRow>
@@ -151,15 +301,19 @@ export default function ProductsPage() {
                         />
                       </div>
                     </TableCell>
-                    <TableCell className="font-medium">{product.name}</TableCell>
-                    <TableCell>{product.type}</TableCell>
-                    <TableCell>{product.category}</TableCell>
-                    <TableCell>Rs. {product.price.toLocaleString()}</TableCell>
-                    <TableCell className="text-center">
-                      <Badge variant={product.inStock ? "default" : "destructive"}>
-                        {product.inStock ? "In Stock" : "Out of Stock"}
-                      </Badge>
+                    <TableCell className="font-medium">
+                      {product.name}
                     </TableCell>
+                    <TableCell>
+                      {categories.find((c) => c.id === product.categoryId)
+                        ?.name || "-"}
+                    </TableCell>
+                    <TableCell>
+                      {product.category?.type === "IMPORTED_USED"
+                        ? "Imported/Used"
+                        : "Brand New"}
+                    </TableCell>
+                    <TableCell>Rs. {product.price.toLocaleString()}</TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -197,13 +351,19 @@ export default function ProductsPage() {
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Are you sure you want to delete this product?</DialogTitle>
+            <DialogTitle>
+              Are you sure you want to delete this product?
+            </DialogTitle>
             <DialogDescription>
-              This action cannot be undone. This will permanently delete the product from the database.
+              This action cannot be undone. This will permanently delete the
+              product from the database.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setIsDeleteDialogOpen(false)}
+            >
               Cancel
             </Button>
             <Button variant="destructive" onClick={confirmDelete}>
@@ -213,5 +373,5 @@ export default function ProductsPage() {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }

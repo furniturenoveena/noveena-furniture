@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ChevronRight, Filter, X } from "lucide-react";
+import { ChevronRight, Filter, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProductCard from "@/components/product-card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -23,11 +23,60 @@ import {
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
 
-// Sample products data
-import { products } from "@/lib/data";
+// Define types based on Prisma schema
+type CategoryType = "IMPORTED_USED" | "BRAND_NEW";
+
+interface Category {
+  id: string;
+  name: string;
+  image: string;
+  description: string;
+  type: CategoryType;
+  _count?: { products: number };
+  products?: Product[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  discountPercentage?: number;
+  rating: number;
+  image: string;
+  dimensions: {
+    width: string;
+    height: string;
+    length: string;
+  };
+  features: string[];
+  tieredPricing: Array<{
+    min: number;
+    max: number;
+    price: number;
+  }>;
+  colors: Array<{
+    id: string;
+    name: string;
+    value: string;
+    image: string;
+  }>;
+  categoryId: string;
+  category?: Category;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export default function CategoryPage({ params }: { params: { type: string } }) {
-  const [displayProducts, setDisplayProducts] = useState([...products]);
+  // API data state
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // UI state
+  const [displayProducts, setDisplayProducts] = useState<Product[]>([]);
   const [categoryFilters, setCategoryFilters] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({
     min: 0,
@@ -38,51 +87,87 @@ export default function CategoryPage({ params }: { params: { type: string } }) {
 
   const categoryType = params.type.replace(/-/g, " ");
 
-  // Extract available categories
-  const categories = Array.from(
-    new Set(products.map((product) => product.category))
+  // Fetch categories and products from API
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        // Fetch categories
+        const categoriesRes = await fetch("/api/categories");
+        const categoriesData = await categoriesRes.json();
+
+        // Fetch products with their categories
+        const productsRes = await fetch("/api/products?includeCategory=true");
+        const productsData = await productsRes.json();
+
+        if (categoriesData && productsData.success) {
+          setCategories(categoriesData.data);
+          setProducts(productsData.data);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Extract available category names
+  const categoryNames = Array.from(
+    new Set(categories.map((category) => category.name))
   );
 
-  // Filter products when filters change
+  // Filter products when filters change or data is loaded
   useEffect(() => {
+    if (products.length === 0) return;
+
     let filteredProducts = [...products];
 
     // Filter by category type (from URL params)
     if (categoryType !== "all") {
-      if (categoryType === "imported-used" || categoryType === "brand-new") {
-        // Handle main category types
-        const type =
-          categoryType === "imported-used" ? "Imported Used" : "Brand New";
+      if (params.type === "imported-used" || params.type === "brand-new") {
+        // Handle main category types (IMPORTED_USED or BRAND_NEW)
+        const typeEnum =
+          params.type === "imported-used" ? "IMPORTED_USED" : "BRAND_NEW";
         filteredProducts = filteredProducts.filter(
-          (product) => product.type === type
+          (product) => product.category && product.category.type === typeEnum
         );
       } else if (
-        categoryType.includes("imported-used-") ||
-        categoryType.includes("brand-new-")
+        params.type.includes("imported-used-") ||
+        params.type.includes("brand-new-")
       ) {
-        // Handle subcategories
-        const [mainType, subCategory] = categoryType.split("-");
-        const type = mainType === "imported" ? "Imported Used" : "Brand New";
-        const category =
-          subCategory.charAt(0).toUpperCase() + subCategory.slice(1);
+        // Handle subcategories like "imported-used-sofa"
+        const parts = params.type.split("-");
+        const mainType =
+          parts[0] === "imported" ? "IMPORTED_USED" : "BRAND_NEW";
+        // Get category name (e.g., "sofa")
+        const subCategory = parts.slice(2).join(" ");
 
         filteredProducts = filteredProducts.filter(
-          (product) => product.type === type && product.category === category
+          (product) =>
+            product.category &&
+            product.category.type === mainType &&
+            product.category.name.toLowerCase() === subCategory
         );
       } else {
         // Handle direct category names
-        const category =
-          categoryType.charAt(0).toUpperCase() + categoryType.slice(1);
         filteredProducts = filteredProducts.filter(
-          (product) => product.category.toLowerCase() === categoryType
+          (product) =>
+            product.category &&
+            product.category.name.toLowerCase() === params.type
         );
       }
     }
 
+    console.log("Filtered Products:", filteredProducts);
+
     // Apply category filters
     if (categoryFilters.length > 0) {
-      filteredProducts = filteredProducts.filter((product) =>
-        categoryFilters.includes(product.category)
+      filteredProducts = filteredProducts.filter(
+        (product) =>
+          product.category && categoryFilters.includes(product.category.name)
       );
     }
 
@@ -101,8 +186,10 @@ export default function CategoryPage({ params }: { params: { type: string } }) {
         filteredProducts.sort((a, b) => b.price - a.price);
         break;
       case "newest":
-        // In a real app, you'd sort by date
-        filteredProducts.sort((a, b) => b.id - a.id);
+        filteredProducts.sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
         break;
       default:
         // Featured - no specific sorting
@@ -110,7 +197,14 @@ export default function CategoryPage({ params }: { params: { type: string } }) {
     }
 
     setDisplayProducts(filteredProducts);
-  }, [categoryType, categoryFilters, priceRange, sortOption]);
+  }, [
+    categoryType,
+    categoryFilters,
+    priceRange,
+    sortOption,
+    products,
+    categories,
+  ]);
 
   // Toggle category filter
   const toggleCategoryFilter = (category: string) => {
@@ -169,6 +263,16 @@ export default function CategoryPage({ params }: { params: { type: string } }) {
       transition: { duration: 0.4 },
     },
   };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-16 mt-16 flex flex-col items-center justify-center min-h-[50vh]">
+        <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
+        <p>Loading products...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-16 mt-16">
@@ -236,18 +340,20 @@ export default function CategoryPage({ params }: { params: { type: string } }) {
               <div>
                 <h3 className="text-lg font-semibold mb-4">Categories</h3>
                 <div className="space-y-2">
-                  {categories.map((category) => (
-                    <div key={category} className="flex items-center">
+                  {categoryNames.map((categoryName) => (
+                    <div key={categoryName} className="flex items-center">
                       <Checkbox
-                        id={`category-${category}`}
-                        checked={categoryFilters.includes(category)}
-                        onCheckedChange={() => toggleCategoryFilter(category)}
+                        id={`category-${categoryName}`}
+                        checked={categoryFilters.includes(categoryName)}
+                        onCheckedChange={() =>
+                          toggleCategoryFilter(categoryName)
+                        }
                       />
                       <Label
-                        htmlFor={`category-${category}`}
+                        htmlFor={`category-${categoryName}`}
                         className="ml-2 text-sm cursor-pointer"
                       >
-                        {category}
+                        {categoryName}
                       </Label>
                     </div>
                   ))}
@@ -334,20 +440,20 @@ export default function CategoryPage({ params }: { params: { type: string } }) {
                   </AccordionTrigger>
                   <AccordionContent>
                     <div className="space-y-2 pt-2">
-                      {categories.map((category) => (
-                        <div key={category} className="flex items-center">
+                      {categoryNames.map((categoryName) => (
+                        <div key={categoryName} className="flex items-center">
                           <Checkbox
-                            id={`mobile-category-${category}`}
-                            checked={categoryFilters.includes(category)}
+                            id={`mobile-category-${categoryName}`}
+                            checked={categoryFilters.includes(categoryName)}
                             onCheckedChange={() =>
-                              toggleCategoryFilter(category)
+                              toggleCategoryFilter(categoryName)
                             }
                           />
                           <Label
-                            htmlFor={`mobile-category-${category}`}
+                            htmlFor={`mobile-category-${categoryName}`}
                             className="ml-2 text-sm cursor-pointer"
                           >
-                            {category}
+                            {categoryName}
                           </Label>
                         </div>
                       ))}
