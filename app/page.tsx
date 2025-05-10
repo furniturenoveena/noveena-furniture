@@ -14,13 +14,51 @@ import { motion } from "framer-motion";
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [productsLoading, setProductsLoading] = useState(true);
 
   useEffect(() => {
+    // Fetch categories from API
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("/api/categories?includeProducts=true");
+        if (!response.ok) {
+          throw new Error("Failed to fetch categories");
+        }
+        const data = await response.json();
+        setCategories(data.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Fetch products from API
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("/api/products?includeCategory=true");
+        if (!response.ok) {
+          throw new Error("Failed to fetch products");
+        }
+        const data = await response.json();
+        setProducts(data.data || []);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
+        setProductsLoading(false);
+      }
+    };
+
+    fetchCategories();
+    fetchProducts();
     setMounted(true);
 
     const setViewportHeight = () => {
       document.documentElement.style.setProperty(
-        '--viewport-height', 
+        "--viewport-height",
         `${window.innerHeight}px`
       );
     };
@@ -29,10 +67,10 @@ export default function Home() {
     setViewportHeight();
 
     // Update on window resize
-    window.addEventListener('resize', setViewportHeight);
+    window.addEventListener("resize", setViewportHeight);
 
     // Add styles for proper dimension control
-    const style = document.createElement('style');
+    const style = document.createElement("style");
     style.textContent = `
       html, body {
         margin: 0;
@@ -65,7 +103,7 @@ export default function Home() {
 
     return () => {
       // Clean up
-      window.removeEventListener('resize', setViewportHeight);
+      window.removeEventListener("resize", setViewportHeight);
       if (style.parentNode) {
         document.head.removeChild(style);
       }
@@ -87,12 +125,24 @@ export default function Home() {
 
       {/* Main Categories Showcase */}
       <div className="px-4 sm:px-6 md:px-8">
-        <CategoryShowcase />
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          </div>
+        ) : (
+          <CategoryShowcase importedUsedCategories={categories} />
+        )}
       </div>
 
       {/* Featured Products Section */}
       <div className="px-4 sm:px-6 md:px-8">
-        <FeaturedProductsSection />
+        {productsLoading ? (
+          <div className="flex justify-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          </div>
+        ) : (
+          <FeaturedProductsSection products={products} />
+        )}
       </div>
 
       {/* Pricing Tiers Section */}
@@ -154,16 +204,29 @@ export default function Home() {
           </div>
         </motion.div>
       </div>
-      
+
       {/* Scroll to top button */}
       <div className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-50">
-        <button 
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           className="p-2 md:p-3 rounded-full bg-primary/90 text-white shadow-lg hover:bg-primary transition-all"
           aria-label="Scroll to top"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" className="md:w-6 md:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            className="md:w-6 md:h-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 10l7-7m0 0l7 7m-7-7v18"
+            />
           </svg>
         </button>
       </div>

@@ -1,375 +1,644 @@
-"use client"
+"use client";
 
-import type React from "react"
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useToast } from "@/components/ui/use-toast";
+import { PlusCircle, X, Loader2 } from "lucide-react";
+import { CloudinaryUpload } from "@/components/ui/cloudinary-upload";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { ChevronLeft, Plus, Trash2, Upload } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
-import { useToast } from "@/components/ui/use-toast"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Separator } from "@/components/ui/separator"
-import { Card, CardContent } from "@/components/ui/card"
+interface Category {
+  id: string;
+  name: string;
+  type: "IMPORTED_USED" | "BRAND_NEW";
+}
 
 export default function NewProductPage() {
-  const router = useRouter()
-  const { toast } = useToast()
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [productData, setProductData] = useState({
+  const router = useRouter();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [formData, setFormData] = useState({
     name: "",
-    price: "",
-    type: "",
-    category: "",
     description: "",
-    features: [""],
+    price: 0,
+    discountPercentage: 0,
+    rating: 5,
+    image: "",
     dimensions: {
       width: "",
-      depth: "",
       height: "",
+      length: "",
     },
-    inStock: true,
-  })
+    features: [] as string[],
+    tieredPricing: [] as { min: number; max: number; price: number }[],
+    colors: [] as { id: string; name: string; value: string; image: string }[],
+    categoryId: "",
+  });
 
-  const [images, setImages] = useState<string[]>([])
+  const [newFeature, setNewFeature] = useState("");
+  const [newTieredPricing, setNewTieredPricing] = useState({
+    min: 1,
+    max: 10,
+    price: 0,
+  });
+  const [newColor, setNewColor] = useState({
+    id: "",
+    name: "",
+    value: "#000000",
+    image: "",
+  });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setProductData((prev) => ({
+  // Fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch("/api/categories");
+        const data = await res.json();
+
+        if (data.success) {
+          setCategories(data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        toast({
+          title: "Error",
+          description: "Failed to fetch categories. Please try again.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchCategories();
+  }, [toast]);
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
-  const handleDimensionChange = (dimension: string, value: string) => {
-    setProductData((prev) => ({
+  const handleImageChange = (url: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      image: url,
+    }));
+  };
+
+  const handleColorImageChange = (url: string) => {
+    setNewColor((prev) => ({
+      ...prev,
+      image: url,
+    }));
+  };
+
+  const handleDimensionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
       ...prev,
       dimensions: {
         ...prev.dimensions,
-        [dimension]: value,
+        [name]: value,
       },
-    }))
-  }
+    }));
+  };
 
-  const handleFeatureChange = (index: number, value: string) => {
-    const updatedFeatures = [...productData.features]
-    updatedFeatures[index] = value
-    setProductData((prev) => ({
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData((prev) => ({
       ...prev,
-      features: updatedFeatures,
-    }))
-  }
+      [name]: value,
+    }));
+  };
+
+  const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: parseFloat(value),
+    }));
+  };
 
   const addFeature = () => {
-    setProductData((prev) => ({
-      ...prev,
-      features: [...prev.features, ""],
-    }))
-  }
+    if (newFeature.trim()) {
+      setFormData((prev) => ({
+        ...prev,
+        features: [...prev.features, newFeature.trim()],
+      }));
+      setNewFeature("");
+    }
+  };
 
   const removeFeature = (index: number) => {
-    const updatedFeatures = [...productData.features]
-    updatedFeatures.splice(index, 1)
-    setProductData((prev) => ({
+    setFormData((prev) => ({
       ...prev,
-      features: updatedFeatures,
-    }))
-  }
+      features: prev.features.filter((_, i) => i !== index),
+    }));
+  };
 
-  const addImage = () => {
-    // In a real app, you would handle file uploads here
-    setImages((prev) => [...prev, "/placeholder.svg?height=300&width=300"])
-  }
-
-  const removeImage = (index: number) => {
-    const updatedImages = [...images]
-    updatedImages.splice(index, 1)
-    setImages(updatedImages)
-  }
-
-  const handleSelectChange = (field: string, value: string) => {
-    setProductData((prev) => ({
+  const addTieredPricing = () => {
+    setFormData((prev) => ({
       ...prev,
-      [field]: value,
-    }))
-  }
+      tieredPricing: [...prev.tieredPricing, newTieredPricing],
+    }));
+    setNewTieredPricing({
+      min: 1,
+      max: 10,
+      price: 0,
+    });
+  };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+  const removeTieredPricing = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      tieredPricing: prev.tieredPricing.filter((_, i) => i !== index),
+    }));
+  };
 
-    // Validate form
-    if (!productData.name || !productData.price || !productData.type || !productData.category) {
+  const addColor = () => {
+    if (newColor.name.trim() && newColor.value.trim()) {
+      setFormData((prev) => ({
+        ...prev,
+        colors: [
+          ...prev.colors,
+          {
+            ...newColor,
+            id: Date.now().toString(), // Generate a temporary ID
+          },
+        ],
+      }));
+      setNewColor({
+        id: "",
+        name: "",
+        value: "#000000",
+        image: "",
+      });
+    }
+  };
+
+  const removeColor = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      colors: prev.colors.filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.name || !formData.description || !formData.categoryId) {
       toast({
-        title: "Missing Information",
+        title: "Validation Error",
         description: "Please fill in all required fields.",
         variant: "destructive",
-      })
-      setIsSubmitting(false)
-      return
+      });
+      return;
     }
 
-    // In a real app, you would make an API call to create the product
-    setTimeout(() => {
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("/api/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast({
+          title: "Product Created",
+          description: "Product has been successfully created.",
+        });
+        router.push("/admin/products");
+      } else {
+        toast({
+          title: "Error",
+          description: data.error || "Failed to create product",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error creating product:", error);
       toast({
-        title: "Product Created",
-        description: "The product has been successfully created.",
-      })
-      setIsSubmitting(false)
-      router.push("/admin/products")
-    }, 1500)
-  }
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <Button variant="outline" size="icon" onClick={() => router.back()}>
-            <ChevronLeft className="h-4 w-4" />
+        <h1 className="text-3xl font-bold tracking-tight">New Product</h1>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => router.back()}>
+            Cancel
           </Button>
-          <h1 className="text-3xl font-bold tracking-tight">Add New Product</h1>
+          <Button onClick={handleSubmit} disabled={isLoading}>
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Create Product
+          </Button>
         </div>
-        <Button disabled={isSubmitting} onClick={handleSubmit}>
-          {isSubmitting ? "Saving..." : "Save Product"}
-        </Button>
       </div>
 
-      <Tabs defaultValue="details" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="details">Details</TabsTrigger>
-          <TabsTrigger value="images">Images</TabsTrigger>
-          <TabsTrigger value="features">Features & Dimensions</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="details" className="space-y-4">
-          <Card>
-            <CardContent className="p-6">
-              <div className="grid gap-6">
-                <div className="grid gap-3">
-                  <Label htmlFor="name">
-                    Product Name <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="name"
-                    name="name"
-                    value={productData.name}
-                    onChange={handleInputChange}
-                    placeholder="Enter product name"
-                    required
-                  />
-                </div>
-
-                <div className="grid gap-3">
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    name="description"
-                    value={productData.description}
-                    onChange={handleInputChange}
-                    placeholder="Enter product description"
-                    rows={5}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                  <div className="grid gap-3">
-                    <Label htmlFor="price">
-                      Price (Rs.) <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      id="price"
-                      name="price"
-                      type="number"
-                      value={productData.price}
-                      onChange={handleInputChange}
-                      placeholder="Enter price"
-                      required
-                    />
-                  </div>
-
-                  <div className="grid gap-3">
-                    <Label htmlFor="type">
-                      Type <span className="text-red-500">*</span>
-                    </Label>
-                    <Select value={productData.type} onValueChange={(value) => handleSelectChange("type", value)}>
-                      <SelectTrigger id="type">
-                        <SelectValue placeholder="Select type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Brand New">Brand New</SelectItem>
-                        <SelectItem value="Imported Used">Imported Used</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                  <div className="grid gap-3">
-                    <Label htmlFor="category">
-                      Category <span className="text-red-500">*</span>
-                    </Label>
-                    <Select
-                      value={productData.category}
-                      onValueChange={(value) => handleSelectChange("category", value)}
-                    >
-                      <SelectTrigger id="category">
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Living Room">Living Room</SelectItem>
-                        <SelectItem value="Dining">Dining</SelectItem>
-                        <SelectItem value="Bedroom">Bedroom</SelectItem>
-                        <SelectItem value="Office">Office</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="flex items-end">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="in-stock"
-                        checked={productData.inStock}
-                        onCheckedChange={(checked) =>
-                          setProductData((prev) => ({
-                            ...prev,
-                            inStock: checked as boolean,
-                          }))
-                        }
-                      />
-                      <Label htmlFor="in-stock">In Stock</Label>
-                    </div>
-                  </div>
-                </div>
+      <form className="space-y-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Basic Information</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="name">Name *</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  required
+                />
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="images" className="space-y-4">
-          <Card>
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-semibold">Product Images</h3>
-                  <Button onClick={addImage} type="button">
-                    <Upload className="mr-2 h-4 w-4" />
-                    Add Image
-                  </Button>
-                </div>
-
-                <Separator />
-
-                {images.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-8">
-                    <div className="mb-4 rounded-full bg-muted p-3">
-                      <Upload className="h-6 w-6" />
-                    </div>
-                    <p className="mb-2 text-sm font-medium">No images added yet</p>
-                    <p className="text-center text-sm text-muted-foreground">Upload images to showcase your product</p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {images.map((image, index) => (
-                      <div key={index} className="relative group">
-                        <div className="relative aspect-square overflow-hidden rounded-md border">
-                          <img
-                            src={image || "/placeholder.svg"}
-                            alt={`Product image ${index + 1}`}
-                            className="object-cover w-full h-full"
-                          />
-                          <Button
-                            variant="destructive"
-                            size="icon"
-                            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                            onClick={() => removeImage(index)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                        <p className="text-sm mt-1 text-center">{index === 0 ? "Main Image" : `Image ${index + 1}`}</p>
-                      </div>
+              <div className="space-y-2">
+                <Label htmlFor="categoryId">Category *</Label>
+                <Select
+                  value={formData.categoryId}
+                  onValueChange={(value) =>
+                    handleSelectChange("categoryId", value)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((category) => (
+                      <SelectItem key={category.id} value={category.id}>
+                        {category.name} (
+                        {category.type === "IMPORTED_USED"
+                          ? "Imported/Used"
+                          : "Brand New"}
+                        )
+                      </SelectItem>
                     ))}
-                  </div>
-                )}
+                  </SelectContent>
+                </Select>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+            </div>
 
-        <TabsContent value="features" className="space-y-4">
-          <Card>
-            <CardContent className="p-6">
-              <div className="space-y-6">
-                <div>
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-semibold">Features</h3>
-                    <Button onClick={addFeature} type="button" size="sm">
-                      <Plus className="mr-2 h-4 w-4" />
-                      Add Feature
+            <div className="space-y-2">
+              <Label htmlFor="description">Description *</Label>
+              <Textarea
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={handleInputChange}
+                rows={5}
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <div className="space-y-2">
+                <Label htmlFor="price">Price *</Label>
+                <Input
+                  id="price"
+                  name="price"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={formData.price}
+                  onChange={handleNumberChange}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="discountPercentage">Discount Percentage</Label>
+                <Input
+                  id="discountPercentage"
+                  name="discountPercentage"
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.01"
+                  value={formData.discountPercentage}
+                  onChange={handleNumberChange}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="rating">Rating</Label>
+                <Input
+                  id="rating"
+                  name="rating"
+                  type="number"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  value={formData.rating}
+                  onChange={handleNumberChange}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <CloudinaryUpload
+                value={formData.image}
+                onChange={handleImageChange}
+                label="Product Image"
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Dimensions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <div className="space-y-2">
+                <Label htmlFor="width">Width</Label>
+                <Input
+                  id="width"
+                  name="width"
+                  value={formData.dimensions.width}
+                  onChange={handleDimensionChange}
+                  placeholder="e.g. 50cm"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="height">Height</Label>
+                <Input
+                  id="height"
+                  name="height"
+                  value={formData.dimensions.height}
+                  onChange={handleDimensionChange}
+                  placeholder="e.g. 100cm"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="length">Length</Label>
+                <Input
+                  id="length"
+                  name="length"
+                  value={formData.dimensions.length}
+                  onChange={handleDimensionChange}
+                  placeholder="e.g. 75cm"
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Features</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex gap-2">
+                <Input
+                  value={newFeature}
+                  onChange={(e) => setNewFeature(e.target.value)}
+                  placeholder="Add a feature"
+                  className="flex-grow"
+                />
+                <Button type="button" onClick={addFeature} variant="secondary">
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Add
+                </Button>
+              </div>
+
+              <div className="space-y-2">
+                {formData.features.map((feature, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-2 rounded-md border p-2"
+                  >
+                    <span className="flex-grow">{feature}</span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeFeature(index)}
+                    >
+                      <X className="h-4 w-4" />
                     </Button>
                   </div>
+                ))}
+                {formData.features.length === 0 && (
+                  <p className="text-sm text-muted-foreground">
+                    No features added yet.
+                  </p>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-                  {productData.features.map((feature, index) => (
-                    <div key={index} className="flex items-center gap-3 mb-3">
-                      <Input
-                        value={feature}
-                        onChange={(e) => handleFeatureChange(index, e.target.value)}
-                        placeholder={`Feature ${index + 1}`}
-                      />
-                      {productData.features.length > 1 && (
-                        <Button variant="ghost" size="icon" onClick={() => removeFeature(index)} type="button">
-                          <Trash2 className="h-4 w-4 text-muted-foreground" />
-                        </Button>
-                      )}
-                    </div>
-                  ))}
+        <Card>
+          <CardHeader>
+            <CardTitle>Tiered Pricing</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="grid grid-cols-3 gap-2">
+                <div className="space-y-2">
+                  <Label htmlFor="min-quantity">Min Quantity</Label>
+                  <Input
+                    id="min-quantity"
+                    type="number"
+                    min="1"
+                    value={newTieredPricing.min}
+                    onChange={(e) =>
+                      setNewTieredPricing({
+                        ...newTieredPricing,
+                        min: parseInt(e.target.value),
+                      })
+                    }
+                  />
                 </div>
-
-                <Separator />
-
-                <div>
-                  <h3 className="text-lg font-semibold mb-4">Dimensions</h3>
-                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-                    <div className="grid gap-3">
-                      <Label htmlFor="width">Width (cm)</Label>
-                      <Input
-                        id="width"
-                        value={productData.dimensions.width}
-                        onChange={(e) => handleDimensionChange("width", e.target.value)}
-                        placeholder="Width in cm"
-                      />
-                    </div>
-
-                    <div className="grid gap-3">
-                      <Label htmlFor="depth">Depth (cm)</Label>
-                      <Input
-                        id="depth"
-                        value={productData.dimensions.depth}
-                        onChange={(e) => handleDimensionChange("depth", e.target.value)}
-                        placeholder="Depth in cm"
-                      />
-                    </div>
-
-                    <div className="grid gap-3">
-                      <Label htmlFor="height">Height (cm)</Label>
-                      <Input
-                        id="height"
-                        value={productData.dimensions.height}
-                        onChange={(e) => handleDimensionChange("height", e.target.value)}
-                        placeholder="Height in cm"
-                      />
-                    </div>
+                <div className="space-y-2">
+                  <Label htmlFor="max-quantity">Max Quantity</Label>
+                  <Input
+                    id="max-quantity"
+                    type="number"
+                    min="1"
+                    value={newTieredPricing.max}
+                    onChange={(e) =>
+                      setNewTieredPricing({
+                        ...newTieredPricing,
+                        max: parseInt(e.target.value),
+                      })
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="tier-price">Price</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="tier-price"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={newTieredPricing.price}
+                      onChange={(e) =>
+                        setNewTieredPricing({
+                          ...newTieredPricing,
+                          price: parseFloat(e.target.value),
+                        })
+                      }
+                      className="flex-grow"
+                    />
+                    <Button
+                      type="button"
+                      onClick={addTieredPricing}
+                      variant="secondary"
+                    >
+                      <PlusCircle className="mr-2 h-4 w-4" />
+                      Add
+                    </Button>
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+
+              <div className="space-y-2">
+                {formData.tieredPricing.map((tier, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-2 rounded-md border p-2"
+                  >
+                    <span className="flex-grow">
+                      {tier.min} - {tier.max} units: Rs.{" "}
+                      {tier.price.toLocaleString()}
+                    </span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeTieredPricing(index)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+                {formData.tieredPricing.length === 0 && (
+                  <p className="text-sm text-muted-foreground">
+                    No tiered pricing added yet.
+                  </p>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Colors</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div className="space-y-2">
+                  <Label htmlFor="color-name">Color Name</Label>
+                  <Input
+                    id="color-name"
+                    value={newColor.name}
+                    onChange={(e) =>
+                      setNewColor({ ...newColor, name: e.target.value })
+                    }
+                    placeholder="e.g. Royal Blue"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="color-value">Color Value</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      type="color"
+                      id="color-value"
+                      value={newColor.value}
+                      onChange={(e) =>
+                        setNewColor({ ...newColor, value: e.target.value })
+                      }
+                      className="w-12 p-1"
+                    />
+                    <Input
+                      value={newColor.value}
+                      onChange={(e) =>
+                        setNewColor({ ...newColor, value: e.target.value })
+                      }
+                      placeholder="#RRGGBB"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <CloudinaryUpload
+                    value={newColor.image}
+                    onChange={handleColorImageChange}
+                    label="Color Image"
+                  />
+                  <Button
+                    type="button"
+                    onClick={addColor}
+                    variant="secondary"
+                    className="w-full mt-2"
+                  >
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Add Color
+                  </Button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
+                {formData.colors.map((color, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-2 rounded-md border p-2"
+                  >
+                    <div
+                      className="h-6 w-6 rounded-full border"
+                      style={{ backgroundColor: color.value }}
+                    ></div>
+                    <span className="flex-grow">{color.name}</span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeColor(index)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+                {formData.colors.length === 0 && (
+                  <p className="text-sm text-muted-foreground">
+                    No colors added yet.
+                  </p>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </form>
     </div>
-  )
+  );
 }

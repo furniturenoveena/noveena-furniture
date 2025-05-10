@@ -6,6 +6,7 @@ import { motion, useAnimation, useInView } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProductCard from "@/components/product-card";
+import { Product as PrismaProduct, Category } from "@/lib/generated/prisma";
 
 // Animation variants
 const fadeIn = {
@@ -23,119 +24,190 @@ const staggerContainer = {
   },
 };
 
-// Sample data for featured products - ideally this would come from a database or API
-const featuredProducts = [
-  {
-    id: 1,
-    name: "Elegant Leather Sofa",
-    price: 189000,
-    image:
-      "https://images.unsplash.com/photo-1567016432779-094069958ea5?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    category: "Living Room",
-    type: "Brand New",
-    rating: 4.9,
-    discountPercentage: 15,
+// Product card animation variants
+const productCardVariants = {
+  hidden: {
+    opacity: 0,
+    y: 50,
+    scale: 0.95,
   },
-  {
-    id: 2,
-    name: "Vintage Dining Table",
-    price: 156000,
-    image:
-      "https://images.unsplash.com/photo-1604578762246-41134e37f9cc?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    category: "Dining",
-    type: "Imported Used",
-    rating: 4.7,
-    tieredPricing: [
-      { min: 1, max: 1, price: 156000 },
-      { min: 2, max: 5, price: 148000 },
-      { min: 6, max: 10, price: 140000 },
-    ],
-  },
-  {
-    id: 3,
-    name: "Modern Coffee Table",
-    price: 48000,
-    image:
-      "https://plus.unsplash.com/premium_photo-1680546330888-f995d2d64571?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    category: "Living Room",
-    type: "Brand New",
-    rating: 4.8,
-  },
-  {
-    id: 4,
-    name: "Premium Queen Bed",
-    price: 220000,
-    image:
-      "https://images.unsplash.com/photo-1634344656611-0773d8dbbe2c?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    category: "Bedroom",
-    type: "Imported Used",
-    rating: 5.0,
-    tieredPricing: [
-      { min: 1, max: 1, price: 220000 },
-      { min: 2, max: 3, price: 209000 },
-      { min: 4, max: 10, price: 198000 },
-    ],
-  },
-];
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.7,
+      ease: [0.22, 1, 0.36, 1],
+      delay: i * 0.2,
+    },
+  }),
+};
 
-export default function FeaturedProductsSection() {
+interface Product extends PrismaProduct {
+  category: Category;
+}
+
+interface FeaturedProductsSectionProps {
+  products: Product[];
+}
+
+export default function FeaturedProductsSection({
+  products,
+}: FeaturedProductsSectionProps) {
+  console.log("FeaturedProductsSection products:", products);
+  // Filter products by category type
+  const brandNewProducts = products
+    .filter((product) => product.category.type === "BRAND_NEW")
+    .slice(0, 4);
+
+  const importedUsedProducts = products
+    .filter((product) => product.category.type === "IMPORTED_USED")
+    .slice(0, 4);
+
+  console.log("Brand New Products:", brandNewProducts);
+  console.log("Imported Used Products:", importedUsedProducts);
+
   // Animation controls
   const controls = useAnimation();
   const featuredRef = useRef(null);
   const inView = useInView(featuredRef, { once: true, amount: 0.2 });
 
+  const brandNewControlsRef = useRef(null);
+  const isBrandNewInView = useInView(brandNewControlsRef, {
+    amount: 0.2,
+    once: true,
+  });
+  const brandNewControls = useAnimation();
+
   useEffect(() => {
     if (inView) {
       controls.start("visible");
     }
-  }, [controls, inView]);
+
+    if (isBrandNewInView) {
+      brandNewControls.start("visible");
+    }
+  }, [controls, inView, isBrandNewInView, brandNewControls]);
 
   return (
-    <section className="py-16" ref={featuredRef}>
-      <div className="container mx-auto px-4">
-        <motion.div
-          className="text-center mb-12"
-          variants={fadeIn}
-          initial="hidden"
-          animate={controls}
-        >
-          <span className="text-primary font-montserrat text-sm tracking-wider uppercase">
-            Handpicked Selection
-          </span>
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 font-playfair">
-            Featured Collection
-          </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto body-elegant text-lg">
-            Discover our handpicked selection of premium furniture pieces that
-            blend elegance, comfort, and timeless design. Each piece tells a
-            unique story.
-          </p>
-        </motion.div>
+    <>
+      {/* Brand New Products Section */}
+      <section className="py-16" ref={brandNewControlsRef}>
+        <div className="container mx-auto px-4">
+          <motion.div
+            className="text-center mb-12"
+            initial="hidden"
+            animate={brandNewControls}
+            variants={fadeIn}
+          >
+            <span className="text-primary font-montserrat text-sm tracking-wider uppercase">
+              Contemporary Designs
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 font-playfair">
+              Brand New Furniture
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto body-elegant text-lg">
+              Explore our latest collection of brand new furniture crafted with
+              premium materials and modern sensibility.
+            </p>
+          </motion.div>
 
-        <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
-          variants={staggerContainer}
-          initial="hidden"
-          animate={controls}
-        >
-          {featuredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} variants={fadeIn} />
-          ))}
-        </motion.div>
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+            variants={staggerContainer}
+            initial="hidden"
+            animate={brandNewControls}
+          >
+            {brandNewProducts.map((product, index) => (
+              <motion.div
+                key={product.id}
+                custom={index}
+                variants={productCardVariants}
+              >
+                <ProductCard product={product} variants={{}} />
+              </motion.div>
+            ))}
+          </motion.div>
 
-        <motion.div
-          className="text-center mt-10"
-          variants={fadeIn}
-          initial="hidden"
-          animate={controls}
-        >
-          <Button asChild size="lg" className="font-montserrat">
-            <Link href="/category/all">
-              View All Products <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
-        </motion.div>
-      </div>
-    </section>
+          <motion.div
+            className="text-center mt-10 mb-16"
+            variants={fadeIn}
+            initial="hidden"
+            animate={brandNewControls}
+          >
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="font-montserrat"
+            >
+              <Link href="/category/brand-new">
+                View All Brand New Furniture
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Imported Used Section */}
+      <section className="py-16" ref={featuredRef}>
+        <div className="container mx-auto px-4">
+          <motion.div
+            className="text-center mb-12"
+            variants={fadeIn}
+            initial="hidden"
+            animate={controls}
+          >
+            <span className="text-primary font-montserrat text-sm tracking-wider uppercase">
+              Premium Pre-Owned Selection
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 font-playfair">
+              Imported Used Collection
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto body-elegant text-lg">
+              Discover our curated selection of high-quality imported used
+              furniture pieces. Each item has been carefully selected for its
+              exceptional craftsmanship, character, and lasting quality at a
+              more accessible price point.
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+            variants={staggerContainer}
+            initial="hidden"
+            animate={controls}
+          >
+            {importedUsedProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                variants={fadeIn}
+              />
+            ))}
+          </motion.div>
+
+          <motion.div
+            className="text-center mt-10 mb-16"
+            variants={fadeIn}
+            initial="hidden"
+            animate={controls}
+          >
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="font-montserrat"
+            >
+              <Link href="/category/all?type=imported-used">
+                View All Imported Used Products
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </motion.div>
+        </div>
+      </section>
+    </>
   );
 }

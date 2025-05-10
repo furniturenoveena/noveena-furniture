@@ -1,16 +1,32 @@
 "use client"; // Add this directive to make it a client component
 
-import Link from "next/link"
-import Image from "next/image"
-import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, ArrowUp, Send } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { cn } from "@/lib/utils"
+import Link from "next/link";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import {
+  Facebook,
+  Instagram,
+  Twitter,
+  Mail,
+  Phone,
+  MapPin,
+  ArrowUp,
+  Send,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 export default function Footer() {
+  const pathname = usePathname();
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  // Don't render footer for admin routes
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <footer className="relative bg-gradient-to-b from-muted/30 to-muted/50 pt-20 border-t overflow-hidden">
@@ -23,7 +39,7 @@ export default function Footer() {
 
       <div className="container mx-auto px-4 relative">
         {/* Back to top button */}
-        <button 
+        <button
           onClick={scrollToTop}
           className="absolute right-4 -top-10 bg-primary text-primary-foreground hover:bg-primary/90 
                     rounded-full flex items-center justify-center w-10 h-10 shadow-lg transform 
@@ -32,47 +48,66 @@ export default function Footer() {
         >
           <ArrowUp size={18} />
         </button>
-        
+
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12">
           {/* Company Info */}
           <div className="lg:col-span-4">
             <div className="flex items-center space-x-3 mb-6">
               <div className="relative h-12 w-12 overflow-hidden rounded-full border-2 border-primary/30">
-                <Image 
-                  src="/placeholder.svg?height=48&width=48" 
-                  alt="Noveena Furniture Logo" 
-                  width={48} 
+                <Image
+                  src="/placeholder.svg?height=48&width=48"
+                  alt="Noveena Furniture Logo"
+                  width={48}
                   height={48}
-                  className="object-contain" 
+                  className="object-contain"
                 />
               </div>
               <div>
-                <h2 className="font-playfair text-xl font-bold text-primary">NOVEENA</h2>
-                <p className="text-xs uppercase tracking-widest font-montserrat text-muted-foreground">Luxury Furniture</p>
+                <h2 className="font-playfair text-xl font-bold text-primary">
+                  NOVEENA
+                </h2>
+                <p className="text-xs uppercase tracking-widest font-montserrat text-muted-foreground">
+                  Luxury Furniture
+                </p>
               </div>
             </div>
-            
+
             <p className="text-muted-foreground mb-6 leading-relaxed">
-              Premium furniture store offering imported used and brand new pieces for discerning customers. 
-              Crafting comfort and elegance for your space since 2010.
+              Premium furniture store offering imported used and brand new
+              pieces for discerning customers. Crafting comfort and elegance for
+              your space since 2010.
             </p>
-            
+
             <div className="flex space-x-4">
               {[
-                { icon: <Facebook className="h-5 w-5" />, label: "Facebook", href: "https://facebook.com" },
-                { icon: <Instagram className="h-5 w-5" />, label: "Instagram", href: "https://instagram.com" },
-                { icon: <Twitter className="h-5 w-5" />, label: "Twitter", href: "https://twitter.com" },
+                {
+                  icon: <Facebook className="h-5 w-5" />,
+                  label: "Facebook",
+                  href: "https://facebook.com",
+                },
+                {
+                  icon: <Instagram className="h-5 w-5" />,
+                  label: "Instagram",
+                  href: "https://instagram.com",
+                },
+                {
+                  icon: <Twitter className="h-5 w-5" />,
+                  label: "Twitter",
+                  href: "https://twitter.com",
+                },
               ].map((social) => (
-                <Link 
+                <Link
                   key={social.label}
-                  href={social.href} 
-                  target="_blank" 
+                  href={social.href}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="bg-background hover:bg-primary/10 border border-border transition-colors 
                           duration-200 h-10 w-10 rounded-full flex items-center justify-center group"
                 >
-                  <span className="group-hover:text-primary">{social.icon}</span>
+                  <span className="group-hover:text-primary">
+                    {social.icon}
+                  </span>
                   <span className="sr-only">{social.label}</span>
                 </Link>
               ))}
@@ -155,15 +190,16 @@ export default function Footer() {
               <span className="absolute left-0 bottom-0 w-1/2 h-0.5 bg-primary/30"></span>
             </h3>
             <p className="text-muted-foreground mb-4 text-sm">
-              Subscribe to our newsletter for the latest updates and exclusive offers.
+              Subscribe to our newsletter for the latest updates and exclusive
+              offers.
             </p>
             <div className="relative">
-              <Input 
-                type="email" 
-                placeholder="Your email address" 
-                className="bg-background pr-12 border-primary/20 focus-visible:ring-primary/50" 
+              <Input
+                type="email"
+                placeholder="Your email address"
+                className="bg-background pr-12 border-primary/20 focus-visible:ring-primary/50"
               />
-              <Button 
+              <Button
                 size="icon"
                 className="absolute right-1 top-1 h-8 w-8 rounded-md"
                 aria-label="Subscribe to newsletter"
@@ -173,7 +209,10 @@ export default function Footer() {
             </div>
             <p className="text-xs text-muted-foreground mt-2">
               By subscribing you agree to our{" "}
-              <Link href="/privacy-policy" className="underline hover:text-primary">
+              <Link
+                href="/privacy-policy"
+                className="underline hover:text-primary"
+              >
                 Privacy Policy
               </Link>
             </p>
@@ -184,10 +223,13 @@ export default function Footer() {
         <div className="border-t border-border/50 mt-12 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm text-muted-foreground">
-              &copy; {new Date().getFullYear()} Noveena Furniture. All rights reserved.
-              <span className="hidden md:inline md:ml-2">Crafting Comfort Since 2010.</span>
+              &copy; {new Date().getFullYear()} Noveena Furniture. All rights
+              reserved.
+              <span className="hidden md:inline md:ml-2">
+                Crafting Comfort Since 2010.
+              </span>
             </p>
-            
+
             <div className="flex flex-wrap gap-x-6 gap-y-2 mt-4 md:mt-0 justify-center">
               {[
                 { name: "Privacy Policy", href: "/privacy-policy" },
@@ -195,9 +237,9 @@ export default function Footer() {
                 { name: "Shipping Policy", href: "/shipping-policy" },
                 { name: "Returns & Warranty", href: "/returns" },
               ].map((link) => (
-                <Link 
-                  key={link.name} 
-                  href={link.href} 
+                <Link
+                  key={link.name}
+                  href={link.href}
                   className={cn(
                     "text-sm text-muted-foreground hover:text-primary transition-colors relative group",
                     "after:absolute after:left-0 after:-bottom-1 after:h-px after:bg-primary",
@@ -209,14 +251,15 @@ export default function Footer() {
               ))}
             </div>
           </div>
-          
+
           <div className="mt-6 text-center">
             <p className="text-xs text-muted-foreground font-light tracking-wider">
-              <span className="font-semibold">NOVEENA FURNITURE</span> - Premium Quality • Exceptional Comfort • Timeless Designs
+              <span className="font-semibold">NOVEENA FURNITURE</span> - Premium
+              Quality • Exceptional Comfort • Timeless Designs
             </p>
           </div>
         </div>
       </div>
     </footer>
-  )
+  );
 }

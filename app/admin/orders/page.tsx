@@ -1,101 +1,112 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { ChevronDown, ChevronUp, Download, Search } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Card, CardContent } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
-import { formatDate } from "@/lib/utils"
+import { useState, useEffect } from "react";
+import { ChevronDown, ChevronUp, Download, Search, Eye } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Card, CardContent } from "@/components/ui/card";
+import { formatDate } from "@/lib/utils";
+import Link from "next/link";
 
-// Sample orders data
-const orders = [
-  {
-    id: "ORD001",
-    customer: "Anusha Perera",
-    date: new Date(2023, 4, 15),
-    amount: 185000,
-    status: "Delivered",
-    items: [{ name: "Elegant Leather Sofa", quantity: 1 }],
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    id: "ORD002",
-    customer: "Dinesh Fernando",
-    date: new Date(2023, 4, 14),
-    amount: 97500,
-    status: "Processing",
-    items: [
-      { name: "Modern Coffee Table", quantity: 1 },
-      { name: "Corner Bookshelf", quantity: 1 },
-    ],
-    paymentMethod: "Cash on Delivery",
-  },
-  {
-    id: "ORD003",
-    customer: "Malik Jayawardena",
-    date: new Date(2023, 4, 13),
-    amount: 235000,
-    status: "Pending",
-    items: [{ name: "Premium Queen Bed", quantity: 1 }],
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    id: "ORD004",
-    customer: "Priyanka Silva",
-    date: new Date(2023, 4, 12),
-    amount: 158000,
-    status: "Delivered",
-    items: [{ name: "Vintage Dining Table", quantity: 1 }],
-    paymentMethod: "Cash on Delivery",
-  },
-  {
-    id: "ORD005",
-    customer: "Roshan Perera",
-    date: new Date(2023, 4, 11),
-    amount: 75000,
-    status: "Processing",
-    items: [{ name: "Ergonomic Office Chair", quantity: 1 }],
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    id: "ORD006",
-    customer: "Chaminda Gunawardena",
-    date: new Date(2023, 4, 10),
-    amount: 320000,
-    status: "Delivered",
-    items: [{ name: "King Size Four-Poster Bed", quantity: 1 }],
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    id: "ORD007",
-    customer: "Nimal Perera",
-    date: new Date(2023, 4, 9),
-    amount: 45000,
-    status: "Cancelled",
-    items: [{ name: "Antique Side Table", quantity: 1 }],
-    paymentMethod: "Cash on Delivery",
-  },
-]
+// Define Order type based on the schema
+type Order = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  orderNotes?: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  province: string;
+  productId: string;
+  productName: string;
+  productPrice: number;
+  quantity: number;
+  colorId?: string;
+  productImage?: string;
+  productCategory?: string;
+  total: number;
+  paymentMethod: string;
+  createdAt: string;
+  updatedAt: string;
+};
 
 export default function OrdersPage() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
-  const [expandedOrder, setExpandedOrder] = useState<string | null>(null)
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
 
-  // Filter orders based on search query and status filter
+  useEffect(() => {
+    async function fetchOrders() {
+      try {
+        setLoading(true);
+        const response = await fetch("/api/orders");
+        if (!response.ok) {
+          throw new Error("Failed to fetch orders");
+        }
+        const data = await response.json();
+        setOrders(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch orders");
+        console.error("Error fetching orders:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchOrders();
+  }, []);
+
+  // Filter orders based on search query
   const filteredOrders = orders.filter((order) => {
     const matchesSearch =
       order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.customer.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesStatus = statusFilter === "all" || order.status.toLowerCase() === statusFilter.toLowerCase()
-    return matchesSearch && matchesStatus
-  })
+      `${order.firstName} ${order.lastName}`
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      order.phone.includes(searchQuery);
+
+    return matchesSearch;
+  });
 
   const toggleOrderDetails = (orderId: string) => {
-    setExpandedOrder(expandedOrder === orderId ? null : orderId)
+    setExpandedOrder(expandedOrder === orderId ? null : orderId);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-lg">Loading orders...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 max-w-xl mx-auto bg-red-50 rounded-lg border border-red-200 mt-10">
+        <h1 className="text-2xl font-bold text-red-700 mb-4">
+          Error Loading Orders
+        </h1>
+        <p className="text-red-600">{error}</p>
+        <Button onClick={() => window.location.reload()} className="mt-4">
+          Try Again
+        </Button>
+      </div>
+    );
   }
 
   return (
@@ -111,30 +122,14 @@ export default function OrdersPage() {
       {/* Filters */}
       <Card>
         <CardContent className="p-4 space-y-4">
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="relative md:col-span-2">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search orders..."
-                className="pl-8"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            <div>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="processing">Processing</SelectItem>
-                  <SelectItem value="delivered">Delivered</SelectItem>
-                  <SelectItem value="cancelled">Cancelled</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="relative w-full">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search by order ID, customer name, or phone..."
+              className="pl-8"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
         </CardContent>
       </Card>
@@ -149,93 +144,115 @@ export default function OrdersPage() {
                 <TableHead>Customer</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>Amount</TableHead>
-                <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredOrders.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                  <TableCell
+                    colSpan={5}
+                    className="text-center py-8 text-muted-foreground"
+                  >
                     No orders found matching your criteria.
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredOrders.map((order) => (
-                  <>
-                    <TableRow key={order.id} className="cursor-pointer" onClick={() => toggleOrderDetails(order.id)}>
-                      <TableCell className="font-medium">{order.id}</TableCell>
-                      <TableCell>{order.customer}</TableCell>
-                      <TableCell>{formatDate(order.date)}</TableCell>
-                      <TableCell>Rs. {order.amount.toLocaleString()}</TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            order.status === "Delivered"
-                              ? "default"
-                              : order.status === "Processing"
-                                ? "secondary"
-                                : order.status === "Pending"
-                                  ? "outline"
-                                  : "destructive"
-                          }
-                        >
-                          {order.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="sm">
-                          {expandedOrder === order.id ? (
-                            <ChevronUp className="h-4 w-4" />
-                          ) : (
-                            <ChevronDown className="h-4 w-4" />
-                          )}
-                          <span className="sr-only">Toggle details</span>
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                    {expandedOrder === order.id && (
-                      <TableRow>
-                        <TableCell colSpan={6} className="bg-muted/50 p-4">
-                          <div className="space-y-4">
-                            <div>
-                              <h4 className="font-semibold mb-2">Order Items</h4>
-                              <ul className="space-y-1 text-sm">
-                                {order.items.map((item, index) => (
-                                  <li key={index}>
-                                    {item.quantity}x {item.name}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                              <div>
-                                <h4 className="font-semibold mb-2">Payment Method</h4>
-                                <p className="text-sm">{order.paymentMethod}</p>
-                              </div>
-                              <div>
-                                <h4 className="font-semibold mb-2">Actions</h4>
-                                <div className="flex space-x-2">
-                                  <Button size="sm" variant="outline">
-                                    View Details
-                                  </Button>
-                                  <Button size="sm" variant="outline">
-                                    Update Status
-                                  </Button>
-                                </div>
-                              </div>
-                            </div>
+                filteredOrders.map((order) => {
+                  return (
+                    <>
+                      <TableRow
+                        key={order.id}
+                        className="cursor-pointer"
+                        onClick={() => toggleOrderDetails(order.id)}
+                      >
+                        <TableCell className="font-medium">
+                          {order.id.slice(-6).toUpperCase()}
+                        </TableCell>
+                        <TableCell>{`${order.firstName} ${order.lastName}`}</TableCell>
+                        <TableCell>
+                          {formatDate(new Date(order.createdAt))}
+                        </TableCell>
+                        <TableCell>
+                          Rs. {order.total.toLocaleString()}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button variant="ghost" size="sm">
+                              {expandedOrder === order.id ? (
+                                <ChevronUp className="h-4 w-4" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4" />
+                              )}
+                              <span className="sr-only">Toggle details</span>
+                            </Button>
+                            <Button variant="ghost" size="sm" asChild>
+                              <Link href={`/admin/orders/${order.id}`}>
+                                <Eye className="h-4 w-4" />
+                                <span className="sr-only">View details</span>
+                              </Link>
+                            </Button>
                           </div>
                         </TableCell>
                       </TableRow>
-                    )}
-                  </>
-                ))
+                      {expandedOrder === order.id && (
+                        <TableRow>
+                          <TableCell colSpan={5} className="bg-muted/50 p-4">
+                            <div className="space-y-4">
+                              <div>
+                                <h4 className="font-semibold mb-2">
+                                  Order Items
+                                </h4>
+                                <ul className="space-y-1 text-sm">
+                                  <li>
+                                    {order.quantity}x {order.productName}
+                                  </li>
+                                </ul>
+                              </div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <h4 className="font-semibold mb-2">
+                                    Customer Info
+                                  </h4>
+                                  <p className="text-sm">{order.phone}</p>
+                                  <p className="text-sm">
+                                    {order.addressLine1},{" "}
+                                    {order.addressLine2 &&
+                                      `${order.addressLine2}, `}
+                                    {order.city}, {order.province}
+                                  </p>
+                                </div>
+                                <div>
+                                  <h4 className="font-semibold mb-2">
+                                    Payment Details
+                                  </h4>
+                                  <p className="text-sm">
+                                    Method: {order.paymentMethod}
+                                  </p>
+                                  <p className="text-sm font-medium">
+                                    Total: Rs. {order.total.toLocaleString()}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="pt-2 border-t">
+                                <Button size="sm" asChild>
+                                  <Link href={`/admin/orders/${order.id}`}>
+                                    View Full Details
+                                  </Link>
+                                </Button>
+                              </div>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </>
+                  );
+                })
               )}
             </TableBody>
           </Table>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum CategoryType {
+  IMPORTED_USED
+  BRAND_NEW
+}
+
+model Product {
+  id                 String          @id @default(auto()) @map("_id") @db.ObjectId
+  name               String
+  description        String
+  price              Float
+  discountPercentage Float?
+  rating             Float
+  image              String
+  dimensions         Dimension
+  features           String[]
+  tieredPricing      TieredPricing[]
+  colors             Color[]
+  category           Category        @relation("CategoryToProduct", fields: [categoryId], references: [id])
+  categoryId         String          @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+type Dimension {
+  width  String
+  height String
+  length String
+}
+
+type TieredPricing {
+  min   Int
+  max   Int
+  price Float
+}
+
+type Color {
+  id    String
+  name  String
+  value String // Hex color code
+  image String
+}
+
+model Category {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  image       String
+  description String
+  type        CategoryType
+  products    Product[]    @relation("CategoryToProduct")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  firstName       String
+  lastName        String
+  phone           String
+  orderNotes      String?
+  addressLine1    String
+  addressLine2    String?
+  city            String
+  province        String
+  productId       String   @db.ObjectId
+  productName     String
+  productPrice    Float
+  quantity        Int      @default(1)
+  colorId         String?
+  productImage    String?
+  productCategory String?
+  total           Float
+  paymentMethod   String   @default("CASH_ON_DELIVERY")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}

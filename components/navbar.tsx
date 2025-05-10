@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useMediaQuery } from "@/hooks/use-mobile";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -53,11 +54,17 @@ const categoryLinks = [
 ];
 
 export default function Navbar() {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [openCategory, setOpenCategory] = useState<string | null>(null);
   const [showSearch, setShowSearch] = useState(false);
   const isMobile = useMediaQuery("(max-width: 768px)");
+
+  // Don't render navbar for admin routes
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -267,10 +274,9 @@ export default function Navbar() {
 
             {/* Ensure ThemeToggle icon is always visible with consistent color */}
             <div
-
               style={{
                 // Force proper contrast for the icon regardless of scroll position
-                padding: !scrolled ? "2px" : "0"
+                padding: !scrolled ? "2px" : "0",
               }}
             >
               <ThemeToggle />
