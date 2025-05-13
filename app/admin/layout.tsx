@@ -15,6 +15,7 @@ import {
   X,
   ChevronDown,
   ShoppingCart,
+  LayoutList,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -53,17 +54,17 @@ const navItems: NavItem[] = [
   {
     title: "Categories",
     href: "/admin/categories",
-    icon: Package,
+    icon: LayoutList,
     submenu: [
       {
         title: "Categories",
         href: "/admin/categories",
-        icon: Package,
+        icon: LayoutList,
       },
       {
         title: "Add New Category",
         href: "/admin/categories/new",
-        icon: Package,
+        icon: LayoutList,
       },
     ],
   },
@@ -212,10 +213,10 @@ export default function AdminLayout({
                       asChild
                       className={cn(
                         "justify-start",
-                        pathname === item.href && "bg-muted font-medium"
+                        pathname === item.href && "bg-muted font-medium w-full"
                       )}
                     >
-                      <Link href={item.href}>
+                      <Link href={item.href} className="w-full">
                         <item.icon className="mr-2 h-5 w-5" />
                         {item.title}
                       </Link>

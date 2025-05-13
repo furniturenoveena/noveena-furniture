@@ -34,14 +34,26 @@ const categoryLinks = [
     description:
       "Timeless pieces with character and history, carefully restored to perfection",
     subcategories: [
-      { name: "Dining", href: "/category/imported-used/dining", icon: "🍽️" },
-      { name: "Bedroom", href: "/category/imported-used/bedroom", icon: "🛏️" },
+      {
+        name: "Dining",
+        href: "/category/imported-used?category=dining",
+        icon: "🍽️",
+      },
+      {
+        name: "Bedroom",
+        href: "/category/imported-used?category=bedroom",
+        icon: "🛏️",
+      },
       {
         name: "Living Room",
-        href: "/category/imported-used/living-room",
+        href: "/category/imported-used?category=living-room",
         icon: "🛋️",
       },
-      { name: "Office", href: "/category/imported-used/office", icon: "💼" },
+      {
+        name: "Office",
+        href: "/category/imported-used?category=office",
+        icon: "💼",
+      },
     ],
   },
   {
@@ -179,23 +191,21 @@ export default function Navbar() {
                           View All {category.name} →
                         </Link>
                       </div>
-                      {index === 0 && (
-                        <div className="space-y-3">
-                          <h4 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">
-                            Categories
-                          </h4>
-                          {category.subcategories.map((subcategory) => (
-                            <Link
-                              key={subcategory.name}
-                              href={subcategory.href}
-                              className="flex items-center py-1 text-sm hover:text-primary transition-colors"
-                            >
-                              <span className="mr-2">{subcategory.icon}</span>
-                              {subcategory.name}
-                            </Link>
-                          ))}
-                        </div>
-                      )}
+                      <div className="space-y-3">
+                        <h4 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">
+                          Categories
+                        </h4>
+                        {category.subcategories.map((subcategory) => (
+                          <Link
+                            key={subcategory.name}
+                            href={subcategory.href}
+                            className="flex items-center py-1 text-sm hover:text-primary transition-colors"
+                          >
+                            <span className="mr-2">{subcategory.icon}</span>
+                            {subcategory.name}
+                          </Link>
+                        ))}
+                      </div>
                     </div>
                     <div className="bg-muted/30 p-4">
                       <p className="text-xs text-muted-foreground">
