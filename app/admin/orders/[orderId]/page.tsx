@@ -36,6 +36,9 @@ type Order = {
   productCategory?: string;
   total: number;
   paymentMethod: string;
+  amountPaid?: number;
+  paymentStatus?: string;
+  paymentDate?: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -204,7 +207,7 @@ export default function OrderDetailsPage({
                     {`, ${order.city}, ${order.province}`}
                   </p>
                 </div>
-              </div>
+              </div>{" "}
               <div className="flex items-center gap-3">
                 <div className="bg-primary/10 p-2 rounded-full">
                   <Truck className="h-5 w-5 text-primary" />
@@ -214,6 +217,8 @@ export default function OrderDetailsPage({
                   <p className="text-sm text-muted-foreground">
                     {order.paymentMethod === "CASH_ON_DELIVERY"
                       ? "Cash on Delivery"
+                      : order.paymentMethod === "PAYHERE"
+                      ? "PayHere"
                       : order.paymentMethod}
                   </p>
                 </div>
@@ -292,7 +297,7 @@ export default function OrderDetailsPage({
           <Card>
             <CardHeader>
               <CardTitle>Payment Details</CardTitle>
-            </CardHeader>
+            </CardHeader>{" "}
             <CardContent>
               <div className="space-y-3">
                 <div className="flex justify-between">
@@ -308,6 +313,64 @@ export default function OrderDetailsPage({
                     Rs. {order.total.toLocaleString()}
                   </p>
                 </div>
+
+                {/* Payment status and details */}
+                {order.paymentStatus && (
+                  <>
+                    <Separator className="my-2" />
+                    <div>
+                      <div className="flex justify-between mb-2">
+                        <p className="text-sm">Payment Status</p>
+                        <p
+                          className={`text-sm font-medium ${
+                            order.paymentStatus === "PAID"
+                              ? "text-green-600"
+                              : order.paymentStatus === "PENDING"
+                              ? "text-amber-600"
+                              : "text-red-600"
+                          }`}
+                        >
+                          {order.paymentStatus === "PAID"
+                            ? "Paid"
+                            : order.paymentStatus === "PENDING"
+                            ? "Pending"
+                            : "Unpaid"}
+                        </p>
+                      </div>
+
+                      {order.amountPaid !== undefined && (
+                        <div className="flex justify-between">
+                          <p className="text-sm">Amount Paid</p>
+                          <p className="text-sm font-medium">
+                            Rs. {order.amountPaid.toLocaleString()}
+                          </p>
+                        </div>
+                      )}
+
+                      {order.amountPaid !== undefined &&
+                        order.amountPaid < order.total && (
+                          <div className="flex justify-between">
+                            <p className="text-sm">Balance Due</p>
+                            <p className="text-sm font-medium">
+                              Rs.{" "}
+                              {(
+                                order.total - order.amountPaid
+                              ).toLocaleString()}
+                            </p>
+                          </div>
+                        )}
+
+                      {order.paymentDate && (
+                        <div className="flex justify-between mt-2">
+                          <p className="text-sm">Payment Date</p>
+                          <p className="text-sm">
+                            {formatDate(new Date(order.paymentDate))}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
             </CardContent>
           </Card>

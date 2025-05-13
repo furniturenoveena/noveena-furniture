@@ -30,6 +30,7 @@ import {
   Check,
   Loader2,
 } from "lucide-react";
+import { PaymentConfirmationModal } from "@/components/payment-confirmation-modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -193,6 +194,8 @@ function CheckoutContent() {
   const advanceAmount =
     paymentOption === "advance" ? total * (advancePayment / 100) : total;
   const balanceAmount = paymentOption === "advance" ? total - advanceAmount : 0;
+  // Payment confirmation modal state
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -215,10 +218,16 @@ function CheckoutContent() {
       return;
     }
 
+    // Open payment confirmation modal
+    setIsPaymentModalOpen(true);
+  };
+
+  // Handle payment confirmation and order submission
+  const handlePaymentConfirmed = async () => {
     setIsSubmitting(true);
 
     try {
-      // Prepare order data
+      // Prepare order data with the new payment information
       const orderData = {
         ...formData,
         productId: product?.id,
@@ -229,7 +238,10 @@ function CheckoutContent() {
         productImage: product?.image,
         productCategory: product?.category?.name,
         total,
-        paymentMethod: "CASH_ON_DELIVERY",
+        paymentMethod: "PAYHERE",
+        amountPaid: advanceAmount,
+        paymentStatus: "PAID",
+        paymentDate: new Date().toISOString(),
       };
 
       // Submit order to API
@@ -245,13 +257,17 @@ function CheckoutContent() {
 
       if (!response.ok) {
         throw new Error(result.error || "Failed to place order");
-      }
-
-      // Send SMS notification
+      } // Send SMS notification
       const customerName = `${formData.firstName} ${formData.lastName}`;
+      const paymentInfo =
+        advanceAmount === total
+          ? `full payment of Rs.${advanceAmount.toLocaleString()} via PayHere`
+          : `advance payment of Rs.${advanceAmount.toLocaleString()} via PayHere (balance due: Rs.${balanceAmount.toLocaleString()})`;
       const smsMessage = `New Order: ${customerName} has ordered ${quantity}x ${
         product?.name
-      } for Rs.${total.toLocaleString()}. Customer phone: ${formData.phone}`;
+      } for Rs.${total.toLocaleString()}, with ${paymentInfo}. Customer phone: ${
+        formData.phone
+      }`;
 
       // Send SMS asynchronously (we don't need to wait for it)
       sendSMS({ message: smsMessage }).catch((error) => {
@@ -275,6 +291,7 @@ function CheckoutContent() {
           "There was an error processing your order. Please try again.",
         variant: "destructive",
       });
+      setIsPaymentModalOpen(false);
     } finally {
       setIsSubmitting(false);
     }
@@ -481,28 +498,57 @@ function CheckoutContent() {
                 <CardDescription>
                   Select your preferred payment option
                 </CardDescription>
-              </CardHeader>
+              </CardHeader>{" "}
               <CardContent>
                 <div className="flex flex-col space-y-3">
                   <div className="flex items-center space-x-3 bg-muted/20 p-3 rounded-md">
                     <input
                       type="radio"
                       name="paymentMethod"
-                      id="cash"
+                      id="payhere"
                       defaultChecked
                       className="h-5 w-5 accent-primary"
                     />
                     <Label
-                      htmlFor="cash"
+                      htmlFor="payhere"
                       className="font-medium flex items-center"
                     >
                       <CreditCard className="h-4 w-4 mr-2" />
-                      Cash on Delivery
+                      PayHere
                     </Label>
                   </div>
                   <div className="text-sm text-muted-foreground pl-8 py-2">
-                    You'll pay when your furniture is delivered to your address
+                    Pay advance to confirm your order with secure online payment
                   </div>
+
+                  {advanceAmount !== total && (
+                    <div className="border border-primary/20 rounded-md p-3 bg-primary/5 mt-2">
+                      <p className="text-sm font-medium mb-2">
+                        Payment Breakdown:
+                      </p>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                          <p className="text-muted-foreground">
+                            Advance Payment:
+                          </p>
+                          <p className="font-medium">
+                            Rs. {advanceAmount.toLocaleString()}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">
+                            Balance Payment:
+                          </p>
+                          <p className="font-medium">
+                            Rs. {balanceAmount.toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-3">
+                        * Balance will be collected upon delivery
+                      </p>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -554,10 +600,21 @@ function CheckoutContent() {
               total={total}
               advanceAmount={advanceAmount}
               balanceAmount={balanceAmount}
-            />
+            />{" "}
           </motion.div>
         </div>
       </div>
+
+      {/* Payment Confirmation Modal */}
+      <PaymentConfirmationModal
+        open={isPaymentModalOpen}
+        onOpenChange={setIsPaymentModalOpen}
+        onConfirmPayment={handlePaymentConfirmed}
+        isSubmitting={isSubmitting}
+        total={total}
+        advanceAmount={advanceAmount}
+        productName={product?.name || ""}
+      />
     </div>
   );
 }

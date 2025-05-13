@@ -36,6 +36,9 @@ type Order = {
   productCategory?: string;
   total: number;
   paymentMethod: string;
+  amountPaid?: number;
+  paymentStatus?: string;
+  paymentDate?: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -225,13 +228,44 @@ export default function OrdersPage() {
                                 <div>
                                   <h4 className="font-semibold mb-2">
                                     Payment Details
-                                  </h4>
+                                  </h4>{" "}
                                   <p className="text-sm">
-                                    Method: {order.paymentMethod}
+                                    Method:{" "}
+                                    {order.paymentMethod === "PAYHERE"
+                                      ? "PayHere"
+                                      : order.paymentMethod ===
+                                        "CASH_ON_DELIVERY"
+                                      ? "Cash on Delivery"
+                                      : order.paymentMethod}
                                   </p>
                                   <p className="text-sm font-medium">
                                     Total: Rs. {order.total.toLocaleString()}
                                   </p>
+                                  {order.paymentStatus && (
+                                    <p
+                                      className={`text-sm ${
+                                        order.paymentStatus === "PAID"
+                                          ? "text-green-600"
+                                          : order.paymentStatus === "PENDING"
+                                          ? "text-amber-600"
+                                          : "text-red-600"
+                                      }`}
+                                    >
+                                      Status:{" "}
+                                      {order.paymentStatus === "PAID"
+                                        ? "Paid"
+                                        : order.paymentStatus === "PENDING"
+                                        ? "Pending"
+                                        : "Unpaid"}
+                                    </p>
+                                  )}
+                                  {order.amountPaid !== undefined &&
+                                    order.amountPaid > 0 && (
+                                      <p className="text-sm">
+                                        Paid: Rs.{" "}
+                                        {order.amountPaid.toLocaleString()}
+                                      </p>
+                                    )}
                                 </div>
                               </div>
                               <div className="pt-2 border-t">

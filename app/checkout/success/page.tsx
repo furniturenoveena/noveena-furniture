@@ -34,7 +34,10 @@ interface OrderDetails {
   productImage?: string;
   productCategory?: string;
   total: number;
+  amountPaid: number;
+  paymentStatus: string;
   paymentMethod: string;
+  paymentDate?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -210,12 +213,59 @@ function OrderContent() {
                     Rs. {orderDetails.productPrice.toLocaleString()} ×{" "}
                     {orderDetails.quantity}
                   </div>
-                </div>
+                </div>{" "}
                 <p className="font-medium text-lg mt-4">
                   Total: Rs. {orderDetails.total.toLocaleString()}
                 </p>
               </div>
             </div>
+
+            {orderDetails.paymentStatus && (
+              <div className="mt-4">
+                <div
+                  className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${
+                    orderDetails.paymentStatus === "PAID"
+                      ? "bg-green-100 text-green-700"
+                      : orderDetails.paymentStatus === "PENDING"
+                      ? "bg-yellow-100 text-yellow-700"
+                      : "bg-red-100 text-red-700"
+                  }`}
+                >
+                  <span className="font-medium">
+                    {orderDetails.paymentStatus === "PAID"
+                      ? "Payment Completed"
+                      : orderDetails.paymentStatus === "PENDING"
+                      ? "Payment Pending"
+                      : "Payment Required"}
+                  </span>
+                </div>
+
+                {orderDetails.amountPaid > 0 && (
+                  <div className="mt-2 text-sm">
+                    <p>
+                      Amount Paid: Rs.{" "}
+                      {orderDetails.amountPaid.toLocaleString()}
+                    </p>
+                    {orderDetails.paymentDate && (
+                      <p>
+                        Payment Date:{" "}
+                        {new Date(
+                          orderDetails.paymentDate
+                        ).toLocaleDateString()}
+                      </p>
+                    )}
+                    {orderDetails.paymentMethod && (
+                      <p>
+                        Payment Method:{" "}
+                        {orderDetails.paymentMethod === "PAYHERE"
+                          ? "PayHere"
+                          : orderDetails.paymentMethod}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
 
             <Separator className="my-6" />
 

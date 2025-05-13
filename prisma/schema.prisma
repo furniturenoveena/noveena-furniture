@@ -13,6 +13,10 @@ enum CategoryType {
   BRAND_NEW
 }
 
+enum PaymentMethod {
+  PAYHERE
+}
+
 model Product {
   id                String         @id @default(auto()) @map("_id") @db.ObjectId
   name              String
@@ -64,7 +68,7 @@ model Category {
 }
 
 model Order {
-  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
+  id                 String        @id @default(auto()) @map("_id") @db.ObjectId
   firstName          String
   lastName           String
   phone              String
@@ -73,16 +77,19 @@ model Order {
   addressLine2       String?
   city               String
   province           String
-  productId          String    @db.ObjectId
+  productId          String        @db.ObjectId
   productName        String
   productPrice       Float
-  quantity           Int       @default(1)
+  quantity           Int           @default(1)
   colorId            String?
   productImage       String?
   productCategory    String?
   total              Float
-  paymentMethod      String    @default("CASH_ON_DELIVERY")
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
+  amountPaid         Float         @default(0)
+  paymentStatus      String        @default("PENDING") // PENDING, PAID, CANCELLED
+  paymentMethod      PaymentMethod @default(PAYHERE)
+  paymentDate        DateTime?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
 }
 
