@@ -143,7 +143,7 @@ export default function Navbar() {
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
             </Link>
 
-            {categoryLinks.map((category) => (
+            {categoryLinks.map((category, index) => (
               <div
                 key={category.name}
                 className="relative group"
@@ -179,21 +179,23 @@ export default function Navbar() {
                           View All {category.name} →
                         </Link>
                       </div>
-                      <div className="space-y-3">
-                        <h4 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">
-                          Categories
-                        </h4>
-                        {category.subcategories.map((subcategory) => (
-                          <Link
-                            key={subcategory.name}
-                            href={subcategory.href}
-                            className="flex items-center py-1 text-sm hover:text-primary transition-colors"
-                          >
-                            <span className="mr-2">{subcategory.icon}</span>
-                            {subcategory.name}
-                          </Link>
-                        ))}
-                      </div>
+                      {index === 0 && (
+                        <div className="space-y-3">
+                          <h4 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">
+                            Categories
+                          </h4>
+                          {category.subcategories.map((subcategory) => (
+                            <Link
+                              key={subcategory.name}
+                              href={subcategory.href}
+                              className="flex items-center py-1 text-sm hover:text-primary transition-colors"
+                            >
+                              <span className="mr-2">{subcategory.icon}</span>
+                              {subcategory.name}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
                     </div>
                     <div className="bg-muted/30 p-4">
                       <p className="text-xs text-muted-foreground">

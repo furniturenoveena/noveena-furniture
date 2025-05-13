@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -39,7 +39,27 @@ interface OrderDetails {
   updatedAt: string;
 }
 
+// Main component that doesn't directly use useSearchParams
 export default function OrderSuccessPage() {
+  return (
+    <Suspense fallback={<OrderLoadingSkeleton />}>
+      <OrderContent />
+    </Suspense>
+  );
+}
+
+// Loading skeleton component
+function OrderLoadingSkeleton() {
+  return (
+    <div className="container mx-auto px-4 py-16 flex flex-col items-center justify-center min-h-[60vh]">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      <h2 className="text-xl font-semibold mt-4">Loading order details...</h2>
+    </div>
+  );
+}
+
+// Client component that uses useSearchParams
+function OrderContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(true);

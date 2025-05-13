@@ -11,28 +11,17 @@ import {
   CheckCircle,
   Loader2,
   User,
-  AtSign,
   MessageSquare,
-  Calendar,
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { Checkbox } from "@/components/ui/checkbox";
-import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/card";
+import { sendSMS } from "@/lib/notify";
 
 const socialLinks = [
   {
@@ -56,13 +45,8 @@ export default function ContactPage() {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
-    email: "",
     phone: "",
-    subject: "",
     message: "",
-    preferredContact: "email",
-    preferredTime: "",
-    newsletter: false,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -81,40 +65,35 @@ export default function ContactPage() {
     }
   };
 
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleCheckboxChange = (name: string, checked: boolean) => {
-    setFormData((prev) => ({ ...prev, [name]: checked }));
-  };
-
   const validateForm = () => {
     const errors: Record<string, string> = {};
 
     if (!formData.name.trim()) errors.name = "Name is required";
-    if (!formData.email.trim()) {
-      errors.email = "Email is required";
-    } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
-      errors.email = "Email is not valid";
-    }
     if (!formData.phone.trim()) errors.phone = "Phone number is required";
-    if (!formData.subject) errors.subject = "Please select a subject";
     if (!formData.message.trim()) errors.message = "Message is required";
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validateForm()) return;
 
     setIsSubmitting(true);
 
-    // Simulate form submission
-    setTimeout(() => {
+    try {
+      // Prepare SMS message with contact form details
+      const smsMessage = `Contact Form: ${formData.name} (${
+        formData.phone
+      }) says: ${formData.message.substring(0, 100)}${
+        formData.message.length > 100 ? "..." : ""
+      }`;
+
+      // Send SMS notification
+      await sendSMS({ message: smsMessage });
+
       toast({
         title: "Message Sent!",
         description:
@@ -123,20 +102,24 @@ export default function ContactPage() {
       });
 
       setFormSubmitted(true);
+    } catch (error) {
+      console.error("Failed to send contact form notification:", error);
+      toast({
+        title: "Error",
+        description:
+          "There was an issue sending your message. Please try again or call us directly.",
+        variant: "destructive",
+      });
+    } finally {
       setIsSubmitting(false);
-    }, 1500);
+    }
   };
 
   const resetForm = () => {
     setFormData({
       name: "",
-      email: "",
       phone: "",
-      subject: "",
       message: "",
-      preferredContact: "email",
-      preferredTime: "",
-      newsletter: false,
     });
     setFormSubmitted(false);
     setFormErrors({});
@@ -368,207 +351,50 @@ export default function ContactPage() {
                   onSubmit={handleSubmit}
                   className="space-y-6"
                 >
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name" className="flex items-center">
-                        <User className="h-3.5 w-3.5 mr-1.5 opacity-70" />
-                        Your Name
-                      </Label>
-                      <Input
-                        id="name"
-                        name="name"
-                        placeholder="Enter your full name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        className={cn(
-                          formErrors.name &&
-                            "border-destructive focus-visible:ring-destructive"
-                        )}
-                      />
-                      {formErrors.name && (
-                        <p className="text-destructive text-xs mt-1">
-                          {formErrors.name}
-                        </p>
+                  <div className="space-y-2">
+                    <Label htmlFor="name" className="flex items-center">
+                      <User className="h-3.5 w-3.5 mr-1.5 opacity-70" />
+                      Your Name
+                    </Label>
+                    <Input
+                      id="name"
+                      name="name"
+                      placeholder="Enter your full name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      className={cn(
+                        formErrors.name &&
+                          "border-destructive focus-visible:ring-destructive"
                       )}
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email" className="flex items-center">
-                        <AtSign className="h-3.5 w-3.5 mr-1.5 opacity-70" />
-                        Email Address
-                      </Label>
-                      <Input
-                        id="email"
-                        name="email"
-                        type="email"
-                        placeholder="your.email@example.com"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className={cn(
-                          formErrors.email &&
-                            "border-destructive focus-visible:ring-destructive"
-                        )}
-                      />
-                      {formErrors.email && (
-                        <p className="text-destructive text-xs mt-1">
-                          {formErrors.email}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="phone" className="flex items-center">
-                        <Phone className="h-3.5 w-3.5 mr-1.5 opacity-70" />
-                        Phone Number
-                      </Label>
-                      <Input
-                        id="phone"
-                        name="phone"
-                        placeholder="+94 XX XXX XXXX"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        className={cn(
-                          formErrors.phone &&
-                            "border-destructive focus-visible:ring-destructive"
-                        )}
-                      />
-                      {formErrors.phone && (
-                        <p className="text-destructive text-xs mt-1">
-                          {formErrors.phone}
-                        </p>
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="subject" className="flex items-center">
-                        <MessageSquare className="h-3.5 w-3.5 mr-1.5 opacity-70" />
-                        Subject
-                      </Label>
-                      <Select
-                        value={formData.subject}
-                        onValueChange={(value) =>
-                          handleSelectChange("subject", value)
-                        }
-                      >
-                        <SelectTrigger
-                          className={cn(
-                            formErrors.subject &&
-                              "border-destructive focus-visible:ring-destructive"
-                          )}
-                        >
-                          <SelectValue placeholder="Select subject" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="general">
-                            General Inquiry
-                          </SelectItem>
-                          <SelectItem value="product">
-                            Product Information
-                          </SelectItem>
-                          <SelectItem value="purchase">
-                            Purchase Assistance
-                          </SelectItem>
-                          <SelectItem value="delivery">
-                            Delivery Information
-                          </SelectItem>
-                          <SelectItem value="customization">
-                            Custom Furniture Inquiry
-                          </SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      {formErrors.subject && (
-                        <p className="text-destructive text-xs mt-1">
-                          {formErrors.subject}
-                        </p>
-                      )}
-                    </div>
+                    />
+                    {formErrors.name && (
+                      <p className="text-destructive text-xs mt-1">
+                        {formErrors.name}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label className="flex items-center">
-                      Preferred Contact Method
+                    <Label htmlFor="phone" className="flex items-center">
+                      <Phone className="h-3.5 w-3.5 mr-1.5 opacity-70" />
+                      Phone Number
                     </Label>
-                    <div className="flex space-x-4">
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="radio"
-                          id="email-contact"
-                          name="preferredContact"
-                          value="email"
-                          checked={formData.preferredContact === "email"}
-                          onChange={(e) =>
-                            handleSelectChange(
-                              "preferredContact",
-                              e.target.value
-                            )
-                          }
-                          className="text-primary focus:ring-primary"
-                        />
-                        <Label
-                          htmlFor="email-contact"
-                          className="text-sm cursor-pointer"
-                        >
-                          Email
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="radio"
-                          id="phone-contact"
-                          name="preferredContact"
-                          value="phone"
-                          checked={formData.preferredContact === "phone"}
-                          onChange={(e) =>
-                            handleSelectChange(
-                              "preferredContact",
-                              e.target.value
-                            )
-                          }
-                          className="text-primary focus:ring-primary"
-                        />
-                        <Label
-                          htmlFor="phone-contact"
-                          className="text-sm cursor-pointer"
-                        >
-                          Phone
-                        </Label>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="preferredTime"
-                      className="flex items-center"
-                    >
-                      <Calendar className="h-3.5 w-3.5 mr-1.5 opacity-70" />
-                      Best Time to Contact
-                    </Label>
-                    <Select
-                      value={formData.preferredTime}
-                      onValueChange={(value) =>
-                        handleSelectChange("preferredTime", value)
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select preferred time (optional)" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="morning">
-                          Morning (9AM - 12PM)
-                        </SelectItem>
-                        <SelectItem value="afternoon">
-                          Afternoon (12PM - 4PM)
-                        </SelectItem>
-                        <SelectItem value="evening">
-                          Evening (4PM - 7PM)
-                        </SelectItem>
-                        <SelectItem value="anytime">
-                          Anytime during business hours
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Input
+                      id="phone"
+                      name="phone"
+                      placeholder="+94 XX XXX XXXX"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className={cn(
+                        formErrors.phone &&
+                          "border-destructive focus-visible:ring-destructive"
+                      )}
+                    />
+                    {formErrors.phone && (
+                      <p className="text-destructive text-xs mt-1">
+                        {formErrors.phone}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -595,22 +421,6 @@ export default function ContactPage() {
                     )}
                   </div>
 
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="newsletter"
-                      checked={formData.newsletter}
-                      onCheckedChange={(checked) =>
-                        handleCheckboxChange("newsletter", checked as boolean)
-                      }
-                    />
-                    <Label
-                      htmlFor="newsletter"
-                      className="text-sm cursor-pointer"
-                    >
-                      Subscribe to our newsletter for promotions and updates
-                    </Label>
-                  </div>
-
                   <Button
                     type="submit"
                     className="w-full"
@@ -634,7 +444,7 @@ export default function ContactPage() {
             )}
           </motion.div>
 
-          {/* FAQ section moved here */}
+          {/* FAQ section */}
           <motion.div
             variants={itemVariants}
             className="bg-card border shadow-sm p-6 sm:p-8 rounded-xl"

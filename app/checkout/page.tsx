@@ -1,5 +1,22 @@
 "use client";
 
+import { Suspense } from "react";
+
+export default function CheckoutPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="container mx-auto px-4 py-16 flex flex-col items-center justify-center min-h-[60vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+          <h2 className="text-xl font-semibold">Loading checkout...</h2>
+        </div>
+      }
+    >
+      <CheckoutContent />
+    </Suspense>
+  );
+}
+
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
@@ -21,7 +38,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -34,6 +50,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
+import { sendSMS } from "@/lib/notify";
 
 // Product type should match your schema
 interface Product {
@@ -50,7 +67,7 @@ interface Product {
   tieredPricing?: { min: number; max: number; price: number }[];
 }
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const { toast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -229,6 +246,18 @@ export default function CheckoutPage() {
       if (!response.ok) {
         throw new Error(result.error || "Failed to place order");
       }
+
+      // Send SMS notification
+      const customerName = `${formData.firstName} ${formData.lastName}`;
+      const smsMessage = `New Order: ${customerName} has ordered ${quantity}x ${
+        product?.name
+      } for Rs.${total.toLocaleString()}. Customer phone: ${formData.phone}`;
+
+      // Send SMS asynchronously (we don't need to wait for it)
+      sendSMS({ message: smsMessage }).catch((error) => {
+        console.error("Failed to send SMS notification:", error);
+        // We don't show this error to the user as the order was successful
+      });
 
       toast({
         title: "Order Placed Successfully",
