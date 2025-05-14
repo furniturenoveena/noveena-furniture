@@ -1,23 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
-
-export default function CheckoutPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="container mx-auto px-4 py-16 flex flex-col items-center justify-center min-h-[60vh]">
-          <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-          <h2 className="text-xl font-semibold">Loading checkout...</h2>
-        </div>
-      }
-    >
-      <CheckoutContent />
-    </Suspense>
-  );
-}
-
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -68,19 +51,79 @@ interface Product {
   tieredPricing?: { min: number; max: number; price: number }[];
 }
 
-function CheckoutContent() {
+// Main page component with proper Suspense boundary
+export default function CheckoutPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="container mx-auto px-4 py-16 flex flex-col items-center justify-center min-h-[60vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+          <h2 className="text-xl font-semibold">Loading checkout...</h2>
+        </div>
+      }
+    >
+      <CheckoutContentWrapper />
+    </Suspense>
+  );
+}
+
+// Wrapper component that safely uses useSearchParams
+function CheckoutContentWrapper() {
+  const searchParams = useSearchParams();
+  const [searchParamsData, setSearchParamsData] = useState({
+    productId: "",
+    quantity: 1,
+    paymentOption: "full",
+    advancePayment: 30,
+    colorId: "",
+  });
+
+  useEffect(() => {
+    const productId = searchParams.get("productId") || "";
+    const qty = searchParams.get("quantity");
+    const payment = searchParams.get("paymentOption");
+    const advance = searchParams.get("advancePayment");
+    const color = searchParams.get("colorId");
+
+    setSearchParamsData({
+      productId,
+      quantity: qty ? parseInt(qty, 10) : 1,
+      paymentOption: payment || "full",
+      advancePayment: advance ? parseInt(advance, 10) : 30,
+      colorId: color || "",
+    });
+  }, [searchParams]);
+
+  return <CheckoutContent searchParamsData={searchParamsData} />;
+}
+
+// Main checkout content that receives parameters as props
+function CheckoutContent({
+  searchParamsData,
+}: {
+  searchParamsData: {
+    productId: string;
+    quantity: number;
+    paymentOption: string;
+    advancePayment: number;
+    colorId: string;
+  };
+}) {
   const { toast } = useToast();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [product, setProduct] = useState<Product | null>(null);
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(searchParamsData.quantity);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Payment related states
-  const [paymentOption, setPaymentOption] = useState("full");
-  const [advancePayment, setAdvancePayment] = useState(30);
-  const [colorId, setColorId] = useState("");
+  const [paymentOption, setPaymentOption] = useState(
+    searchParamsData.paymentOption
+  );
+  const [advancePayment, setAdvancePayment] = useState(
+    searchParamsData.advancePayment
+  );
+  const [colorId, setColorId] = useState(searchParamsData.colorId);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -115,14 +158,10 @@ function CheckoutContent() {
     }));
   };
 
-  // Get product details and payment options from URL params
+  // Get product details from productId
   useEffect(() => {
     const fetchProduct = async () => {
-      const productId = searchParams.get("productId");
-      const qty = searchParams.get("quantity");
-      const payment = searchParams.get("paymentOption");
-      const advance = searchParams.get("advancePayment");
-      const color = searchParams.get("colorId");
+      const productId = searchParamsData.productId;
 
       if (!productId) {
         router.push("/");
@@ -140,23 +179,6 @@ function CheckoutContent() {
 
         const data = await response.json();
         setProduct(data.data || data);
-
-        if (qty) {
-          setQuantity(parseInt(qty, 10));
-        }
-
-        // Set payment options from URL
-        if (payment) {
-          setPaymentOption(payment);
-        }
-
-        if (advance) {
-          setAdvancePayment(parseInt(advance, 10));
-        }
-
-        if (color) {
-          setColorId(color);
-        }
       } catch (error) {
         console.error("Error fetching product:", error);
         toast({
@@ -170,7 +192,7 @@ function CheckoutContent() {
     };
 
     fetchProduct();
-  }, [searchParams, router, toast]);
+  }, [searchParamsData.productId, router, toast]);
 
   // Calculate total - remove delivery fee and keep only discounts from tiered pricing
   let unitPrice = product ? product.price : 0;
@@ -194,6 +216,7 @@ function CheckoutContent() {
   const advanceAmount =
     paymentOption === "advance" ? total * (advancePayment / 100) : total;
   const balanceAmount = paymentOption === "advance" ? total - advanceAmount : 0;
+
   // Payment confirmation modal state
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
@@ -257,7 +280,9 @@ function CheckoutContent() {
 
       if (!response.ok) {
         throw new Error(result.error || "Failed to place order");
-      } // Send SMS notification
+      }
+
+      // Send SMS notification
       const customerName = `${formData.firstName} ${formData.lastName}`;
       const paymentInfo =
         advanceAmount === total
@@ -602,7 +627,7 @@ function CheckoutContent() {
               total={total}
               advanceAmount={advanceAmount}
               balanceAmount={balanceAmount}
-            />{" "}
+            />
           </motion.div>
         </div>
       </div>
