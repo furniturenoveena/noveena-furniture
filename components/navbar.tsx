@@ -73,11 +73,6 @@ export default function Navbar() {
   const [showSearch, setShowSearch] = useState(false);
   const isMobile = useMediaQuery("(max-width: 768px)");
 
-  // Don't render navbar for admin routes
-  if (pathname?.startsWith("/admin")) {
-    return null;
-  }
-
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
@@ -85,6 +80,11 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Don't render navbar for admin routes
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   const handleToggleMenu = () => {
     setIsOpen(!isOpen);
