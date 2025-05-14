@@ -423,7 +423,7 @@ export default function ContactPage() {
 
                   <Button
                     type="submit"
-                    className="w-full"
+                    className="w-full font-montserrat transition-all duration-300 hover:scale-[1.02] py-3 md:py-0 hover:bg-white hover:text-primary border border-transparent hover:border-primary"
                     disabled={isSubmitting}
                     size="lg"
                   >
@@ -434,7 +434,12 @@ export default function ContactPage() {
                       </span>
                     ) : (
                       <span className="flex items-center">
-                        <Send className="mr-2 h-4 w-4" />
+                        <motion.div
+                          whileHover={{ scale: 1.1 }}
+                          className="mr-2"
+                        >
+                          <Send className="h-5 w-5" />
+                        </motion.div>
                         Send Message
                       </span>
                     )}

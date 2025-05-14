@@ -41,9 +41,10 @@ export default function Footer() {
         {/* Back to top button */}
         <button
           onClick={scrollToTop}
-          className="absolute right-4 -top-10 bg-primary text-primary-foreground hover:bg-primary/90 
-                    rounded-full flex items-center justify-center w-10 h-10 shadow-lg transform 
-                    transition-transform hover:-translate-y-1"
+          className="absolute right-4 -top-10 bg-primary text-primary-foreground 
+              rounded-full flex items-center justify-center w-10 h-10 shadow-lg
+              transition-all duration-300 hover:scale-[1.02] 
+              hover:bg-white hover:text-primary border border-transparent hover:border-primary"
           aria-label="Back to top"
         >
           <ArrowUp size={18} />
@@ -154,8 +155,8 @@ export default function Footer() {
                   <MapPin className="h-4 w-4 text-primary/80" />
                 </span>
                 <span className="text-muted-foreground mt-1 text-sm">
-                  123 Furniture Avenue, <br />
-                  Colombo 05, Sri Lanka
+                  337 Kaduwela Rd, <br />
+                  Thalangama, Koswatta
                 </span>
               </li>
               <li className="flex items-center group">
@@ -163,10 +164,10 @@ export default function Footer() {
                   <Phone className="h-4 w-4 text-primary/80" />
                 </span>
                 <Link
-                  href="tel:+94112345678"
+                  href="tel:+94779134361"
                   className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm"
                 >
-                  +94 11 234 5678
+                  +94 77 913 4361
                 </Link>
               </li>
               <li className="flex items-center group">
@@ -174,10 +175,10 @@ export default function Footer() {
                   <Mail className="h-4 w-4 text-primary/80" />
                 </span>
                 <Link
-                  href="mailto:info@noveena.com"
+                  href="mailto:info@noveena.lk"
                   className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm"
                 >
-                  info@noveena.com
+                  info@noveena.lk
                 </Link>
               </li>
             </ul>
@@ -209,10 +210,7 @@ export default function Footer() {
             </div>
             <p className="text-xs text-muted-foreground mt-2">
               By subscribing you agree to our{" "}
-              <Link
-                href="/privacy-policy"
-                className="underline hover:text-primary"
-              >
+              <Link href="#" className="underline hover:text-primary">
                 Privacy Policy
               </Link>
             </p>
@@ -232,10 +230,10 @@ export default function Footer() {
 
             <div className="flex flex-wrap gap-x-6 gap-y-2 mt-4 md:mt-0 justify-center">
               {[
-                { name: "Privacy Policy", href: "/privacy-policy" },
-                { name: "Terms of Service", href: "/terms-of-service" },
-                { name: "Shipping Policy", href: "/shipping-policy" },
-                { name: "Returns & Warranty", href: "/returns" },
+                { name: "Privacy Policy", href: "#" },
+                { name: "Terms of Service", href: "#" },
+                { name: "Shipping Policy", href: "#" },
+                { name: "Returns & Warranty", href: "#" },
               ].map((link) => (
                 <Link
                   key={link.name}

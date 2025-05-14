@@ -568,7 +568,7 @@ function CheckoutContent() {
                 type="submit"
                 size="lg"
                 disabled={isSubmitting}
-                className="w-full md:w-auto"
+                className="w-full md:w-auto font-montserrat transition-all duration-300 hover:scale-[1.02] py-3 md:py-0 hover:bg-white hover:text-primary border border-transparent hover:border-primary"
               >
                 {isSubmitting ? (
                   <>
@@ -577,8 +577,10 @@ function CheckoutContent() {
                   </>
                 ) : (
                   <>
+                    <motion.div whileHover={{ scale: 1.1 }} className="mr-2">
+                      <ArrowRight className="h-5 w-5" />
+                    </motion.div>
                     Place Order
-                    <ArrowRight className="ml-2 h-4 w-4" />
                   </>
                 )}
               </Button>

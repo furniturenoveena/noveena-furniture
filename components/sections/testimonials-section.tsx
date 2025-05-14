@@ -71,29 +71,30 @@ export default function TestimonialsSection() {
   const testimonials: TestimonialItem[] = [
     {
       id: 1,
-      name: "Sarah Johnson",
-      title: "Interior Designer",
-      image: "https://randomuser.me/api/portraits/women/35.jpg",
+      name: "Soma Perera",
+      title: "Google Reviewer",
+      image:
+        "https://media.istockphoto.com/id/1337144146/vector/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=BIbFwuv7FxTWvh5S3vB6bkT0Qv8Vn8N5Ffseq84ClGI=",
       content:
-        "The craftsmanship of Noveena's furniture is exceptional. I've incorporated their pieces into multiple client projects, and the feedback has always been overwhelmingly positive. The attention to detail and quality of materials truly sets them apart.",
+        "One of the best furniture shops I have visited. There are two shops on both sides of the road. One side is the showroom and the other side is the warehouse. Affordable and unique furniture items.",
       rating: 5,
     },
     {
       id: 2,
-      name: "David Chen",
-      title: "Homeowner",
-      image: "https://randomuser.me/api/portraits/men/81.jpg",
-      content:
-        "We furnished our entire living room with Noveena pieces, and the quality has exceeded our expectations. The customer service was outstanding from selection to delivery. Three years later, everything still looks as beautiful as the day it arrived.",
+      name: "Buddhi Rasanga",
+      title: "Local Guide",
+      image:
+        "https://media.istockphoto.com/id/1337144146/vector/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=BIbFwuv7FxTWvh5S3vB6bkT0Qv8Vn8N5Ffseq84ClGI=",
+      content: "Quantity furniture can be bought hear",
       rating: 5,
     },
     {
       id: 3,
-      name: "Amara Perera",
-      title: "Boutique Hotel Owner",
-      image: "https://randomuser.me/api/portraits/men/92.jpg",
-      content:
-        "Our guests frequently comment on our beautiful furniture. Working with Noveena allowed us to create a unique aesthetic that perfectly balances luxury and comfort. Their team was professional and accommodating throughout the entire process.",
+      name: "Praveen Alankara",
+      title: "Local Guide",
+      image:
+        "https://media.istockphoto.com/id/1337144146/vector/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=BIbFwuv7FxTWvh5S3vB6bkT0Qv8Vn8N5Ffseq84ClGI=",
+      content: "Yaa..there are lots of used things to buy....cheap priced😊👍",
       rating: 5,
     },
   ];

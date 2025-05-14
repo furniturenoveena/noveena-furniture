@@ -222,18 +222,18 @@ export default function AboutPage() {
                 className="flex gap-4 flex-wrap"
               >
                 <Button
-                  variant="default"
                   size="lg"
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 group relative overflow-hidden"
+                  className="font-montserrat transition-all duration-300 hover:scale-[1.02] py-3 md:py-0 hover:bg-white hover:text-primary border border-transparent hover:border-primary"
                 >
                   <Link
                     href="/category/all"
                     className="flex items-center gap-2"
                   >
+                    <motion.div whileHover={{ scale: 1.1 }} className="mr-2">
+                      <ArrowRight className="h-5 w-5" />
+                    </motion.div>
                     Explore Our Collection
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </Link>
-                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
                 </Button>
 
                 <Button

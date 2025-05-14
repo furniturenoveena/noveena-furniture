@@ -722,7 +722,7 @@ export default function ProductDetailPage({
             <div className="flex flex-col sm:flex-row gap-4">
               <Button
                 size="lg"
-                className="flex-1 font-montserrat transition-all duration-300 hover:scale-[1.02]"
+                className="flex-1 font-montserrat transition-all duration-300 hover:scale-[1.02] py-3 md:py-0 hover:bg-white hover:text-primary border border-transparent hover:border-primary"
                 onClick={handleBuyNow}
               >
                 <motion.div whileHover={{ scale: 1.1 }} className="mr-2">
@@ -733,7 +733,7 @@ export default function ProductDetailPage({
               <Button
                 size="lg"
                 variant="outline"
-                className="flex-1 font-montserrat transition-all duration-300 hover:bg-primary/5"
+                className="flex-1 font-montserrat transition-all duration-300 hover:bg-primary/5 py-3 md:py-0"
                 onClick={handleAddToCart}
               >
                 <motion.div whileHover={{ scale: 1.1 }} className="mr-2">

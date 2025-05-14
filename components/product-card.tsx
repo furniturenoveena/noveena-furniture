@@ -42,7 +42,7 @@ export default function ProductCard({
   const [quickViewOpen, setQuickViewOpen] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const controls = useAnimation();
-  const inView = useInView(cardRef, { once: true, threshold: 0.1 });
+  const inView = useInView(cardRef, { once: true, amount: 0.1 });
 
   // 3D tilt effect variables
   const [rotateX, setRotateX] = useState(0);

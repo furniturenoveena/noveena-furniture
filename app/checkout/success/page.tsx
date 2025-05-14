@@ -334,10 +334,16 @@ function OrderContent() {
           <Button asChild variant="outline" size="lg">
             <Link href="/">Continue Shopping</Link>
           </Button>
-          <Button asChild size="lg">
+          <Button
+            asChild
+            size="lg"
+            className="font-montserrat transition-all duration-300 hover:scale-[1.02] py-3 md:py-0 hover:bg-white hover:text-primary border border-transparent hover:border-primary"
+          >
             <Link href="/contact">
               Need Help? Contact Us
-              <ArrowRight className="ml-2 h-4 w-4" />
+              <motion.div whileHover={{ scale: 1.1 }} className="ml-2">
+                <ArrowRight className="h-4 w-4" />
+              </motion.div>
             </Link>
           </Button>
         </div>
