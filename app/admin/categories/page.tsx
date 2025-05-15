@@ -151,8 +151,13 @@ export default function CategoriesPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Categories</h1>
-        <Button asChild>
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+          Categories
+        </h1>
+        <Button
+          asChild
+          className="w-full sm:w-auto justify-center hover:bg-white hover:text-primary border border-transparent hover:border-primary"
+        >
           <Link href="/admin/categories/new">
             <Plus className="mr-2 h-4 w-4" />
             Add New Category
@@ -190,15 +195,15 @@ export default function CategoriesPage() {
 
       {/* Categories Table */}
       <Card>
-        <CardContent className="p-0">
+        <CardContent className="p-0 overflow-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[80px]">Image</TableHead>
+                <TableHead className="w-[60px] min-w-[60px]">Image</TableHead>
                 <TableHead>Name</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Products</TableHead>
-                <TableHead className="text-right w-[100px]">Actions</TableHead>
+                <TableHead className="hidden md:table-cell">Type</TableHead>
+                <TableHead className="hidden md:table-cell">Products</TableHead>
+                <TableHead className="text-right w-[80px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -223,24 +228,46 @@ export default function CategoriesPage() {
                           className="object-cover"
                         />
                       </div>
-                    </TableCell>
+                    </TableCell>{" "}
                     <TableCell className="font-medium">
-                      {category.name}
+                      <div>
+                        {category.name}
+                        <div className="md:hidden mt-1 text-xs text-muted-foreground">
+                          <Badge
+                            variant={
+                              category.type === "IMPORTED_USED"
+                                ? "secondary"
+                                : "default"
+                            }
+                            className={`text-[10px] h-4 hover:text-red-800`}
+                          >
+                            {category.type === "IMPORTED_USED"
+                              ? "Imported"
+                              : "Brand New"}
+                          </Badge>
+                          <span className="ml-2">
+                            {category._count?.products ?? 0} products
+                          </span>
+                        </div>
+                      </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden md:table-cell">
                       <Badge
                         variant={
                           category.type === "IMPORTED_USED"
                             ? "secondary"
                             : "default"
                         }
+                        className={`hover:text-red-800`}
                       >
                         {category.type === "IMPORTED_USED"
                           ? "Imported/Used"
                           : "Brand New"}
                       </Badge>
                     </TableCell>
-                    <TableCell>{category._count?.products ?? 0}</TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      {category._count?.products ?? 0}
+                    </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>

@@ -49,9 +49,9 @@ export default function CTASection() {
 
   return (
     <section className="py-24 relative overflow-hidden">
+      {" "}
       {/* Background elements */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-background/90 z-0"></div>
-
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-background/90 dark:from-primary/20 dark:to-background/70 z-0"></div>
       {/* Animated decorative elements */}
       <motion.div
         className="absolute inset-0 w-full h-full z-0 pointer-events-none"
@@ -107,7 +107,6 @@ export default function CTASection() {
           />
         </motion.svg>
       </motion.div>
-
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -118,8 +117,9 @@ export default function CTASection() {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ delay: 0.2 }}
             >
+              {" "}
               <motion.span
-                className="text-primary font-montserrat text-sm tracking-wider uppercase bg-primary/5 px-4 py-2 rounded-full inline-block mb-4"
+                className="text-primary font-montserrat text-sm tracking-wider uppercase bg-primary/5 dark:bg-primary/20 px-4 py-2 rounded-full inline-block mb-4"
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
@@ -127,7 +127,6 @@ export default function CTASection() {
               >
                 Ready to Transform Your Space?
               </motion.span>
-
               <motion.h2
                 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-playfair"
                 initial={{ opacity: 0, y: 20 }}
@@ -137,7 +136,6 @@ export default function CTASection() {
               >
                 Elevate Your Home with Noveena Luxury Furniture
               </motion.h2>
-
               <motion.div
                 className="w-32 h-1 bg-primary/30 mb-6"
                 initial={{ width: 0, opacity: 0 }}
@@ -145,7 +143,6 @@ export default function CTASection() {
                 viewport={{ once: true }}
                 transition={{ delay: 0.5, duration: 0.8 }}
               ></motion.div>
-
               <motion.p
                 className="text-muted-foreground text-lg mb-8 max-w-lg body-elegant"
                 initial={{ opacity: 0, y: 20 }}
@@ -157,7 +154,6 @@ export default function CTASection() {
                 precision and designed to transform your living spaces into a
                 statement of elegance and luxury.
               </motion.p>
-
               <motion.div
                 className="flex flex-col sm:flex-row gap-4"
                 initial={{ opacity: 0, y: 20 }}
@@ -165,35 +161,34 @@ export default function CTASection() {
                 viewport={{ once: true }}
                 transition={{ delay: 0.6, duration: 0.7 }}
               >
+                {" "}
                 <Button
                   asChild
                   size="lg"
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 relative overflow-hidden group"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 dark:hover:bg-primary/80 relative overflow-hidden group"
                 >
                   <Link href="/contact">
-                    <span className="relative z-10 flex items-center group-hover:text-primary">
+                    <span className="relative z-10 flex items-center group-hover:text-primary dark:group-hover:text-primary-foreground">
                       Request Consultation
                       <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                     </span>
-                    <span className="absolute inset-0 bg-gradient-to-r from-white to-gray-100 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"></span>
+                    <span className="absolute inset-0 bg-gradient-to-r from-white to-gray-100 dark:from-gray-800 dark:to-gray-900 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"></span>
                   </Link>
-                </Button>
-
+                </Button>{" "}
                 <Button
                   asChild
                   variant="outline"
                   size="lg"
-                  className="border-primary text-primary hover:bg-primary/10 transition-colors"
+                  className="border-primary text-primary dark:border-primary/70 dark:text-primary hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors"
                 >
                   <Link href="/category/all" className="flex items-center">
                     View Collection
                     <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                   </Link>
                 </Button>
-              </motion.div>
-
+              </motion.div>{" "}
               <motion.div
-                className="mt-8 pt-8 border-t border-muted/30 flex items-center gap-4"
+                className="mt-8 pt-8 border-t border-muted/30 dark:border-muted/10 flex items-center gap-4"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -203,7 +198,7 @@ export default function CTASection() {
                   {[1, 2, 3].map((i) => (
                     <motion.div
                       key={i}
-                      className="relative h-10 w-10 rounded-full border-2 border-background overflow-hidden"
+                      className="relative h-10 w-10 rounded-full border-2 border-background dark:border-gray-800 overflow-hidden"
                       initial={{ opacity: 0, x: -10 * i }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
@@ -256,7 +251,6 @@ export default function CTASection() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
               </motion.div>
-
               <motion.div
                 className="absolute bottom-0 left-0 right-0 p-6 md:p-8 text-white bg-gradient-to-t from-black/60 to-transparent"
                 initial={{ opacity: 0, y: 20 }}
@@ -264,8 +258,9 @@ export default function CTASection() {
                 viewport={{ once: true }}
                 transition={{ delay: 0.6, duration: 0.7 }}
               >
+                {" "}
                 <motion.span
-                  className="bg-primary/80 text-white text-sm font-medium px-4 py-1 rounded-full"
+                  className="bg-primary/80 dark:bg-primary/90 text-white text-sm font-medium px-4 py-1 rounded-full"
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
@@ -292,17 +287,16 @@ export default function CTASection() {
                   Our most popular luxury furniture collection
                 </motion.p>
               </motion.div>
-
-              {/* Corner decorations */}
+              {/* Corner decorations */}{" "}
               <motion.div
-                className="absolute top-4 right-4 w-20 h-20 border-t-2 border-r-2 border-white/40 rounded-tr-xl pointer-events-none"
+                className="absolute top-4 right-4 w-20 h-20 border-t-2 border-r-2 border-white/40 dark:border-white/60 rounded-tr-xl pointer-events-none"
                 initial={{ opacity: 0, scale: 0.5 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.6, duration: 0.7 }}
               ></motion.div>
               <motion.div
-                className="absolute bottom-4 left-4 w-20 h-20 border-b-2 border-l-2 border-white/40 rounded-bl-xl pointer-events-none"
+                className="absolute bottom-4 left-4 w-20 h-20 border-b-2 border-l-2 border-white/40 dark:border-white/60 rounded-bl-xl pointer-events-none"
                 initial={{ opacity: 0, scale: 0.5 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}

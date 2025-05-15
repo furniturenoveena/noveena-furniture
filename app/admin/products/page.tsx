@@ -208,15 +208,19 @@ export default function ProductsPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Products</h1>
-        <Button asChild>
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+          Products
+        </h1>
+        <Button
+          asChild
+          className="w-full sm:w-auto justify-center hover:bg-white hover:text-primary border border-transparent hover:border-primary"
+        >
           <Link href="/admin/products/new">
             <Plus className="mr-2 h-4 w-4" />
             Add New Product
           </Link>
         </Button>
       </div>
-
       {/* Filters */}
       <Card>
         <CardContent className="p-4 space-y-4">
@@ -262,20 +266,19 @@ export default function ProductsPage() {
             </div>
           </div>
         </CardContent>
-      </Card>
-
+      </Card>{" "}
       {/* Products Table */}
       <Card>
-        <CardContent className="p-0">
+        <CardContent className="p-0 overflow-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[80px]">Image</TableHead>
+                <TableHead className="w-[60px] min-w-[60px]">Image</TableHead>
                 <TableHead>Name</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Type</TableHead>
+                <TableHead className="hidden md:table-cell">Category</TableHead>
+                <TableHead className="hidden md:table-cell">Type</TableHead>
                 <TableHead>Price</TableHead>
-                <TableHead className="text-right w-[100px]">Actions</TableHead>
+                <TableHead className="text-right w-[80px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -300,15 +303,29 @@ export default function ProductsPage() {
                           className="object-cover"
                         />
                       </div>
-                    </TableCell>
+                    </TableCell>{" "}
                     <TableCell className="font-medium">
-                      {product.name}
+                      <div>
+                        {product.name}
+                        <div className="md:hidden mt-1 text-xs text-muted-foreground">
+                          <span className="mr-2">
+                            {product.category?.type === "IMPORTED_USED"
+                              ? "Imported"
+                              : "Brand New"}
+                          </span>
+                          •
+                          <span className="ml-2">
+                            {categories.find((c) => c.id === product.categoryId)
+                              ?.name || "-"}
+                          </span>
+                        </div>
+                      </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden md:table-cell">
                       {categories.find((c) => c.id === product.categoryId)
                         ?.name || "-"}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden md:table-cell">
                       {product.category?.type === "IMPORTED_USED"
                         ? "Imported/Used"
                         : "Brand New"}
@@ -346,7 +363,6 @@ export default function ProductsPage() {
           </Table>
         </CardContent>
       </Card>
-
       {/* Delete Confirmation Dialog */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <DialogContent>

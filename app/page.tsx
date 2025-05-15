@@ -119,10 +119,8 @@ export default function Home() {
     <div className="pt-16 md:pt-16 overflow-x-hidden">
       {/* Hero Section */}
       <HeroSection />
-
       {/* Features Section */}
       <FeaturesSection />
-
       {/* Main Categories Showcase */}
       <div className="px-4 sm:px-6 md:px-8">
         {loading ? (
@@ -137,7 +135,6 @@ export default function Home() {
           />
         )}
       </div>
-
       {/* Featured Products Section */}
       <div className="px-4 sm:px-6 md:px-8">
         {productsLoading ? (
@@ -148,22 +145,18 @@ export default function Home() {
           <FeaturedProductsSection products={products} />
         )}
       </div>
-
       {/* Pricing Tiers Section */}
       <div className="px-4 sm:px-6 md:px-8">
         <PricingTiersSection />
       </div>
-
       {/* About Section */}
       <div className="px-4 sm:px-6 md:px-8">
         <AboutSection />
       </div>
-
       {/* Section Divider */}
       <div className="w-full flex justify-center my-8 md:my-16">
         <div className="w-2/3 sm:w-1/2 md:w-1/3 h-0.5 bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
       </div>
-
       {/* Testimonials Section with animation */}
       <motion.div
         initial={{ opacity: 0, y: 50 }}
@@ -174,28 +167,25 @@ export default function Home() {
       >
         <TestimonialsSection />
       </motion.div>
-
       {/* Section Divider */}
       <div className="w-full flex justify-center my-8 md:my-16">
         <div className="w-2/3 sm:w-1/2 md:w-1/3 h-0.5 bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
-      </div>
-
+      </div>{" "}
       {/* 3D Furniture Showcase with animation */}
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true, margin: "-50px" }}
         transition={{ duration: 1.2 }}
-        className="relative bg-gradient-to-b from-slate-50 to-white py-8 md:py-16"
+        className="relative bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-background py-8 md:py-16"
       >
         <div className="container mx-auto px-4 sm:px-6 md:px-8">
           <VisualizationSection />
         </div>
-      </motion.div>
-
+      </motion.div>{" "}
       {/* CTA Section with enhanced layout */}
       <div className="relative mt-10 md:mt-20 mb-8 md:mb-12">
-        <div className="absolute inset-0 bg-gray-50 transform -skew-y-2 z-0"></div>
+        <div className="absolute inset-0 bg-gray-50 dark:bg-gray-900/50 transform -skew-y-2 z-0"></div>
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}

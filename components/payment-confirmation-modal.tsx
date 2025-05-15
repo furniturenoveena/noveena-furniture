@@ -139,7 +139,10 @@ export function PaymentConfirmationModal({
               >
                 Cancel
               </Button>
-              <Button onClick={handleConfirm} className="flex-1">
+              <Button
+                onClick={handleConfirm}
+                className="flex-1  transition-all duration-300 hover:scale-[1.02] py-3 md:py-0 hover:bg-white hover:text-primary border border-transparent hover:border-primary"
+              >
                 <CreditCard className="mr-2 h-4 w-4" />
                 Proceed to Pay
               </Button>

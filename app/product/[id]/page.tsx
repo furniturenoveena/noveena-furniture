@@ -34,50 +34,11 @@ import {
 } from "@/components/ui/tooltip";
 import ProductCard from "@/components/product-card";
 import { useToast } from "@/components/ui/use-toast";
+import { Product as PrismaProduct, Category } from "@/lib/generated/prisma";
 
-// Define types based on Prisma schema
-type Color = {
-  id: string;
-  name: string;
-  value: string;
-  image: string;
-};
-
-type Dimension = {
-  width: string;
-  height: string;
-  length: string;
-};
-
-type TieredPricing = {
-  min: number;
-  max: number;
-  price: number;
-};
-
-type Category = {
-  id: string;
-  name: string;
-  image: string;
-  description: string;
-  type: "IMPORTED_USED" | "BRAND_NEW";
-};
-
-type Product = {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  discountPercentage?: number;
-  rating: number;
-  image: string;
-  dimensions: Dimension;
-  features: string[];
-  tieredPricing?: TieredPricing[];
-  colors: Color[];
+interface Product extends PrismaProduct {
   category: Category;
-  categoryId: string;
-};
+}
 
 export default function ProductDetailPage({
   params,

@@ -124,6 +124,7 @@ export default function OrderDetailsPage({
 
   return (
     <div className="space-y-6">
+      {" "}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2 mb-2">
@@ -135,7 +136,7 @@ export default function OrderDetailsPage({
             </Button>
             <p className="text-sm text-muted-foreground">Back to orders</p>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
             Order #{order.id.slice(-6).toUpperCase()}
           </h1>
           <div className="flex items-center gap-2 mt-1">
@@ -144,12 +145,8 @@ export default function OrderDetailsPage({
             </span>
           </div>
         </div>
-        <div className="flex flex-col sm:flex-row gap-2">
-          <Button>Contact Customer</Button>
-        </div>
       </div>
-
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
         {/* Order Summary */}
         <Card>
           <CardHeader>

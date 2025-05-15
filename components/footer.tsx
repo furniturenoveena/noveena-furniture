@@ -57,7 +57,7 @@ export default function Footer() {
             <div className="flex items-center space-x-3 mb-6">
               <div className="relative h-12 w-12 overflow-hidden rounded-full border-2 border-primary/30">
                 <Image
-                  src="/placeholder.svg?height=48&width=48"
+                  src="https://res.cloudinary.com/do08c2xq5/image/upload/v1747288693/493565611_680880901320361_2273471322479004360_n_bk6pmy.jpg"
                   alt="Noveena Furniture Logo"
                   width={48}
                   height={48}
@@ -155,7 +155,7 @@ export default function Footer() {
                   <MapPin className="h-4 w-4 text-primary/80" />
                 </span>
                 <span className="text-muted-foreground mt-1 text-sm">
-                  337 Kaduwela Rd, <br />
+                  337, Kaduwela Rd, <br />
                   Thalangama, Koswatta
                 </span>
               </li>
@@ -163,22 +163,30 @@ export default function Footer() {
                 <span className="bg-background p-2 rounded-full mr-3 border border-border group-hover:border-primary/50 transition-colors duration-200">
                   <Phone className="h-4 w-4 text-primary/80" />
                 </span>
-                <Link
-                  href="tel:+94779134361"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm"
-                >
-                  +94 77 913 4361
-                </Link>
+                <div className="flex flex-col">
+                  <Link
+                    href="tel:+94779134361"
+                    className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm"
+                  >
+                    +94 77 913 4361
+                  </Link>
+                  <Link
+                    href="tel:+94112741427"
+                    className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm"
+                  >
+                    +94 112 741 427
+                  </Link>
+                </div>
               </li>
               <li className="flex items-center group">
                 <span className="bg-background p-2 rounded-full mr-3 border border-border group-hover:border-primary/50 transition-colors duration-200">
                   <Mail className="h-4 w-4 text-primary/80" />
                 </span>
                 <Link
-                  href="mailto:info@noveena.lk"
+                  href="mailto:noveenafurniture@gmail.com"
                   className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm"
                 >
-                  info@noveena.lk
+                  noveenafurniture@gmail.com
                 </Link>
               </li>
             </ul>
@@ -207,10 +215,13 @@ export default function Footer() {
               >
                 <Send className="h-4 w-4" />
               </Button>
-            </div>
+            </div>{" "}
             <p className="text-xs text-muted-foreground mt-2">
               By subscribing you agree to our{" "}
-              <Link href="#" className="underline hover:text-primary">
+              <Link
+                href="/privacy-policy"
+                className="underline hover:text-primary"
+              >
                 Privacy Policy
               </Link>
             </p>
@@ -229,11 +240,11 @@ export default function Footer() {
             </p>
 
             <div className="flex flex-wrap gap-x-6 gap-y-2 mt-4 md:mt-0 justify-center">
+              {" "}
               {[
-                { name: "Privacy Policy", href: "#" },
-                { name: "Terms of Service", href: "#" },
-                { name: "Shipping Policy", href: "#" },
-                { name: "Returns & Warranty", href: "#" },
+                { name: "Privacy Policy", href: "/privacy-policy" },
+                { name: "Terms of Service", href: "/terms-and-conditions" },
+                { name: "Returns & Refunds", href: "/refund-policy" },
               ].map((link) => (
                 <Link
                   key={link.name}

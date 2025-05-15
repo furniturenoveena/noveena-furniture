@@ -349,10 +349,10 @@ function OrderContent() {
         </div>
 
         <div className="mt-12 text-center text-muted-foreground">
-          <p className="mb-2">
-            A confirmation email has been sent to your email address.
+          <p className="mb-2">We have successfully received your order.</p>
+          <p>
+            We will give you a call shortly to confirm the delivery details.
           </p>
-          <p>We will contact you shortly to confirm your delivery details.</p>
         </div>
       </motion.div>
     </div>

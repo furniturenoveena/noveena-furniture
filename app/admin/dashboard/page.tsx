@@ -154,8 +154,11 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6">
+      {" "}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+          Dashboard
+        </h1>
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
@@ -163,13 +166,12 @@ export default function AdminDashboard() {
             onClick={() => window.location.reload()}
           >
             <Clock className="mr-2 h-4 w-4" />
-            Refresh
+            <span>Refresh</span>
           </Button>
         </div>
       </div>
-
       {/* Overview Cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-1 xs:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
@@ -271,10 +273,9 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Charts Section */}
+      {/* Charts Section */}{" "}
       <Tabs defaultValue="sales" className="space-y-4">
-        <TabsList>
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="sales">Sales</TabsTrigger>
           <TabsTrigger value="products">Products</TabsTrigger>
         </TabsList>
@@ -359,7 +360,6 @@ export default function AdminDashboard() {
           </Card>
         </TabsContent>
       </Tabs>
-
       {/* Recent Orders Section */}
       <div>
         <div className="flex items-center justify-between mb-4">

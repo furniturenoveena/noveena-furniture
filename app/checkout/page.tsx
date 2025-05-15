@@ -568,7 +568,7 @@ function CheckoutContent() {
                 type="submit"
                 size="lg"
                 disabled={isSubmitting}
-                className="w-full md:w-auto"
+                className="w-full md:w-auto  transition-all duration-300 hover:scale-[1.02] py-3 md:py-0 hover:bg-white hover:text-primary border border-transparent hover:border-primary"
               >
                 {isSubmitting ? (
                   <>

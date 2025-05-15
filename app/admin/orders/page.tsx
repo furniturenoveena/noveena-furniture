@@ -111,41 +111,40 @@ export default function OrdersPage() {
       </div>
     );
   }
-
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Orders</h1>
-        <Button variant="outline">
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+          Orders
+        </h1>
+        <Button variant="outline" className="w-full sm:w-auto justify-center">
           <Download className="mr-2 h-4 w-4" />
           Export
         </Button>
       </div>
-
       {/* Filters */}
       <Card>
         <CardContent className="p-4 space-y-4">
           <div className="relative w-full">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by order ID, customer name, or phone..."
+              placeholder="Search orders..."
               className="pl-8"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
         </CardContent>
-      </Card>
-
+      </Card>{" "}
       {/* Orders Table */}
       <Card>
-        <CardContent className="p-0">
+        <CardContent className="p-0 overflow-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[100px]">Order ID</TableHead>
+                <TableHead className="w-[80px]">ID</TableHead>
                 <TableHead>Customer</TableHead>
-                <TableHead>Date</TableHead>
+                <TableHead className="hidden md:table-cell">Date</TableHead>
                 <TableHead>Amount</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -164,6 +163,7 @@ export default function OrdersPage() {
                 filteredOrders.map((order) => {
                   return (
                     <>
+                      {" "}
                       <TableRow
                         key={order.id}
                         className="cursor-pointer"
@@ -173,7 +173,7 @@ export default function OrdersPage() {
                           {order.id.slice(-6).toUpperCase()}
                         </TableCell>
                         <TableCell>{`${order.firstName} ${order.lastName}`}</TableCell>
-                        <TableCell>
+                        <TableCell className="hidden md:table-cell">
                           {formatDate(new Date(order.createdAt))}
                         </TableCell>
                         <TableCell>
@@ -269,7 +269,11 @@ export default function OrdersPage() {
                                 </div>
                               </div>
                               <div className="pt-2 border-t">
-                                <Button size="sm" asChild>
+                                <Button
+                                  size="sm"
+                                  asChild
+                                  className="hover:bg-white hover:text-primary border border-transparent hover:border-primary"
+                                >
                                   <Link href={`/admin/orders/${order.id}`}>
                                     View Full Details
                                   </Link>

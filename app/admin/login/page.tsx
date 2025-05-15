@@ -1,106 +1,115 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { motion } from "framer-motion"
-import { Lock, User } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { useToast } from "@/components/ui/use-toast"
-import Link from "next/link"
+import { useState, useEffect } from "react";
+import { useActionState } from "react";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { Lock, User, Eye, EyeOff } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import Link from "next/link";
+import { login } from "../actions";
 
 export default function AdminLogin() {
-  const router = useRouter()
-  const { toast } = useToast()
-  const [credentials, setCredentials] = useState({ username: "", password: "" })
-  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setCredentials((prev) => ({ ...prev, [name]: value }))
-  }
+  const [state, formAction] = useActionState(login, {
+    errors: {},
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+  const handleFormAction = async (formData: FormData) => {
+    setIsLoading(true);
+    await formAction(formData);
+    setIsLoading(false);
+  };
 
-    // Simulate API call
-    setTimeout(() => {
-      // In a real app, you would validate credentials with an API
-      if (credentials.username === "admin" && credentials.password === "password") {
-        toast({
-          title: "Login Successful",
-          description: "Welcome to the admin dashboard!",
-        })
-        router.push("/admin/dashboard")
-      } else {
-        toast({
-          title: "Login Failed",
-          description: "Invalid username or password. Please try again.",
-          variant: "destructive",
-        })
-      }
-      setIsLoading(false)
-    }, 1500)
-  }
-
+  // Use useEffect to show toast when errors change
+  useEffect(() => {
+    if (state?.errors && Object.keys(state.errors).length > 0) {
+      toast({
+        title: "Login Failed",
+        description:
+          Object.values(state.errors)[0]?.[0] ||
+          "Invalid credentials. Please try again.",
+        variant: "destructive",
+      });
+    }
+  }, [state?.errors, toast]);
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/20 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-muted/20 px-4 py-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md rounded-lg border bg-background p-8 shadow-lg"
+        className="w-full max-w-md rounded-lg border bg-background p-6 sm:p-8 shadow-lg"
       >
-        <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold">Admin Login</h1>
-          <p className="text-muted-foreground mt-2">Sign in to access your dashboard</p>
+        <div className="mb-6 sm:mb-8 text-center">
+          <h1 className="text-xl sm:text-2xl font-bold">Admin Login</h1>
+          <p className="text-muted-foreground mt-2 text-sm sm:text-base">
+            Sign in to access your dashboard
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form action={handleFormAction} className="space-y-6">
           <div className="space-y-2">
             <div className="relative">
               <User className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
               <Input
                 name="username"
                 placeholder="Username"
-                value={credentials.username}
-                onChange={handleChange}
                 className="pl-10"
                 required
               />
             </div>
+            {state?.errors?.username && (
+              <p className="text-sm text-destructive">
+                {state.errors.username[0]}
+              </p>
+            )}
           </div>
-
           <div className="space-y-2">
             <div className="relative">
               <Lock className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
               <Input
                 name="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Password"
-                value={credentials.password}
-                onChange={handleChange}
-                className="pl-10"
+                className="pl-10 pr-10"
                 required
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-3 h-5 w-5 text-muted-foreground hover:text-foreground"
+              >
+                {showPassword ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <Eye className="h-5 w-5" />
+                )}
+              </button>
             </div>
-          </div>
-
-          <Button type="submit" className="w-full" disabled={isLoading}>
+            {state?.errors?.password && (
+              <p className="text-sm text-destructive">
+                {state.errors.password[0]}
+              </p>
+            )}
+          </div>{" "}
+          <Button
+            type="submit"
+            size="lg"
+            className="w-full font-montserrat transition-all duration-100 py-6 md:py-5 text-base hover:bg-white hover:text-primary border border-transparent hover:border-primary"
+            disabled={isLoading}
+          >
             {isLoading ? "Signing In..." : "Sign In"}
           </Button>
         </form>
-
-        <div className="mt-6 text-center text-sm text-muted-foreground">
-          <p>
-            For demo purposes, use: <br />
-            Username: admin <br />
-            Password: password
-          </p>
-        </div>
 
         <div className="mt-6 text-center">
           <Link href="/" className="text-sm text-primary hover:underline">
@@ -109,5 +118,5 @@ export default function AdminLogin() {
         </div>
       </motion.div>
     </div>
-  )
+  );
 }
