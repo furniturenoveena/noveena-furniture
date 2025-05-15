@@ -180,7 +180,7 @@ function CategoryCard({
   config,
   size,
 }: CategoryCardProps) {
-  const href = `/category/${type}/${category.name
+  const href = `/category/${type}?category=${category.name
     .toLowerCase()
     .replace(" ", "-")}`;
 

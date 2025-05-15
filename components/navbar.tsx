@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { useMediaQuery } from "@/hooks/use-mobile";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -27,22 +27,34 @@ import ThemeToggle from "@/components/theme-toggle";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 
+// Define interfaces based on Prisma schema
+interface Category {
+  id: string;
+  name: string;
+  description: string;
+  image: string;
+  type: "IMPORTED_USED" | "BRAND_NEW";
+}
+
+interface CategoryLink {
+  name: string;
+  href: string;
+  description: string;
+  subcategories: {
+    name: string;
+    href: string;
+    icon: string;
+  }[];
+}
+
+// Placeholder for initial load
 const categoryLinks = [
   {
     name: "Imported Used",
     href: "/category/imported-used",
     description:
       "Timeless pieces with character and history, carefully restored to perfection",
-    subcategories: [
-      { name: "Dining", href: "/category/imported-used/dining", icon: "🍽️" },
-      { name: "Bedroom", href: "/category/imported-used/bedroom", icon: "🛏️" },
-      {
-        name: "Living Room",
-        href: "/category/imported-used/living-room",
-        icon: "🛋️",
-      },
-      { name: "Office", href: "/category/imported-used/office", icon: "💼" },
-    ],
+    subcategories: [],
   },
   {
     name: "Brand New",
@@ -55,16 +67,112 @@ const categoryLinks = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [openCategory, setOpenCategory] = useState<string | null>(null);
   const [showSearch, setShowSearch] = useState(false);
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  // Don't render navbar for admin routes
-  if (pathname?.startsWith("/admin")) {
-    return null;
-  }
+  // Add state for dynamic categories
+  const [dynamicCategories, setDynamicCategories] = useState<CategoryLink[]>(
+    []
+  );
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Function to assign icon based on category name
+  const getCategoryIcon = (name: string): string => {
+    const lowerName = name.toLowerCase();
+
+    if (lowerName.includes("dining") || lowerName.includes("table"))
+      return "🍽️";
+    if (lowerName.includes("bed") || lowerName.includes("mattress"))
+      return "🛏️";
+    if (
+      lowerName.includes("living") ||
+      lowerName.includes("sofa") ||
+      lowerName.includes("couch")
+    )
+      return "🛋️";
+    if (
+      lowerName.includes("office") ||
+      lowerName.includes("desk") ||
+      lowerName.includes("work")
+    )
+      return "💼";
+    if (lowerName.includes("chair") || lowerName.includes("stool")) return "🪑";
+    if (
+      lowerName.includes("storage") ||
+      lowerName.includes("cabinet") ||
+      lowerName.includes("shelf")
+    )
+      return "📚";
+    if (lowerName.includes("kitchen") || lowerName.includes("cookware"))
+      return "🍳";
+    if (lowerName.includes("bath") || lowerName.includes("bathroom"))
+      return "🚿";
+    if (
+      lowerName.includes("outdoor") ||
+      lowerName.includes("garden") ||
+      lowerName.includes("patio")
+    )
+      return "🌿";
+    if (lowerName.includes("light") || lowerName.includes("lamp")) return "💡";
+    if (lowerName.includes("decor") || lowerName.includes("art")) return "🖼️";
+    if (lowerName.includes("kids") || lowerName.includes("child")) return "👶";
+
+    // Default furniture icon
+    return "🪑";
+  };
+
+  // Fetch categories from API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch("/api/categories");
+        const data = await response.json();
+
+        if (data.success) {
+          // Filter to only show IMPORTED_USED categories
+          const importedUsedCategories = data.data.filter(
+            (category: Category) => category.type === "IMPORTED_USED"
+          );
+
+          // Format for navbar use
+          if (importedUsedCategories.length > 0) {
+            const formattedCategories: CategoryLink[] = [
+              {
+                name: "Imported Used",
+                href: "/category/imported-used",
+                description:
+                  "Timeless pieces with character and history, carefully restored to perfection",
+                subcategories: importedUsedCategories.map(
+                  (category: Category) => ({
+                    name: category.name,
+                    href: `/category/imported-used?category=${category.name
+                      .toLowerCase()
+                      .replace(/\s+/g, "-")}`,
+                    icon: getCategoryIcon(category.name),
+                  })
+                ),
+              },
+            ];
+            console.log("Formatted Categories:", formattedCategories);
+            setDynamicCategories(formattedCategories);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -73,6 +181,17 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Pre-fill search query from URL if coming back to a page with search
+  useEffect(() => {
+    const query = searchParams?.get("search") || "";
+    setSearchQuery(query);
+  }, [searchParams]);
+
+  // Don't render navbar for admin routes
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   const handleToggleMenu = () => {
     setIsOpen(!isOpen);
@@ -94,6 +213,22 @@ export default function Navbar() {
     setShowSearch(!showSearch);
   };
 
+  const handleSearch = (e?: FormEvent) => {
+    if (e) e.preventDefault();
+
+    if (searchQuery.trim()) {
+      router.push(
+        `/category/all?search=${encodeURIComponent(searchQuery.trim())}`
+      );
+      setShowSearch(false);
+      setIsOpen(false);
+    }
+  };
+
+  // Use dynamic categories if they're loaded, otherwise use placeholder
+  const displayCategories =
+    dynamicCategories.length > 0 ? dynamicCategories : [categoryLinks[0]]; // Only show Imported Used placeholder
+
   return (
     <header
       className={cn(
@@ -109,7 +244,7 @@ export default function Navbar() {
           <Link href="/" className="flex items-center space-x-2 group">
             <div className="relative h-12 w-12 overflow-hidden rounded-full border-2 border-primary/20 group-hover:border-primary/80 transition-all duration-500">
               <Image
-                src="/placeholder.svg?height=48&width=48"
+                src="https://res.cloudinary.com/do08c2xq5/image/upload/v1747288693/493565611_680880901320361_2273471322479004360_n_bk6pmy.jpg"
                 alt="Noveena Furniture Logo"
                 width={48}
                 height={48}
@@ -143,7 +278,7 @@ export default function Navbar() {
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
             </Link>
 
-            {categoryLinks.map((category) => (
+            {displayCategories.map((category, index) => (
               <div
                 key={category.name}
                 className="relative group"
@@ -164,7 +299,14 @@ export default function Navbar() {
 
                 {openCategory === category.name && (
                   <div className="absolute left-0 mt-2 w-[500px] rounded-xl shadow-lg bg-background border overflow-hidden">
-                    <div className="p-6 grid grid-cols-2 gap-6">
+                    <div
+                      className={cn(
+                        "p-6",
+                        category.subcategories.length > 0
+                          ? "grid grid-cols-2 gap-6"
+                          : ""
+                      )}
+                    >
                       <div>
                         <h3 className="font-playfair text-lg font-semibold mb-2">
                           {category.name}
@@ -179,21 +321,24 @@ export default function Navbar() {
                           View All {category.name} →
                         </Link>
                       </div>
-                      <div className="space-y-3">
-                        <h4 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">
-                          Categories
-                        </h4>
-                        {category.subcategories.map((subcategory) => (
-                          <Link
-                            key={subcategory.name}
-                            href={subcategory.href}
-                            className="flex items-center py-1 text-sm hover:text-primary transition-colors"
-                          >
-                            <span className="mr-2">{subcategory.icon}</span>
-                            {subcategory.name}
-                          </Link>
-                        ))}
-                      </div>
+
+                      {category.subcategories.length > 0 && (
+                        <div className="space-y-3">
+                          <h4 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">
+                            Categories
+                          </h4>
+                          {category.subcategories.map((subcategory) => (
+                            <Link
+                              key={subcategory.name}
+                              href={subcategory.href}
+                              className="flex items-center py-1 text-sm hover:text-primary transition-colors"
+                            >
+                              <span className="mr-2">{subcategory.icon}</span>
+                              {subcategory.name}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
                     </div>
                     <div className="bg-muted/30 p-4">
                       <p className="text-xs text-muted-foreground">
@@ -206,6 +351,22 @@ export default function Navbar() {
                 )}
               </div>
             ))}
+
+            {/* Brand New as a simple link without dropdown */}
+            <Link
+              href="/category/brand-new"
+              className="text-sm font-medium hover:text-primary transition-colors relative group"
+            >
+              <span
+                className={cn(
+                  "transition-colors duration-300",
+                  "text-foreground group-hover:text-primary"
+                )}
+              >
+                Brand New
+              </span>
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+            </Link>
 
             <Link
               href="/about"
@@ -242,7 +403,8 @@ export default function Navbar() {
           <div className="flex items-center space-x-2">
             <AnimatePresence>
               {showSearch && (
-                <motion.div
+                <motion.form
+                  onSubmit={handleSearch}
                   initial={{ width: 0, opacity: 0 }}
                   animate={{ width: "200px", opacity: 1 }}
                   exit={{ width: 0, opacity: 0 }}
@@ -253,12 +415,14 @@ export default function Navbar() {
                     placeholder="Search products..."
                     className="pr-8"
                     autoFocus
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                   />
                   <X
                     className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground cursor-pointer"
                     onClick={toggleSearch}
                   />
-                </motion.div>
+                </motion.form>
               )}
             </AnimatePresence>
 
@@ -290,9 +454,6 @@ export default function Navbar() {
             >
               <Link href="/contact">
                 <ShoppingBag className="h-5 w-5" />
-                <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center">
-                  0
-                </Badge>
                 <span className="sr-only">Contact for Purchase</span>
               </Link>
             </Button>
@@ -322,13 +483,15 @@ export default function Navbar() {
           >
             <div className="container mx-auto px-4 py-4">
               <div className="flex justify-between items-center mb-4">
-                <div className="relative w-full">
+                <form onSubmit={handleSearch} className="relative w-full">
                   <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Search products..."
                     className="pl-9 pr-9"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                   />
-                </div>
+                </form>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -350,7 +513,7 @@ export default function Navbar() {
                   Home
                 </Link>
 
-                {categoryLinks.map((category) => (
+                {displayCategories.map((category) => (
                   <div key={category.name} className="space-y-1">
                     <button
                       className="flex items-center justify-between w-full py-2 px-3 rounded-md hover:bg-muted transition-colors"
@@ -385,21 +548,31 @@ export default function Navbar() {
                           All {category.name}
                         </Link>
 
-                        {category.subcategories.map((subcategory) => (
-                          <Link
-                            key={subcategory.name}
-                            href={subcategory.href}
-                            className="flex items-center py-2 px-3 rounded-md hover:bg-muted transition-colors"
-                            onClick={() => setIsOpen(false)}
-                          >
-                            <span className="mr-2">{subcategory.icon}</span>
-                            {subcategory.name}
-                          </Link>
-                        ))}
+                        {category.subcategories.length > 0 &&
+                          category.subcategories.map((subcategory) => (
+                            <Link
+                              key={subcategory.name}
+                              href={subcategory.href}
+                              className="flex items-center py-2 px-3 rounded-md hover:bg-muted transition-colors"
+                              onClick={() => setIsOpen(false)}
+                            >
+                              <span className="mr-2">{subcategory.icon}</span>
+                              {subcategory.name}
+                            </Link>
+                          ))}
                       </motion.div>
                     )}
                   </div>
                 ))}
+
+                {/* Brand New simple link for mobile */}
+                <Link
+                  href="/category/brand-new"
+                  className="flex items-center py-2 px-3 rounded-md hover:bg-muted transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Brand New
+                </Link>
 
                 <Link
                   href="/about"
@@ -448,22 +621,29 @@ export default function Navbar() {
                       <h4 className="text-sm font-semibold">Get in Touch</h4>
                       <div className="grid gap-2">
                         <a
-                          href="tel:+123456789"
+                          href="tel:+94779134361"
                           className="flex items-center text-sm hover:text-primary transition-colors"
                         >
                           <Phone className="h-4 w-4 mr-2 text-primary/70" />
-                          <span>+1 (234) 567-8900</span>
+                          <span>+94 77 913 4361</span>
                         </a>
                         <a
-                          href="mailto:info@noveena.com"
+                          href="tel:+94112741427"
+                          className="flex items-center text-sm hover:text-primary transition-colors"
+                        >
+                          <Phone className="h-4 w-4 mr-2 text-primary/70" />
+                          <span>+94 112 741 427</span>
+                        </a>
+                        <a
+                          href="mailto:noveenafurniture@gmail.com"
                           className="flex items-center text-sm hover:text-primary transition-colors"
                         >
                           <Mail className="h-4 w-4 mr-2 text-primary/70" />
-                          <span>info@noveena.com</span>
+                          <span>noveenafurniture@gmail.com</span>
                         </a>
                         <div className="flex items-center text-sm">
                           <MapPin className="h-4 w-4 mr-2 text-primary/70 flex-shrink-0" />
-                          <span>123 Luxury Lane, Furniture District</span>
+                          <span>337, Kaduwela Rd, Thalangama, Koswatta.</span>
                         </div>
                       </div>
                     </div>
@@ -500,7 +680,11 @@ export default function Navbar() {
                   </div>
 
                   <div className="mt-6 space-y-3">
-                    <Button asChild variant="default" className="w-full">
+                    <Button
+                      asChild
+                      variant="default"
+                      className="w-full hover:bg-white hover:text-primary border border-transparent hover:border-primary"
+                    >
                       <Link href="/contact" onClick={() => setIsOpen(false)}>
                         <Phone className="mr-2 h-4 w-4" />
                         Contact for Purchase

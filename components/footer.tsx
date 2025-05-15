@@ -41,9 +41,10 @@ export default function Footer() {
         {/* Back to top button */}
         <button
           onClick={scrollToTop}
-          className="absolute right-4 -top-10 bg-primary text-primary-foreground hover:bg-primary/90 
-                    rounded-full flex items-center justify-center w-10 h-10 shadow-lg transform 
-                    transition-transform hover:-translate-y-1"
+          className="absolute right-4 -top-10 bg-primary text-primary-foreground 
+              rounded-full flex items-center justify-center w-10 h-10 shadow-lg
+              transition-all duration-300 hover:scale-[1.02] 
+              hover:bg-white hover:text-primary border border-transparent hover:border-primary"
           aria-label="Back to top"
         >
           <ArrowUp size={18} />
@@ -56,7 +57,7 @@ export default function Footer() {
             <div className="flex items-center space-x-3 mb-6">
               <div className="relative h-12 w-12 overflow-hidden rounded-full border-2 border-primary/30">
                 <Image
-                  src="/placeholder.svg?height=48&width=48"
+                  src="https://res.cloudinary.com/do08c2xq5/image/upload/v1747288693/493565611_680880901320361_2273471322479004360_n_bk6pmy.jpg"
                   alt="Noveena Furniture Logo"
                   width={48}
                   height={48}
@@ -154,30 +155,38 @@ export default function Footer() {
                   <MapPin className="h-4 w-4 text-primary/80" />
                 </span>
                 <span className="text-muted-foreground mt-1 text-sm">
-                  123 Furniture Avenue, <br />
-                  Colombo 05, Sri Lanka
+                  337, Kaduwela Rd, <br />
+                  Thalangama, Koswatta
                 </span>
               </li>
               <li className="flex items-center group">
                 <span className="bg-background p-2 rounded-full mr-3 border border-border group-hover:border-primary/50 transition-colors duration-200">
                   <Phone className="h-4 w-4 text-primary/80" />
                 </span>
-                <Link
-                  href="tel:+94112345678"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm"
-                >
-                  +94 11 234 5678
-                </Link>
+                <div className="flex flex-col">
+                  <Link
+                    href="tel:+94779134361"
+                    className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm"
+                  >
+                    +94 77 913 4361
+                  </Link>
+                  <Link
+                    href="tel:+94112741427"
+                    className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm"
+                  >
+                    +94 112 741 427
+                  </Link>
+                </div>
               </li>
               <li className="flex items-center group">
                 <span className="bg-background p-2 rounded-full mr-3 border border-border group-hover:border-primary/50 transition-colors duration-200">
                   <Mail className="h-4 w-4 text-primary/80" />
                 </span>
                 <Link
-                  href="mailto:info@noveena.com"
+                  href="mailto:noveenafurniture@gmail.com"
                   className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm"
                 >
-                  info@noveena.com
+                  noveenafurniture@gmail.com
                 </Link>
               </li>
             </ul>
@@ -206,7 +215,7 @@ export default function Footer() {
               >
                 <Send className="h-4 w-4" />
               </Button>
-            </div>
+            </div>{" "}
             <p className="text-xs text-muted-foreground mt-2">
               By subscribing you agree to our{" "}
               <Link
@@ -231,11 +240,11 @@ export default function Footer() {
             </p>
 
             <div className="flex flex-wrap gap-x-6 gap-y-2 mt-4 md:mt-0 justify-center">
+              {" "}
               {[
                 { name: "Privacy Policy", href: "/privacy-policy" },
-                { name: "Terms of Service", href: "/terms-of-service" },
-                { name: "Shipping Policy", href: "/shipping-policy" },
-                { name: "Returns & Warranty", href: "/returns" },
+                { name: "Terms of Service", href: "/terms-and-conditions" },
+                { name: "Returns & Refunds", href: "/refund-policy" },
               ].map((link) => (
                 <Link
                   key={link.name}

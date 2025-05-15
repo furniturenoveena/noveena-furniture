@@ -15,10 +15,12 @@ import {
   X,
   ChevronDown,
   ShoppingCart,
+  LayoutList,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { logout } from "./actions";
 
 interface NavItem {
   title: string;
@@ -53,17 +55,17 @@ const navItems: NavItem[] = [
   {
     title: "Categories",
     href: "/admin/categories",
-    icon: Package,
+    icon: LayoutList,
     submenu: [
       {
         title: "Categories",
         href: "/admin/categories",
-        icon: Package,
+        icon: LayoutList,
       },
       {
         title: "Add New Category",
         href: "/admin/categories/new",
-        icon: Package,
+        icon: LayoutList,
       },
     ],
   },
@@ -140,21 +142,30 @@ export default function AdminLayout({
           </div>
 
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={() => router.push("/")}>
+            <Button variant="ghost" size="sm" onClick={() => logout()}>
               <LogOut className="mr-2 h-4 w-4" />
-              Exit Admin
+              Logout
             </Button>
           </div>
         </div>
-      </header>
-
+      </header>{" "}
       {/* Main Content */}
       <div className="flex flex-1">
-        {/* Sidebar (Desktop) */}
+        {/* Mobile Sidebar Overlay */}
+        {isMobileMenuOpen && (
+          <div
+            className="fixed inset-0 z-20 bg-black/50 md:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+
+        {/* Sidebar */}
         <aside
           className={cn(
-            "fixed inset-y-0 left-0 z-30 mt-16 hidden w-64 flex-col border-r bg-background md:flex",
-            isMobileMenuOpen && "flex"
+            "fixed inset-y-0 left-0 z-30 mt-16 w-[85%] max-w-[280px] flex-col border-r bg-background transition-transform duration-300 ease-in-out",
+            isMobileMenuOpen ? "translate-x-0" : "-translate-x-full",
+            "md:translate-x-0 md:w-64 md:flex"
           )}
         >
           <ScrollArea className="flex-1 py-4">
@@ -197,7 +208,10 @@ export default function AdminLayout({
                                   "bg-muted font-medium"
                               )}
                             >
-                              <Link href={subItem.href}>
+                              <Link
+                                href={subItem.href}
+                                onClick={() => setIsMobileMenuOpen(false)}
+                              >
                                 <subItem.icon className="mr-2 h-4 w-4" />
                                 {subItem.title}
                               </Link>
@@ -212,10 +226,14 @@ export default function AdminLayout({
                       asChild
                       className={cn(
                         "justify-start",
-                        pathname === item.href && "bg-muted font-medium"
+                        pathname === item.href && "bg-muted font-medium w-full"
                       )}
                     >
-                      <Link href={item.href}>
+                      <Link
+                        href={item.href}
+                        className="w-full"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
                         <item.icon className="mr-2 h-5 w-5" />
                         {item.title}
                       </Link>
@@ -228,8 +246,10 @@ export default function AdminLayout({
         </aside>
 
         {/* Content */}
-        <main className="flex-1 md:ml-64">
-          <div className="container mx-auto p-4 md:p-6">{children}</div>
+        <main className="flex-1 md:ml-64 w-full">
+          <div className="container mx-auto px-3 py-4 md:p-6 max-w-full">
+            {children}
+          </div>
         </main>
       </div>
     </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -34,12 +34,35 @@ interface OrderDetails {
   productImage?: string;
   productCategory?: string;
   total: number;
+  amountPaid: number;
+  paymentStatus: string;
   paymentMethod: string;
+  paymentDate?: string;
   createdAt: string;
   updatedAt: string;
 }
 
+// Main component that doesn't directly use useSearchParams
 export default function OrderSuccessPage() {
+  return (
+    <Suspense fallback={<OrderLoadingSkeleton />}>
+      <OrderContent />
+    </Suspense>
+  );
+}
+
+// Loading skeleton component
+function OrderLoadingSkeleton() {
+  return (
+    <div className="container mx-auto px-4 py-16 flex flex-col items-center justify-center min-h-[60vh]">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      <h2 className="text-xl font-semibold mt-4">Loading order details...</h2>
+    </div>
+  );
+}
+
+// Client component that uses useSearchParams
+function OrderContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(true);
@@ -190,12 +213,59 @@ export default function OrderSuccessPage() {
                     Rs. {orderDetails.productPrice.toLocaleString()} ×{" "}
                     {orderDetails.quantity}
                   </div>
-                </div>
+                </div>{" "}
                 <p className="font-medium text-lg mt-4">
                   Total: Rs. {orderDetails.total.toLocaleString()}
                 </p>
               </div>
             </div>
+
+            {orderDetails.paymentStatus && (
+              <div className="mt-4">
+                <div
+                  className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${
+                    orderDetails.paymentStatus === "PAID"
+                      ? "bg-green-100 text-green-700"
+                      : orderDetails.paymentStatus === "PENDING"
+                      ? "bg-yellow-100 text-yellow-700"
+                      : "bg-red-100 text-red-700"
+                  }`}
+                >
+                  <span className="font-medium">
+                    {orderDetails.paymentStatus === "PAID"
+                      ? "Payment Completed"
+                      : orderDetails.paymentStatus === "PENDING"
+                      ? "Payment Pending"
+                      : "Payment Required"}
+                  </span>
+                </div>
+
+                {orderDetails.amountPaid > 0 && (
+                  <div className="mt-2 text-sm">
+                    <p>
+                      Amount Paid: Rs.{" "}
+                      {orderDetails.amountPaid.toLocaleString()}
+                    </p>
+                    {orderDetails.paymentDate && (
+                      <p>
+                        Payment Date:{" "}
+                        {new Date(
+                          orderDetails.paymentDate
+                        ).toLocaleDateString()}
+                      </p>
+                    )}
+                    {orderDetails.paymentMethod && (
+                      <p>
+                        Payment Method:{" "}
+                        {orderDetails.paymentMethod === "PAYHERE"
+                          ? "PayHere"
+                          : orderDetails.paymentMethod}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
 
             <Separator className="my-6" />
 
@@ -264,19 +334,25 @@ export default function OrderSuccessPage() {
           <Button asChild variant="outline" size="lg">
             <Link href="/">Continue Shopping</Link>
           </Button>
-          <Button asChild size="lg">
+          <Button
+            asChild
+            size="lg"
+            className="font-montserrat transition-all duration-300 hover:scale-[1.02] py-3 md:py-0 hover:bg-white hover:text-primary border border-transparent hover:border-primary"
+          >
             <Link href="/contact">
               Need Help? Contact Us
-              <ArrowRight className="ml-2 h-4 w-4" />
+              <motion.div whileHover={{ scale: 1.1 }} className="ml-2">
+                <ArrowRight className="h-4 w-4" />
+              </motion.div>
             </Link>
           </Button>
         </div>
 
         <div className="mt-12 text-center text-muted-foreground">
-          <p className="mb-2">
-            A confirmation email has been sent to your email address.
+          <p className="mb-2">We have successfully received your order.</p>
+          <p>
+            We will give you a call shortly to confirm the delivery details.
           </p>
-          <p>We will contact you shortly to confirm your delivery details.</p>
         </div>
       </motion.div>
     </div>

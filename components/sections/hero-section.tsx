@@ -372,20 +372,14 @@ export default function HeroSection() {
             <Button
               asChild
               size={window.innerWidth < 640 ? "default" : "lg"}
-              className="rounded-md group relative overflow-hidden bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:shadow-lg transition-shadow"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 relative overflow-hidden group rounded-md shadow-md hover:shadow-lg transition-shadow"
             >
               <Link href="/category/all">
-                <span className="relative z-10">Explore Collection</span>
-                <ArrowRight className="ml-2 h-4 w-4 transition-all duration-300 group-hover:translate-x-1 relative z-10" />
-                <motion.div
-                  className="absolute inset-0 bg-white"
-                  initial={{ scale: 0, opacity: 0 }}
-                  whileHover={{
-                    scale: 2.5,
-                    opacity: 0.15,
-                    transition: { duration: 0.4 },
-                  }}
-                />
+                <span className="relative z-10 flex items-center group-hover:text-primary">
+                  Explore Collection
+                  <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                </span>
+                <span className="absolute inset-0 bg-gradient-to-r from-white to-gray-100 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"></span>
               </Link>
             </Button>
 

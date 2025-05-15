@@ -222,18 +222,18 @@ export default function AboutPage() {
                 className="flex gap-4 flex-wrap"
               >
                 <Button
-                  variant="default"
                   size="lg"
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 group relative overflow-hidden"
+                  className="font-montserrat transition-all duration-300 hover:scale-[1.02] py-3 md:py-0 hover:bg-white hover:text-primary border border-transparent hover:border-primary"
                 >
                   <Link
                     href="/category/all"
                     className="flex items-center gap-2"
                   >
+                    <motion.div whileHover={{ scale: 1.1 }} className="mr-2">
+                      <ArrowRight className="h-5 w-5" />
+                    </motion.div>
                     Explore Our Collection
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </Link>
-                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
                 </Button>
 
                 <Button
@@ -646,88 +646,120 @@ export default function AboutPage() {
             </motion.p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                name: "Ravi Weeramanthrie",
-                role: "Founder & CEO",
-                bio: "With over 20 years of experience in the furniture industry, Ravi leads our team with passion and vision.",
-                contact: {
-                  email: "raviweeramanthrie@gmail.com",
-                  phone: "+94 77 913 4361",
-                },
-              },
-              {
-                name: "Nisal Fernando",
-                role: "Design Consultant",
-                bio: "Nisal has an eye for design and helps customers find the perfect pieces to transform their spaces.",
-                contact: {
-                  email: "nisal@noveena.lk",
-                  phone: "+94 11 123 4568",
-                },
-              },
-              {
-                name: "Kumari Jayasinghe",
-                role: "Customer Relations",
-                bio: "Kumari ensures that our customers receive exceptional service at every step of their journey with us.",
-                contact: {
-                  email: "kumari@noveena.lk",
-                  phone: "+94 11 123 4569",
-                },
-              },
-            ].map((member, i) => (
-              <motion.div
-                key={i}
-                custom={i}
-                variants={teamMemberVariants}
-                initial="hidden"
-                animate={teamInView ? "visible" : "hidden"}
-                className="group relative overflow-hidden"
+          {/* Replacing team member cards with collective team information */}
+          <div className="grid md:grid-cols-2 gap-8">
+            <motion.div
+              initial="hidden"
+              animate={teamInView ? "visible" : "hidden"}
+              variants={staggerContainer}
+              className="bg-card backdrop-blur-sm border border-muted rounded-xl p-8"
+            >
+              <motion.h3
+                variants={fadeUpItem}
+                custom={0}
+                className="text-2xl font-bold mb-4 font-playfair"
               >
-                <div className="bg-card backdrop-blur-sm border border-muted rounded-xl overflow-hidden transition-all duration-300 group-hover:shadow-lg group-hover:border-primary/20">
-                  <div className="relative h-64 w-full overflow-hidden">
-                    <Image
-                      src="/placeholder.svg?height=300&width=300"
-                      alt={member.name}
-                      fill
-                      className="object-cover transition-transform duration-1000 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                Our Collective Expertise
+              </motion.h3>
 
-                    {/* Contact info overlay on hover */}
-                    <div className="absolute inset-0 flex flex-col justify-end p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                      <div className="text-white space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Mail className="h-4 w-4" />
-                          <span className="text-sm">
-                            {member.contact.email}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Phone className="h-4 w-4" />
-                          <span className="text-sm">
-                            {member.contact.phone}
-                          </span>
-                        </div>
+              <motion.p
+                variants={fadeUpItem}
+                custom={1}
+                className="text-muted-foreground mb-6"
+              >
+                Our dedicated team brings together decades of experience in
+                furniture design, curation, and customer service. We are united
+                by our passion for exceptional furniture and our commitment to
+                helping our customers create beautiful living spaces.
+              </motion.p>
+
+              <motion.div
+                variants={fadeUpItem}
+                custom={2}
+                className="space-y-4"
+              >
+                {[
+                  {
+                    metric: "20+ Years",
+                    description: "Combined Industry Experience",
+                  },
+                  {
+                    metric: "100%",
+                    description: "Dedication to Customer Satisfaction",
+                  },
+                  {
+                    metric: "24/7",
+                    description: "Design Thinking & Innovation",
+                  },
+                ].map((stat, i) => (
+                  <div key={i} className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <div className="h-2 w-2 bg-primary rounded-full"></div>
+                    </div>
+                    <div>
+                      <div className="text-xl font-bold text-primary">
+                        {stat.metric}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {stat.description}
                       </div>
                     </div>
                   </div>
-
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold group-hover:text-primary transition-colors duration-300">
-                      {member.name}
-                    </h3>
-                    <p className="text-primary mb-3 text-sm font-medium">
-                      {member.role}
-                    </p>
-                    <Separator className="mb-3 bg-muted/50" />
-                    <p className="text-muted-foreground text-sm">
-                      {member.bio}
-                    </p>
-                  </div>
-                </div>
+                ))}
               </motion.div>
-            ))}
+            </motion.div>
+
+            <motion.div
+              variants={fadeLeftItem}
+              custom={2}
+              initial="hidden"
+              animate={teamInView ? "visible" : "hidden"}
+              className="bg-card backdrop-blur-sm border border-muted rounded-xl overflow-hidden"
+            >
+              <div className="relative h-64 w-full">
+                <Image
+                  src="https://images.unsplash.com/photo-1600494603989-9650cf6ddd3d?q=80&w=2670&auto=format&fit=crop"
+                  alt="Our Workspace"
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 p-6 text-white">
+                  <div className="text-2xl font-bold mb-2">Our Philosophy</div>
+                  <p className="text-white/80">
+                    Creating beautiful spaces through thoughtful furniture
+                    selection
+                  </p>
+                </div>
+              </div>
+              <div className="p-6">
+                <p className="mb-4">
+                  At Noveena, we believe that great furniture is more than just
+                  functional—it tells a story and creates an emotional
+                  connection. Our team works collaboratively to source pieces
+                  that are not only beautiful and well-crafted, but that also
+                  create a sense of harmony and purpose in your space.
+                </p>
+                <div className="flex items-center gap-2 text-primary">
+                  <Mail className="h-4 w-4" />
+                  <a
+                    href="mailto:team@noveena.lk"
+                    className="text-sm hover:underline"
+                  >
+                    team@noveena.lk
+                  </a>
+                </div>
+                <div className="flex items-center gap-2 text-primary mt-2">
+                  <Phone className="h-4 w-4" />
+                  <a
+                    href="tel:+94779134361"
+                    className="text-sm hover:underline"
+                  >
+                    +94 77 913 4361
+                  </a>
+                </div>
+              </div>
+            </motion.div>
           </div>
 
           {/* Team expansion CTA */}

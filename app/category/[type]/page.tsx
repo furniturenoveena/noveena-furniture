@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, FormEvent } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ChevronRight, Filter, X, Loader2 } from "lucide-react";
+import { ChevronRight, Filter, X, Loader2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProductCard from "@/components/product-card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -22,54 +23,19 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
+import { Product as PrismaProduct, Category } from "@/lib/generated/prisma";
 
-// Define types based on Prisma schema
-type CategoryType = "IMPORTED_USED" | "BRAND_NEW";
-
-interface Category {
-  id: string;
-  name: string;
-  image: string;
-  description: string;
-  type: CategoryType;
-  _count?: { products: number };
-  products?: Product[];
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  discountPercentage?: number;
-  rating: number;
-  image: string;
-  dimensions: {
-    width: string;
-    height: string;
-    length: string;
-  };
-  features: string[];
-  tieredPricing: Array<{
-    min: number;
-    max: number;
-    price: number;
-  }>;
-  colors: Array<{
-    id: string;
-    name: string;
-    value: string;
-    image: string;
-  }>;
-  categoryId: string;
-  category?: Category;
-  createdAt: string;
-  updatedAt: string;
+interface Product extends PrismaProduct {
+  category: Category;
 }
 
 export default function CategoryPage({ params }: { params: { type: string } }) {
+  // Get search params from URL
+  const searchParams = useSearchParams();
+  const urlSearchQuery = searchParams?.get("search") || "";
+  const urlCategoryParam = searchParams?.get("category") || "";
+
   // API data state
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -85,7 +51,28 @@ export default function CategoryPage({ params }: { params: { type: string } }) {
   const [sortOption, setSortOption] = useState("featured");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
+  // Search state
+  const [searchQuery, setSearchQuery] = useState(urlSearchQuery);
+  const [activeSearchQuery, setActiveSearchQuery] = useState(urlSearchQuery);
+
   const categoryType = params.type.replace(/-/g, " ");
+
+  // Initialize category filters from URL params if provided
+  useEffect(() => {
+    if (urlCategoryParam) {
+      const formattedCategory = urlCategoryParam
+        .split("-")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+      setCategoryFilters([formattedCategory]);
+    }
+  }, [urlCategoryParam]);
+
+  // Update search query when URL changes
+  useEffect(() => {
+    setSearchQuery(urlSearchQuery);
+    setActiveSearchQuery(urlSearchQuery);
+  }, [urlSearchQuery]);
 
   // Fetch categories and products from API
   useEffect(() => {
@@ -116,8 +103,29 @@ export default function CategoryPage({ params }: { params: { type: string } }) {
 
   // Extract available category names
   const categoryNames = Array.from(
-    new Set(categories.map((category) => category.name))
+    new Set(
+      categories
+        .filter((category) => {
+          if (params.type === "all") {
+            return true; // Show all categories
+          } else if (params.type.startsWith("imported-used")) {
+            return category.type === "IMPORTED_USED";
+          } else if (params.type.startsWith("brand-new")) {
+            return category.type === "BRAND_NEW";
+          } else {
+            // For direct category names, show all categories
+            return true;
+          }
+        })
+        .map((category) => category.name)
+    )
   );
+
+  // Handle search submission
+  const handleSearch = (e: FormEvent) => {
+    e.preventDefault();
+    setActiveSearchQuery(searchQuery);
+  };
 
   // Filter products when filters change or data is loaded
   useEffect(() => {
@@ -161,7 +169,17 @@ export default function CategoryPage({ params }: { params: { type: string } }) {
       }
     }
 
-    console.log("Filtered Products:", filteredProducts);
+    // Apply search filter
+    if (activeSearchQuery) {
+      const query = activeSearchQuery.toLowerCase();
+      filteredProducts = filteredProducts.filter(
+        (product) =>
+          product.name.toLowerCase().includes(query) ||
+          product.description.toLowerCase().includes(query) ||
+          (product.category &&
+            product.category.name.toLowerCase().includes(query))
+      );
+    }
 
     // Apply category filters
     if (categoryFilters.length > 0) {
@@ -204,6 +222,7 @@ export default function CategoryPage({ params }: { params: { type: string } }) {
     sortOption,
     products,
     categories,
+    activeSearchQuery, // Add activeSearchQuery as a dependency
   ]);
 
   // Toggle category filter
@@ -308,6 +327,24 @@ export default function CategoryPage({ params }: { params: { type: string } }) {
           </motion.h1>
 
           <div className="flex items-center gap-4">
+            {/* Add search form */}
+            <form onSubmit={handleSearch} className="relative hidden md:block">
+              <Input
+                placeholder="Search products..."
+                className="w-[200px] pr-8"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <Button
+                type="submit"
+                size="icon"
+                variant="ghost"
+                className="absolute right-0 top-0 h-full"
+              >
+                <Search className="h-4 w-4" />
+              </Button>
+            </form>
+
             <Button
               variant="outline"
               className="md:hidden"
@@ -337,6 +374,27 @@ export default function CategoryPage({ params }: { params: { type: string } }) {
           {/* Filters - Desktop */}
           <div className="hidden md:block">
             <div className="space-y-6">
+              {/* Search form for mobile (shown inside filters) */}
+              <div className="md:hidden">
+                <h3 className="text-lg font-semibold mb-4">Search</h3>
+                <form onSubmit={handleSearch} className="relative">
+                  <Input
+                    placeholder="Search products..."
+                    className="pr-8"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                  <Button
+                    type="submit"
+                    size="icon"
+                    variant="ghost"
+                    className="absolute right-0 top-0 h-full"
+                  >
+                    <Search className="h-4 w-4" />
+                  </Button>
+                </form>
+              </div>
+
               <div>
                 <h3 className="text-lg font-semibold mb-4">Categories</h3>
                 <div className="space-y-2">
@@ -433,7 +491,32 @@ export default function CategoryPage({ params }: { params: { type: string } }) {
             </div>
 
             <div className="space-y-6 overflow-auto max-h-[calc(100vh-120px)]">
-              <Accordion type="single" collapsible defaultValue="categories">
+              {/* Add search to mobile filters */}
+              <Accordion type="single" collapsible defaultValue="search">
+                <AccordionItem value="search">
+                  <AccordionTrigger className="text-lg font-semibold">
+                    Search
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <form onSubmit={handleSearch} className="relative pt-2">
+                      <Input
+                        placeholder="Search products..."
+                        className="pr-8"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                      />
+                      <Button
+                        type="submit"
+                        size="icon"
+                        variant="ghost"
+                        className="absolute right-0 top-2 h-10"
+                      >
+                        <Search className="h-4 w-4" />
+                      </Button>
+                    </form>
+                  </AccordionContent>
+                </AccordionItem>
+
                 <AccordionItem value="categories">
                   <AccordionTrigger className="text-lg font-semibold">
                     Categories
@@ -544,13 +627,42 @@ export default function CategoryPage({ params }: { params: { type: string } }) {
 
           {/* Products Grid */}
           <div className="md:col-span-3">
+            {/* Display active search query if present */}
+            {activeSearchQuery && (
+              <div className="mb-4">
+                <div className="flex items-center">
+                  <span className="text-sm text-muted-foreground mr-2">
+                    Search results for:
+                  </span>
+                  <div className="flex items-center bg-muted px-3 py-1 rounded-md">
+                    <span className="text-sm font-medium">
+                      {activeSearchQuery}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 ml-1 p-0"
+                      onClick={() => {
+                        setSearchQuery("");
+                        setActiveSearchQuery("");
+                      }}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {displayProducts.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-60 text-center">
                 <h3 className="text-xl font-semibold mb-2">
                   No products found
                 </h3>
                 <p className="text-muted-foreground mb-4">
-                  Try adjusting your filters or check out our other collections.
+                  {activeSearchQuery
+                    ? `No results found for "${activeSearchQuery}". Try a different search term or browse our collections.`
+                    : "Try adjusting your filters or check out our other collections."}
                 </p>
                 <Button asChild>
                   <Link href="/category/all">View All Products</Link>

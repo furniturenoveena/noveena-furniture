@@ -328,7 +328,11 @@ export default function EditProductPage({
           <Button variant="outline" onClick={() => router.back()}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={isLoading}>
+          <Button
+            onClick={handleSubmit}
+            disabled={isLoading}
+            className="hover:bg-white hover:text-primary border border-transparent hover:border-primary"
+          >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Save Changes
           </Button>
@@ -534,36 +538,38 @@ export default function EditProductPage({
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="grid grid-cols-3 gap-2">
-                <div className="space-y-2">
-                  <Label htmlFor="min-quantity">Min Quantity</Label>
-                  <Input
-                    id="min-quantity"
-                    type="number"
-                    min="1"
-                    value={newTieredPricing.min}
-                    onChange={(e) =>
-                      setNewTieredPricing({
-                        ...newTieredPricing,
-                        min: parseInt(e.target.value),
-                      })
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="max-quantity">Max Quantity</Label>
-                  <Input
-                    id="max-quantity"
-                    type="number"
-                    min="1"
-                    value={newTieredPricing.max}
-                    onChange={(e) =>
-                      setNewTieredPricing({
-                        ...newTieredPricing,
-                        max: parseInt(e.target.value),
-                      })
-                    }
-                  />
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="min-quantity">Min Quantity</Label>
+                    <Input
+                      id="min-quantity"
+                      type="number"
+                      min="1"
+                      value={newTieredPricing.min}
+                      onChange={(e) =>
+                        setNewTieredPricing({
+                          ...newTieredPricing,
+                          min: parseInt(e.target.value),
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="max-quantity">Max Quantity</Label>
+                    <Input
+                      id="max-quantity"
+                      type="number"
+                      min="1"
+                      value={newTieredPricing.max}
+                      onChange={(e) =>
+                        setNewTieredPricing({
+                          ...newTieredPricing,
+                          max: parseInt(e.target.value),
+                        })
+                      }
+                    />
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="tier-price">Price</Label>
@@ -587,8 +593,8 @@ export default function EditProductPage({
                       onClick={addTieredPricing}
                       variant="secondary"
                     >
-                      <PlusCircle className="mr-2 h-4 w-4" />
-                      Add
+                      <PlusCircle className="h-4 w-4 md:mr-2" />
+                      <span className="hidden md:inline">Add</span>
                     </Button>
                   </div>
                 </div>

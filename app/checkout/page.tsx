@@ -1,5 +1,22 @@
 "use client";
 
+import { Suspense } from "react";
+
+export default function CheckoutPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="container mx-auto px-4 py-16 flex flex-col items-center justify-center min-h-[60vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+          <h2 className="text-xl font-semibold">Loading checkout...</h2>
+        </div>
+      }
+    >
+      <CheckoutContent />
+    </Suspense>
+  );
+}
+
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
@@ -13,6 +30,7 @@ import {
   Check,
   Loader2,
 } from "lucide-react";
+import { PaymentConfirmationModal } from "@/components/payment-confirmation-modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,7 +39,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -34,6 +51,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
+import { sendSMS } from "@/lib/notify";
 
 // Product type should match your schema
 interface Product {
@@ -50,7 +68,7 @@ interface Product {
   tieredPricing?: { min: number; max: number; price: number }[];
 }
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const { toast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -176,6 +194,8 @@ export default function CheckoutPage() {
   const advanceAmount =
     paymentOption === "advance" ? total * (advancePayment / 100) : total;
   const balanceAmount = paymentOption === "advance" ? total - advanceAmount : 0;
+  // Payment confirmation modal state
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -198,10 +218,16 @@ export default function CheckoutPage() {
       return;
     }
 
+    // Open payment confirmation modal
+    setIsPaymentModalOpen(true);
+  };
+
+  // Handle payment confirmation and order submission
+  const handlePaymentConfirmed = async () => {
     setIsSubmitting(true);
 
     try {
-      // Prepare order data
+      // Prepare order data with the new payment information
       const orderData = {
         ...formData,
         productId: product?.id,
@@ -212,7 +238,10 @@ export default function CheckoutPage() {
         productImage: product?.image,
         productCategory: product?.category?.name,
         total,
-        paymentMethod: "CASH_ON_DELIVERY",
+        paymentMethod: "PAYHERE",
+        amountPaid: advanceAmount,
+        paymentStatus: "PAID",
+        paymentDate: new Date().toISOString(),
       };
 
       // Submit order to API
@@ -228,7 +257,23 @@ export default function CheckoutPage() {
 
       if (!response.ok) {
         throw new Error(result.error || "Failed to place order");
-      }
+      } // Send SMS notification
+      const customerName = `${formData.firstName} ${formData.lastName}`;
+      const paymentInfo =
+        advanceAmount === total
+          ? `full payment of Rs.${advanceAmount.toLocaleString()} via PayHere`
+          : `advance payment of Rs.${advanceAmount.toLocaleString()} via PayHere (balance due: Rs.${balanceAmount.toLocaleString()})`;
+      const smsMessage = `New Order: ${customerName} has ordered ${quantity}x ${
+        product?.name
+      } for Rs.${total.toLocaleString()}, with ${paymentInfo}. Customer phone: ${
+        formData.phone
+      }`;
+
+      // Send SMS asynchronously (we don't need to wait for it)
+      sendSMS({ message: smsMessage }).catch((error) => {
+        console.error("Failed to send SMS notification:", error);
+        // We don't show this error to the user as the order was successful
+      });
 
       toast({
         title: "Order Placed Successfully",
@@ -246,6 +291,7 @@ export default function CheckoutPage() {
           "There was an error processing your order. Please try again.",
         variant: "destructive",
       });
+      setIsPaymentModalOpen(false);
     } finally {
       setIsSubmitting(false);
     }
@@ -452,28 +498,57 @@ export default function CheckoutPage() {
                 <CardDescription>
                   Select your preferred payment option
                 </CardDescription>
-              </CardHeader>
+              </CardHeader>{" "}
               <CardContent>
                 <div className="flex flex-col space-y-3">
                   <div className="flex items-center space-x-3 bg-muted/20 p-3 rounded-md">
                     <input
                       type="radio"
                       name="paymentMethod"
-                      id="cash"
+                      id="payhere"
                       defaultChecked
                       className="h-5 w-5 accent-primary"
                     />
                     <Label
-                      htmlFor="cash"
+                      htmlFor="payhere"
                       className="font-medium flex items-center"
                     >
                       <CreditCard className="h-4 w-4 mr-2" />
-                      Cash on Delivery
+                      PayHere
                     </Label>
                   </div>
                   <div className="text-sm text-muted-foreground pl-8 py-2">
-                    You'll pay when your furniture is delivered to your address
+                    Pay advance to confirm your order with secure online payment
                   </div>
+
+                  {advanceAmount !== total && (
+                    <div className="border border-primary/20 rounded-md p-3 bg-primary/5 mt-2">
+                      <p className="text-sm font-medium mb-2">
+                        Payment Breakdown:
+                      </p>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                          <p className="text-muted-foreground">
+                            Advance Payment:
+                          </p>
+                          <p className="font-medium">
+                            Rs. {advanceAmount.toLocaleString()}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">
+                            Balance Payment:
+                          </p>
+                          <p className="font-medium">
+                            Rs. {balanceAmount.toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-3">
+                        * Balance will be collected upon delivery
+                      </p>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -493,7 +568,7 @@ export default function CheckoutPage() {
                 type="submit"
                 size="lg"
                 disabled={isSubmitting}
-                className="w-full md:w-auto"
+                className="w-full md:w-auto  transition-all duration-300 hover:scale-[1.02] py-3 md:py-0 hover:bg-white hover:text-primary border border-transparent hover:border-primary"
               >
                 {isSubmitting ? (
                   <>
@@ -525,10 +600,21 @@ export default function CheckoutPage() {
               total={total}
               advanceAmount={advanceAmount}
               balanceAmount={balanceAmount}
-            />
+            />{" "}
           </motion.div>
         </div>
       </div>
+
+      {/* Payment Confirmation Modal */}
+      <PaymentConfirmationModal
+        open={isPaymentModalOpen}
+        onOpenChange={setIsPaymentModalOpen}
+        onConfirmPayment={handlePaymentConfirmed}
+        isSubmitting={isSubmitting}
+        total={total}
+        advanceAmount={advanceAmount}
+        productName={product?.name || ""}
+      />
     </div>
   );
 }

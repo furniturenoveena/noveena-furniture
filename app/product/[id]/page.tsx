@@ -34,50 +34,11 @@ import {
 } from "@/components/ui/tooltip";
 import ProductCard from "@/components/product-card";
 import { useToast } from "@/components/ui/use-toast";
+import { Product as PrismaProduct, Category } from "@/lib/generated/prisma";
 
-// Define types based on Prisma schema
-type Color = {
-  id: string;
-  name: string;
-  value: string;
-  image: string;
-};
-
-type Dimension = {
-  width: string;
-  height: string;
-  length: string;
-};
-
-type TieredPricing = {
-  min: number;
-  max: number;
-  price: number;
-};
-
-type Category = {
-  id: string;
-  name: string;
-  image: string;
-  description: string;
-  type: "IMPORTED_USED" | "BRAND_NEW";
-};
-
-type Product = {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  discountPercentage?: number;
-  rating: number;
-  image: string;
-  dimensions: Dimension;
-  features: string[];
-  tieredPricing?: TieredPricing[];
-  colors: Color[];
+interface Product extends PrismaProduct {
   category: Category;
-  categoryId: string;
-};
+}
 
 export default function ProductDetailPage({
   params,
@@ -722,7 +683,7 @@ export default function ProductDetailPage({
             <div className="flex flex-col sm:flex-row gap-4">
               <Button
                 size="lg"
-                className="flex-1 font-montserrat transition-all duration-300 hover:scale-[1.02]"
+                className="flex-1 font-montserrat transition-all duration-300 hover:scale-[1.02] py-3 md:py-0 hover:bg-white hover:text-primary border border-transparent hover:border-primary"
                 onClick={handleBuyNow}
               >
                 <motion.div whileHover={{ scale: 1.1 }} className="mr-2">
@@ -733,7 +694,7 @@ export default function ProductDetailPage({
               <Button
                 size="lg"
                 variant="outline"
-                className="flex-1 font-montserrat transition-all duration-300 hover:bg-primary/5"
+                className="flex-1 font-montserrat transition-all duration-300 hover:bg-primary/5 py-3 md:py-0"
                 onClick={handleAddToCart}
               >
                 <motion.div whileHover={{ scale: 1.1 }} className="mr-2">

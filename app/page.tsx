@@ -14,7 +14,7 @@ import { motion } from "framer-motion";
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [productsLoading, setProductsLoading] = useState(true);
@@ -119,10 +119,8 @@ export default function Home() {
     <div className="pt-16 md:pt-16 overflow-x-hidden">
       {/* Hero Section */}
       <HeroSection />
-
       {/* Features Section */}
       <FeaturesSection />
-
       {/* Main Categories Showcase */}
       <div className="px-4 sm:px-6 md:px-8">
         {loading ? (
@@ -130,10 +128,13 @@ export default function Home() {
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           </div>
         ) : (
-          <CategoryShowcase importedUsedCategories={categories} />
+          <CategoryShowcase
+            importedUsedCategories={categories.filter(
+              (category) => category.type === "IMPORTED_USED"
+            )}
+          />
         )}
       </div>
-
       {/* Featured Products Section */}
       <div className="px-4 sm:px-6 md:px-8">
         {productsLoading ? (
@@ -144,22 +145,18 @@ export default function Home() {
           <FeaturedProductsSection products={products} />
         )}
       </div>
-
       {/* Pricing Tiers Section */}
       <div className="px-4 sm:px-6 md:px-8">
         <PricingTiersSection />
       </div>
-
       {/* About Section */}
       <div className="px-4 sm:px-6 md:px-8">
         <AboutSection />
       </div>
-
       {/* Section Divider */}
       <div className="w-full flex justify-center my-8 md:my-16">
         <div className="w-2/3 sm:w-1/2 md:w-1/3 h-0.5 bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
       </div>
-
       {/* Testimonials Section with animation */}
       <motion.div
         initial={{ opacity: 0, y: 50 }}
@@ -170,28 +167,25 @@ export default function Home() {
       >
         <TestimonialsSection />
       </motion.div>
-
       {/* Section Divider */}
       <div className="w-full flex justify-center my-8 md:my-16">
         <div className="w-2/3 sm:w-1/2 md:w-1/3 h-0.5 bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
-      </div>
-
+      </div>{" "}
       {/* 3D Furniture Showcase with animation */}
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true, margin: "-50px" }}
         transition={{ duration: 1.2 }}
-        className="relative bg-gradient-to-b from-slate-50 to-white py-8 md:py-16"
+        className="relative bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-background py-8 md:py-16"
       >
         <div className="container mx-auto px-4 sm:px-6 md:px-8">
           <VisualizationSection />
         </div>
-      </motion.div>
-
+      </motion.div>{" "}
       {/* CTA Section with enhanced layout */}
       <div className="relative mt-10 md:mt-20 mb-8 md:mb-12">
-        <div className="absolute inset-0 bg-gray-50 transform -skew-y-2 z-0"></div>
+        <div className="absolute inset-0 bg-gray-50 dark:bg-gray-900/50 transform -skew-y-2 z-0"></div>
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
@@ -203,32 +197,6 @@ export default function Home() {
             <CTASection />
           </div>
         </motion.div>
-      </div>
-
-      {/* Scroll to top button */}
-      <div className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-50">
-        <button
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="p-2 md:p-3 rounded-full bg-primary/90 text-white shadow-lg hover:bg-primary transition-all"
-          aria-label="Scroll to top"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            className="md:w-6 md:h-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M5 10l7-7m0 0l7 7m-7-7v18"
-            />
-          </svg>
-        </button>
       </div>
     </div>
   );

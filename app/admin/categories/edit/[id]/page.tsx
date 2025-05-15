@@ -160,19 +160,29 @@ export default function EditCategoryPage({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Edit Category</h1>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => router.back()}>
+      {" "}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+          Edit Category
+        </h1>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <Button
+            variant="outline"
+            onClick={() => router.back()}
+            className="w-full sm:w-auto justify-center"
+          >
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={isLoading}>
+          <Button
+            onClick={handleSubmit}
+            disabled={isLoading}
+            className="w-full sm:w-auto justify-center hover:bg-white hover:text-primary border border-transparent hover:border-primary"
+          >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Save Changes
           </Button>
         </div>
       </div>
-
       <form className="space-y-8">
         <Card>
           <CardHeader>
@@ -211,11 +221,11 @@ export default function EditCategoryPage({
             </div>
 
             <div className="space-y-2">
-              <Label>Category Type *</Label>
+              <Label>Category Type *</Label>{" "}
               <RadioGroup
                 value={formData.type}
                 onValueChange={handleRadioChange}
-                className="grid grid-cols-2 gap-4"
+                className="grid grid-cols-1 xs:grid-cols-2 gap-4"
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="BRAND_NEW" id="brand-new" />
