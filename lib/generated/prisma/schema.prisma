@@ -17,6 +17,13 @@ enum PaymentMethod {
   PAYHERE
 }
 
+type ImageCollection {
+  image1 String
+  image2 String?
+  image3 String?
+  image4 String?
+}
+
 model Product {
   id                 String          @id @default(auto()) @map("_id") @db.ObjectId
   name               String
@@ -24,7 +31,7 @@ model Product {
   price              Float
   discountPercentage Float?
   rating             Float
-  image              String
+  images             ImageCollection
   dimensions         Dimension
   features           String[]
   tieredPricing      TieredPricing[]
@@ -49,10 +56,10 @@ type TieredPricing {
 }
 
 type Color {
-  id    String
-  name  String
-  value String // Hex color code
-  image String
+  id     String
+  name   String
+  value  String // Hex color code
+  images ImageCollection
 }
 
 model Category {
@@ -81,12 +88,12 @@ model Order {
   productName     String
   productPrice    Float
   quantity        Int           @default(1)
-  colorId         String?
+  colorValue      String?
+  colorName       String?
   productImage    String?
   productCategory String?
   total           Float
   amountPaid      Float         @default(0)
-  paymentStatus   String        @default("PENDING") // PENDING, PAID, CANCELLED
   paymentMethod   PaymentMethod @default(PAYHERE)
   paymentDate     DateTime?
   createdAt       DateTime      @default(now())

@@ -54,7 +54,6 @@ interface FeaturedProductsSectionProps {
 export default function FeaturedProductsSection({
   products,
 }: FeaturedProductsSectionProps) {
-  console.log("FeaturedProductsSection products:", products);
   // Filter products by category type
   const brandNewProducts = products
     .filter((product) => product.category.type === "BRAND_NEW")
@@ -63,9 +62,6 @@ export default function FeaturedProductsSection({
   const importedUsedProducts = products
     .filter((product) => product.category.type === "IMPORTED_USED")
     .slice(0, 4);
-
-  console.log("Brand New Products:", brandNewProducts);
-  console.log("Imported Used Products:", importedUsedProducts);
 
   // Animation controls
   const controls = useAnimation();

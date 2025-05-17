@@ -120,7 +120,7 @@ export default function ProductCard({
         >
           <div className="relative aspect-square premium-image-container overflow-hidden">
             <Image
-              src={colorPreview?.image || product.image || "/placeholder.svg"}
+              src={product.images.image1 || "/placeholder.svg"}
               alt={product.name}
               fill
               className="object-cover premium-image"
@@ -339,7 +339,7 @@ export default function ProductCard({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="overflow-hidden rounded-md">
               <Image
-                src={colorPreview?.image || product.image || "/placeholder.svg"}
+                src={product.images.image1 || "/placeholder.svg"}
                 alt={product.name}
                 width={500}
                 height={500}

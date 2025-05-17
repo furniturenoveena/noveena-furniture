@@ -39,41 +39,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
+import { Category, Product as PrismaProduct } from "@/lib/generated/prisma";
 
 // Product type definition based on Prisma schema
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  discountPercentage?: number;
-  rating: number;
-  image: string;
-  dimensions: {
-    width: string;
-    height: string;
-    length: string;
-  };
-  features: string[];
-  tieredPricing: {
-    min: number;
-    max: number;
-    price: number;
-  }[];
-  colors: {
-    id: string;
-    name: string;
-    value: string;
-    image: string;
-  }[];
-  categoryId: string;
-  category?: {
-    id: string;
-    name: string;
-    type: "IMPORTED_USED" | "BRAND_NEW";
-  };
-  createdAt: string;
-  updatedAt: string;
+interface Product extends PrismaProduct {
+  category: Category;
 }
 
 export default function ProductsPage() {
@@ -297,7 +267,7 @@ export default function ProductsPage() {
                     <TableCell>
                       <div className="relative h-12 w-12 overflow-hidden rounded-md">
                         <Image
-                          src={product.image || "/placeholder.svg"}
+                          src={product.images.image1 || "/placeholder.svg"}
                           alt={product.name}
                           fill
                           className="object-cover"

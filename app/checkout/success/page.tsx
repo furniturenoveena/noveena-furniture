@@ -30,12 +30,12 @@ interface OrderDetails {
   productName: string;
   productPrice: number;
   quantity: number;
-  colorId?: string;
+  colorValue?: string;
+  colorName?: string;
   productImage?: string;
   productCategory?: string;
   total: number;
   amountPaid: number;
-  paymentStatus: string;
   paymentMethod: string;
   paymentDate?: string;
   createdAt: string;
@@ -181,7 +181,7 @@ function OrderContent() {
                 Order Summary
               </h2>
               <span className="text-sm bg-primary/10 text-primary px-3 py-1 rounded-full">
-                Order #{orderDetails.id.substring(0, 8)}
+                Order #{orderDetails.id.slice(-6)}
               </span>
             </div>
 
@@ -208,6 +208,17 @@ function OrderContent() {
                     Category: {orderDetails.productCategory}
                   </p>
                 )}
+                {orderDetails.colorName && (
+                  <p className="text-sm text-muted-foreground flex items-center mt-1">
+                    Color: {orderDetails.colorName}
+                    {orderDetails.colorValue && (
+                      <span
+                        className="ml-2 inline-block w-4 h-4 rounded-full border"
+                        style={{ backgroundColor: orderDetails.colorValue }}
+                      />
+                    )}
+                  </p>
+                )}
                 <div className="flex items-center justify-between mt-2">
                   <div className="text-sm">
                     Rs. {orderDetails.productPrice.toLocaleString()} ×{" "}
@@ -220,52 +231,43 @@ function OrderContent() {
               </div>
             </div>
 
-            {orderDetails.paymentStatus && (
-              <div className="mt-4">
-                <div
-                  className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${
-                    orderDetails.paymentStatus === "PAID"
-                      ? "bg-green-100 text-green-700"
-                      : orderDetails.paymentStatus === "PENDING"
-                      ? "bg-yellow-100 text-yellow-700"
-                      : "bg-red-100 text-red-700"
-                  }`}
-                >
-                  <span className="font-medium">
-                    {orderDetails.paymentStatus === "PAID"
-                      ? "Payment Completed"
-                      : orderDetails.paymentStatus === "PENDING"
-                      ? "Payment Pending"
-                      : "Payment Required"}
-                  </span>
-                </div>
-
-                {orderDetails.amountPaid > 0 && (
-                  <div className="mt-2 text-sm">
+            {/* Payment information */}
+            <div className="mt-4">
+              <div
+                className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${
+                  orderDetails.amountPaid > 0
+                    ? "bg-green-100 text-green-700"
+                    : "bg-yellow-100 text-yellow-700"
+                }`}
+              >
+                <span className="font-medium">
+                  {orderDetails.amountPaid > 0
+                    ? "Payment Completed"
+                    : "Payment Pending"}
+                </span>
+              </div>{" "}
+              {orderDetails.amountPaid > 0 && (
+                <div className="mt-2 text-sm">
+                  <p>
+                    Amount Paid: Rs. {orderDetails.amountPaid.toLocaleString()}
+                  </p>
+                  {orderDetails.paymentDate && (
                     <p>
-                      Amount Paid: Rs.{" "}
-                      {orderDetails.amountPaid.toLocaleString()}
+                      Payment Date:{" "}
+                      {new Date(orderDetails.paymentDate).toLocaleDateString()}
                     </p>
-                    {orderDetails.paymentDate && (
-                      <p>
-                        Payment Date:{" "}
-                        {new Date(
-                          orderDetails.paymentDate
-                        ).toLocaleDateString()}
-                      </p>
-                    )}
-                    {orderDetails.paymentMethod && (
-                      <p>
-                        Payment Method:{" "}
-                        {orderDetails.paymentMethod === "PAYHERE"
-                          ? "PayHere"
-                          : orderDetails.paymentMethod}
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
+                  )}
+                  {orderDetails.paymentMethod && (
+                    <p>
+                      Payment Method:{" "}
+                      {orderDetails.paymentMethod === "PAYHERE"
+                        ? "PayHere"
+                        : orderDetails.paymentMethod}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
 
             <Separator className="my-6" />
 

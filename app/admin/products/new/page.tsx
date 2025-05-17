@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,6 +18,10 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { PlusCircle, X, Loader2 } from "lucide-react";
 import { CloudinaryUpload } from "@/components/ui/cloudinary-upload";
+import {
+  CloudinaryMultipleUpload,
+  ImageCollection,
+} from "@/components/ui/cloudinary-multiple-upload";
 
 interface Category {
   id: string;
@@ -35,7 +40,12 @@ export default function NewProductPage() {
     price: 0,
     discountPercentage: 0,
     rating: 5,
-    image: "",
+    images: {
+      image1: "",
+      image2: "",
+      image3: "",
+      image4: "",
+    },
     dimensions: {
       width: "",
       height: "",
@@ -43,7 +53,12 @@ export default function NewProductPage() {
     },
     features: [] as string[],
     tieredPricing: [] as { min: number; max: number; price: number }[],
-    colors: [] as { id: string; name: string; value: string; image: string }[],
+    colors: [] as {
+      id: string;
+      name: string;
+      value: string;
+      images: ImageCollection;
+    }[],
     categoryId: "",
   });
 
@@ -57,7 +72,12 @@ export default function NewProductPage() {
     id: "",
     name: "",
     value: "#000000",
-    image: "",
+    images: {
+      image1: "",
+      image2: "",
+      image3: "",
+      image4: "",
+    },
   });
 
   // Fetch categories
@@ -92,18 +112,27 @@ export default function NewProductPage() {
       [name]: value,
     }));
   };
-
-  const handleImageChange = (url: string) => {
+  const handleImagesChange = (images: ImageCollection) => {
     setFormData((prev) => ({
       ...prev,
-      image: url,
+      images: {
+        image1: images.image1 || "",
+        image2: images.image2 || "",
+        image3: images.image3 || "",
+        image4: images.image4 || "",
+      },
     }));
   };
 
-  const handleColorImageChange = (url: string) => {
+  const handleColorImagesChange = (images: ImageCollection) => {
     setNewColor((prev) => ({
       ...prev,
-      image: url,
+      images: {
+        image1: images.image1 || "",
+        image2: images.image2 || "",
+        image3: images.image3 || "",
+        image4: images.image4 || "",
+      },
     }));
   };
 
@@ -168,7 +197,6 @@ export default function NewProductPage() {
       tieredPricing: prev.tieredPricing.filter((_, i) => i !== index),
     }));
   };
-
   const addColor = () => {
     if (newColor.name.trim() && newColor.value.trim()) {
       setFormData((prev) => ({
@@ -185,7 +213,12 @@ export default function NewProductPage() {
         id: "",
         name: "",
         value: "#000000",
-        image: "",
+        images: {
+          image1: "",
+          image2: "",
+          image3: "",
+          image4: "",
+        },
       });
     }
   };
@@ -308,7 +341,6 @@ export default function NewProductPage() {
                 </Select>
               </div>
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="description">Description *</Label>
               <Textarea
@@ -320,7 +352,6 @@ export default function NewProductPage() {
                 required
               />
             </div>
-
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div className="space-y-2">
                 <Label htmlFor="price">Price *</Label>
@@ -361,13 +392,12 @@ export default function NewProductPage() {
                   onChange={handleNumberChange}
                 />
               </div>
-            </div>
-
+            </div>{" "}
             <div className="space-y-2">
-              <CloudinaryUpload
-                value={formData.image}
-                onChange={handleImageChange}
-                label="Product Image"
+              <CloudinaryMultipleUpload
+                value={formData.images}
+                onChange={handleImagesChange}
+                label="Product Images"
               />
             </div>
           </CardContent>
@@ -593,12 +623,12 @@ export default function NewProductPage() {
                       placeholder="#RRGGBB"
                     />
                   </div>
-                </div>
+                </div>{" "}
                 <div className="space-y-2">
-                  <CloudinaryUpload
-                    value={newColor.image}
-                    onChange={handleColorImageChange}
-                    label="Color Image"
+                  <CloudinaryMultipleUpload
+                    value={newColor.images}
+                    onChange={handleColorImagesChange}
+                    label="Color Images"
                   />
                   <Button
                     type="button"
@@ -613,15 +643,29 @@ export default function NewProductPage() {
               </div>
 
               <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
+                {" "}
                 {formData.colors.map((color, index) => (
                   <div
                     key={index}
                     className="flex items-center gap-2 rounded-md border p-2"
                   >
-                    <div
-                      className="h-6 w-6 rounded-full border"
-                      style={{ backgroundColor: color.value }}
-                    ></div>
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="h-6 w-6 rounded-full border"
+                        style={{ backgroundColor: color.value }}
+                      ></div>
+                      {color.images.image1 && (
+                        <div className="h-8 w-8 relative overflow-hidden rounded-sm">
+                          <Image
+                            src={color.images.image1}
+                            alt={color.name}
+                            width={32}
+                            height={32}
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
+                    </div>
                     <span className="flex-grow">{color.name}</span>
                     <Button
                       type="button"

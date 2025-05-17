@@ -35,7 +35,8 @@ export async function POST(request: Request) {
       productName,
       productPrice,
       quantity,
-      colorId,
+      colorValue,
+      colorName,
       productImage,
       productCategory,
       total,
@@ -56,7 +57,7 @@ export async function POST(request: Request) {
         { error: "Missing required fields" },
         { status: 400 }
       );
-    } // Create order in database
+    }
     const order = await prisma.order.create({
       data: {
         firstName,
@@ -71,13 +72,13 @@ export async function POST(request: Request) {
         productName,
         productPrice,
         quantity: quantity || 1,
-        colorId: colorId || "",
+        colorValue: colorValue || "",
+        colorName: colorName || "",
         productImage: productImage || "",
         productCategory: productCategory || "",
         total,
         paymentMethod: paymentMethod || "PAYHERE",
         amountPaid: body.amountPaid || 0,
-        paymentStatus: body.paymentStatus || "PENDING",
         paymentDate: body.paymentDate || null,
       },
     });

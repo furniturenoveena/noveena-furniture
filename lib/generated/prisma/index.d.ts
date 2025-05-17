@@ -14,6 +14,11 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
 
 
 /**
+ * Model ImageCollection
+ * 
+ */
+export type ImageCollection = $Result.DefaultSelection<Prisma.$ImageCollectionPayload>
+/**
  * Model Dimension
  * 
  */
@@ -1079,6 +1084,77 @@ export namespace Prisma {
    */
 
   /**
+   * Model ImageCollection
+   */
+
+
+
+
+
+  export type ImageCollectionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    image1?: boolean
+    image2?: boolean
+    image3?: boolean
+    image4?: boolean
+  }, ExtArgs["result"]["imageCollection"]>
+
+
+
+  export type ImageCollectionSelectScalar = {
+    image1?: boolean
+    image2?: boolean
+    image3?: boolean
+    image4?: boolean
+  }
+
+  export type ImageCollectionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"image1" | "image2" | "image3" | "image4", ExtArgs["result"]["imageCollection"]>
+
+  export type $ImageCollectionPayload = {
+    name: "ImageCollection"
+    objects: {}
+    scalars: {
+      image1: string
+      image2: string | null
+      image3: string | null
+      image4: string | null
+    }
+    composites: {}
+  }
+
+  type ImageCollectionGetPayload<S extends boolean | null | undefined | ImageCollectionDefaultArgs> = $Result.GetResult<Prisma.$ImageCollectionPayload, S>
+
+
+
+
+
+  /**
+   * Fields of the ImageCollection model
+   */
+  interface ImageCollectionFieldRefs {
+    readonly image1: FieldRef<"ImageCollection", 'String'>
+    readonly image2: FieldRef<"ImageCollection", 'String'>
+    readonly image3: FieldRef<"ImageCollection", 'String'>
+    readonly image4: FieldRef<"ImageCollection", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ImageCollection without action
+   */
+  export type ImageCollectionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageCollection
+     */
+    select?: ImageCollectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageCollection
+     */
+    omit?: ImageCollectionOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Model Dimension
    */
 
@@ -1224,7 +1300,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     value?: boolean
-    image?: boolean
+    images?: boolean | ImageCollectionDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["color"]>
 
 
@@ -1233,10 +1309,10 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     value?: boolean
-    image?: boolean
   }
 
-  export type ColorOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "value" | "image", ExtArgs["result"]["color"]>
+  export type ColorOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "value" | "images", ExtArgs["result"]["color"]>
+  export type ColorInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
   export type $ColorPayload = {
     name: "Color"
@@ -1245,9 +1321,10 @@ export namespace Prisma {
       id: string
       name: string
       value: string
-      image: string
     }
-    composites: {}
+    composites: {
+      images: Prisma.$ImageCollectionPayload
+    }
   }
 
   type ColorGetPayload<S extends boolean | null | undefined | ColorDefaultArgs> = $Result.GetResult<Prisma.$ColorPayload, S>
@@ -1263,7 +1340,6 @@ export namespace Prisma {
     readonly id: FieldRef<"Color", 'String'>
     readonly name: FieldRef<"Color", 'String'>
     readonly value: FieldRef<"Color", 'String'>
-    readonly image: FieldRef<"Color", 'String'>
   }
     
 
@@ -1280,6 +1356,10 @@ export namespace Prisma {
      * Omit specific fields from the Color
      */
     omit?: ColorOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ColorInclude<ExtArgs> | null
   }
 
 
@@ -1314,7 +1394,6 @@ export namespace Prisma {
     price: number | null
     discountPercentage: number | null
     rating: number | null
-    image: string | null
     categoryId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -1327,7 +1406,6 @@ export namespace Prisma {
     price: number | null
     discountPercentage: number | null
     rating: number | null
-    image: string | null
     categoryId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -1340,7 +1418,6 @@ export namespace Prisma {
     price: number
     discountPercentage: number
     rating: number
-    image: number
     features: number
     categoryId: number
     createdAt: number
@@ -1368,7 +1445,6 @@ export namespace Prisma {
     price?: true
     discountPercentage?: true
     rating?: true
-    image?: true
     categoryId?: true
     createdAt?: true
     updatedAt?: true
@@ -1381,7 +1457,6 @@ export namespace Prisma {
     price?: true
     discountPercentage?: true
     rating?: true
-    image?: true
     categoryId?: true
     createdAt?: true
     updatedAt?: true
@@ -1394,7 +1469,6 @@ export namespace Prisma {
     price?: true
     discountPercentage?: true
     rating?: true
-    image?: true
     features?: true
     categoryId?: true
     createdAt?: true
@@ -1495,7 +1569,6 @@ export namespace Prisma {
     price: number
     discountPercentage: number | null
     rating: number
-    image: string
     features: string[]
     categoryId: string
     createdAt: Date
@@ -1528,7 +1601,7 @@ export namespace Prisma {
     price?: boolean
     discountPercentage?: boolean
     rating?: boolean
-    image?: boolean
+    images?: boolean | ImageCollectionDefaultArgs<ExtArgs>
     dimensions?: boolean | DimensionDefaultArgs<ExtArgs>
     features?: boolean
     tieredPricing?: boolean | TieredPricingDefaultArgs<ExtArgs>
@@ -1548,14 +1621,13 @@ export namespace Prisma {
     price?: boolean
     discountPercentage?: boolean
     rating?: boolean
-    image?: boolean
     features?: boolean
     categoryId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "price" | "discountPercentage" | "rating" | "image" | "dimensions" | "features" | "tieredPricing" | "colors" | "categoryId" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
+  export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "price" | "discountPercentage" | "rating" | "images" | "dimensions" | "features" | "tieredPricing" | "colors" | "categoryId" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
   export type ProductInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     category?: boolean | CategoryDefaultArgs<ExtArgs>
   }
@@ -1572,13 +1644,13 @@ export namespace Prisma {
       price: number
       discountPercentage: number | null
       rating: number
-      image: string
       features: string[]
       categoryId: string
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["product"]>
     composites: {
+      images: Prisma.$ImageCollectionPayload
       dimensions: Prisma.$DimensionPayload
       tieredPricing: Prisma.$TieredPricingPayload[]
       colors: Prisma.$ColorPayload[]
@@ -1980,7 +2052,6 @@ export namespace Prisma {
     readonly price: FieldRef<"Product", 'Float'>
     readonly discountPercentage: FieldRef<"Product", 'Float'>
     readonly rating: FieldRef<"Product", 'Float'>
-    readonly image: FieldRef<"Product", 'String'>
     readonly features: FieldRef<"Product", 'String[]'>
     readonly categoryId: FieldRef<"Product", 'String'>
     readonly createdAt: FieldRef<"Product", 'DateTime'>
@@ -3440,12 +3511,12 @@ export namespace Prisma {
     productName: string | null
     productPrice: number | null
     quantity: number | null
-    colorId: string | null
+    colorValue: string | null
+    colorName: string | null
     productImage: string | null
     productCategory: string | null
     total: number | null
     amountPaid: number | null
-    paymentStatus: string | null
     paymentMethod: $Enums.PaymentMethod | null
     paymentDate: Date | null
     createdAt: Date | null
@@ -3466,12 +3537,12 @@ export namespace Prisma {
     productName: string | null
     productPrice: number | null
     quantity: number | null
-    colorId: string | null
+    colorValue: string | null
+    colorName: string | null
     productImage: string | null
     productCategory: string | null
     total: number | null
     amountPaid: number | null
-    paymentStatus: string | null
     paymentMethod: $Enums.PaymentMethod | null
     paymentDate: Date | null
     createdAt: Date | null
@@ -3492,12 +3563,12 @@ export namespace Prisma {
     productName: number
     productPrice: number
     quantity: number
-    colorId: number
+    colorValue: number
+    colorName: number
     productImage: number
     productCategory: number
     total: number
     amountPaid: number
-    paymentStatus: number
     paymentMethod: number
     paymentDate: number
     createdAt: number
@@ -3534,12 +3605,12 @@ export namespace Prisma {
     productName?: true
     productPrice?: true
     quantity?: true
-    colorId?: true
+    colorValue?: true
+    colorName?: true
     productImage?: true
     productCategory?: true
     total?: true
     amountPaid?: true
-    paymentStatus?: true
     paymentMethod?: true
     paymentDate?: true
     createdAt?: true
@@ -3560,12 +3631,12 @@ export namespace Prisma {
     productName?: true
     productPrice?: true
     quantity?: true
-    colorId?: true
+    colorValue?: true
+    colorName?: true
     productImage?: true
     productCategory?: true
     total?: true
     amountPaid?: true
-    paymentStatus?: true
     paymentMethod?: true
     paymentDate?: true
     createdAt?: true
@@ -3586,12 +3657,12 @@ export namespace Prisma {
     productName?: true
     productPrice?: true
     quantity?: true
-    colorId?: true
+    colorValue?: true
+    colorName?: true
     productImage?: true
     productCategory?: true
     total?: true
     amountPaid?: true
-    paymentStatus?: true
     paymentMethod?: true
     paymentDate?: true
     createdAt?: true
@@ -3699,12 +3770,12 @@ export namespace Prisma {
     productName: string
     productPrice: number
     quantity: number
-    colorId: string | null
+    colorValue: string | null
+    colorName: string | null
     productImage: string | null
     productCategory: string | null
     total: number
     amountPaid: number
-    paymentStatus: string
     paymentMethod: $Enums.PaymentMethod
     paymentDate: Date | null
     createdAt: Date
@@ -3744,12 +3815,12 @@ export namespace Prisma {
     productName?: boolean
     productPrice?: boolean
     quantity?: boolean
-    colorId?: boolean
+    colorValue?: boolean
+    colorName?: boolean
     productImage?: boolean
     productCategory?: boolean
     total?: boolean
     amountPaid?: boolean
-    paymentStatus?: boolean
     paymentMethod?: boolean
     paymentDate?: boolean
     createdAt?: boolean
@@ -3772,19 +3843,19 @@ export namespace Prisma {
     productName?: boolean
     productPrice?: boolean
     quantity?: boolean
-    colorId?: boolean
+    colorValue?: boolean
+    colorName?: boolean
     productImage?: boolean
     productCategory?: boolean
     total?: boolean
     amountPaid?: boolean
-    paymentStatus?: boolean
     paymentMethod?: boolean
     paymentDate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firstName" | "lastName" | "phone" | "orderNotes" | "addressLine1" | "addressLine2" | "city" | "province" | "productId" | "productName" | "productPrice" | "quantity" | "colorId" | "productImage" | "productCategory" | "total" | "amountPaid" | "paymentStatus" | "paymentMethod" | "paymentDate" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firstName" | "lastName" | "phone" | "orderNotes" | "addressLine1" | "addressLine2" | "city" | "province" | "productId" | "productName" | "productPrice" | "quantity" | "colorValue" | "colorName" | "productImage" | "productCategory" | "total" | "amountPaid" | "paymentMethod" | "paymentDate" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
 
   export type $OrderPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Order"
@@ -3803,12 +3874,12 @@ export namespace Prisma {
       productName: string
       productPrice: number
       quantity: number
-      colorId: string | null
+      colorValue: string | null
+      colorName: string | null
       productImage: string | null
       productCategory: string | null
       total: number
       amountPaid: number
-      paymentStatus: string
       paymentMethod: $Enums.PaymentMethod
       paymentDate: Date | null
       createdAt: Date
@@ -4218,12 +4289,12 @@ export namespace Prisma {
     readonly productName: FieldRef<"Order", 'String'>
     readonly productPrice: FieldRef<"Order", 'Float'>
     readonly quantity: FieldRef<"Order", 'Int'>
-    readonly colorId: FieldRef<"Order", 'String'>
+    readonly colorValue: FieldRef<"Order", 'String'>
+    readonly colorName: FieldRef<"Order", 'String'>
     readonly productImage: FieldRef<"Order", 'String'>
     readonly productCategory: FieldRef<"Order", 'String'>
     readonly total: FieldRef<"Order", 'Float'>
     readonly amountPaid: FieldRef<"Order", 'Float'>
-    readonly paymentStatus: FieldRef<"Order", 'String'>
     readonly paymentMethod: FieldRef<"Order", 'PaymentMethod'>
     readonly paymentDate: FieldRef<"Order", 'DateTime'>
     readonly createdAt: FieldRef<"Order", 'DateTime'>
@@ -4587,7 +4658,6 @@ export namespace Prisma {
     price: 'price',
     discountPercentage: 'discountPercentage',
     rating: 'rating',
-    image: 'image',
     features: 'features',
     categoryId: 'categoryId',
     createdAt: 'createdAt',
@@ -4624,12 +4694,12 @@ export namespace Prisma {
     productName: 'productName',
     productPrice: 'productPrice',
     quantity: 'quantity',
-    colorId: 'colorId',
+    colorValue: 'colorValue',
+    colorName: 'colorName',
     productImage: 'productImage',
     productCategory: 'productCategory',
     total: 'total',
     amountPaid: 'amountPaid',
-    paymentStatus: 'paymentStatus',
     paymentMethod: 'paymentMethod',
     paymentDate: 'paymentDate',
     createdAt: 'createdAt',
@@ -4757,7 +4827,7 @@ export namespace Prisma {
     price?: FloatFilter<"Product"> | number
     discountPercentage?: FloatNullableFilter<"Product"> | number | null
     rating?: FloatFilter<"Product"> | number
-    image?: StringFilter<"Product"> | string
+    images?: XOR<ImageCollectionCompositeFilter, ImageCollectionObjectEqualityInput>
     dimensions?: XOR<DimensionCompositeFilter, DimensionObjectEqualityInput>
     features?: StringNullableListFilter<"Product">
     tieredPricing?: TieredPricingCompositeListFilter | TieredPricingObjectEqualityInput[]
@@ -4775,7 +4845,7 @@ export namespace Prisma {
     price?: SortOrder
     discountPercentage?: SortOrder
     rating?: SortOrder
-    image?: SortOrder
+    images?: ImageCollectionOrderByInput
     dimensions?: DimensionOrderByInput
     features?: SortOrder
     tieredPricing?: TieredPricingOrderByCompositeAggregateInput
@@ -4796,7 +4866,7 @@ export namespace Prisma {
     price?: FloatFilter<"Product"> | number
     discountPercentage?: FloatNullableFilter<"Product"> | number | null
     rating?: FloatFilter<"Product"> | number
-    image?: StringFilter<"Product"> | string
+    images?: XOR<ImageCollectionCompositeFilter, ImageCollectionObjectEqualityInput>
     dimensions?: XOR<DimensionCompositeFilter, DimensionObjectEqualityInput>
     features?: StringNullableListFilter<"Product">
     tieredPricing?: TieredPricingCompositeListFilter | TieredPricingObjectEqualityInput[]
@@ -4814,7 +4884,6 @@ export namespace Prisma {
     price?: SortOrder
     discountPercentage?: SortOrder
     rating?: SortOrder
-    image?: SortOrder
     features?: SortOrder
     categoryId?: SortOrder
     createdAt?: SortOrder
@@ -4836,7 +4905,6 @@ export namespace Prisma {
     price?: FloatWithAggregatesFilter<"Product"> | number
     discountPercentage?: FloatNullableWithAggregatesFilter<"Product"> | number | null
     rating?: FloatWithAggregatesFilter<"Product"> | number
-    image?: StringWithAggregatesFilter<"Product"> | string
     features?: StringNullableListFilter<"Product">
     categoryId?: StringWithAggregatesFilter<"Product"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Product"> | Date | string
@@ -4925,12 +4993,12 @@ export namespace Prisma {
     productName?: StringFilter<"Order"> | string
     productPrice?: FloatFilter<"Order"> | number
     quantity?: IntFilter<"Order"> | number
-    colorId?: StringNullableFilter<"Order"> | string | null
+    colorValue?: StringNullableFilter<"Order"> | string | null
+    colorName?: StringNullableFilter<"Order"> | string | null
     productImage?: StringNullableFilter<"Order"> | string | null
     productCategory?: StringNullableFilter<"Order"> | string | null
     total?: FloatFilter<"Order"> | number
     amountPaid?: FloatFilter<"Order"> | number
-    paymentStatus?: StringFilter<"Order"> | string
     paymentMethod?: EnumPaymentMethodFilter<"Order"> | $Enums.PaymentMethod
     paymentDate?: DateTimeNullableFilter<"Order"> | Date | string | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
@@ -4951,12 +5019,12 @@ export namespace Prisma {
     productName?: SortOrder
     productPrice?: SortOrder
     quantity?: SortOrder
-    colorId?: SortOrder
+    colorValue?: SortOrder
+    colorName?: SortOrder
     productImage?: SortOrder
     productCategory?: SortOrder
     total?: SortOrder
     amountPaid?: SortOrder
-    paymentStatus?: SortOrder
     paymentMethod?: SortOrder
     paymentDate?: SortOrder
     createdAt?: SortOrder
@@ -4980,12 +5048,12 @@ export namespace Prisma {
     productName?: StringFilter<"Order"> | string
     productPrice?: FloatFilter<"Order"> | number
     quantity?: IntFilter<"Order"> | number
-    colorId?: StringNullableFilter<"Order"> | string | null
+    colorValue?: StringNullableFilter<"Order"> | string | null
+    colorName?: StringNullableFilter<"Order"> | string | null
     productImage?: StringNullableFilter<"Order"> | string | null
     productCategory?: StringNullableFilter<"Order"> | string | null
     total?: FloatFilter<"Order"> | number
     amountPaid?: FloatFilter<"Order"> | number
-    paymentStatus?: StringFilter<"Order"> | string
     paymentMethod?: EnumPaymentMethodFilter<"Order"> | $Enums.PaymentMethod
     paymentDate?: DateTimeNullableFilter<"Order"> | Date | string | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
@@ -5006,12 +5074,12 @@ export namespace Prisma {
     productName?: SortOrder
     productPrice?: SortOrder
     quantity?: SortOrder
-    colorId?: SortOrder
+    colorValue?: SortOrder
+    colorName?: SortOrder
     productImage?: SortOrder
     productCategory?: SortOrder
     total?: SortOrder
     amountPaid?: SortOrder
-    paymentStatus?: SortOrder
     paymentMethod?: SortOrder
     paymentDate?: SortOrder
     createdAt?: SortOrder
@@ -5040,12 +5108,12 @@ export namespace Prisma {
     productName?: StringWithAggregatesFilter<"Order"> | string
     productPrice?: FloatWithAggregatesFilter<"Order"> | number
     quantity?: IntWithAggregatesFilter<"Order"> | number
-    colorId?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    colorValue?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    colorName?: StringNullableWithAggregatesFilter<"Order"> | string | null
     productImage?: StringNullableWithAggregatesFilter<"Order"> | string | null
     productCategory?: StringNullableWithAggregatesFilter<"Order"> | string | null
     total?: FloatWithAggregatesFilter<"Order"> | number
     amountPaid?: FloatWithAggregatesFilter<"Order"> | number
-    paymentStatus?: StringWithAggregatesFilter<"Order"> | string
     paymentMethod?: EnumPaymentMethodWithAggregatesFilter<"Order"> | $Enums.PaymentMethod
     paymentDate?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
@@ -5059,7 +5127,7 @@ export namespace Prisma {
     price: number
     discountPercentage?: number | null
     rating: number
-    image: string
+    images: XOR<ImageCollectionCreateEnvelopeInput, ImageCollectionCreateInput>
     dimensions: XOR<DimensionCreateEnvelopeInput, DimensionCreateInput>
     features?: ProductCreatefeaturesInput | string[]
     tieredPricing?: XOR<TieredPricingListCreateEnvelopeInput, TieredPricingCreateInput> | TieredPricingCreateInput[]
@@ -5076,7 +5144,7 @@ export namespace Prisma {
     price: number
     discountPercentage?: number | null
     rating: number
-    image: string
+    images: XOR<ImageCollectionCreateEnvelopeInput, ImageCollectionCreateInput>
     dimensions: XOR<DimensionCreateEnvelopeInput, DimensionCreateInput>
     features?: ProductCreatefeaturesInput | string[]
     tieredPricing?: XOR<TieredPricingListCreateEnvelopeInput, TieredPricingCreateInput> | TieredPricingCreateInput[]
@@ -5092,7 +5160,7 @@ export namespace Prisma {
     price?: FloatFieldUpdateOperationsInput | number
     discountPercentage?: NullableFloatFieldUpdateOperationsInput | number | null
     rating?: FloatFieldUpdateOperationsInput | number
-    image?: StringFieldUpdateOperationsInput | string
+    images?: XOR<ImageCollectionUpdateEnvelopeInput, ImageCollectionCreateInput>
     dimensions?: XOR<DimensionUpdateEnvelopeInput, DimensionCreateInput>
     features?: ProductUpdatefeaturesInput | string[]
     tieredPricing?: XOR<TieredPricingListUpdateEnvelopeInput, TieredPricingCreateInput> | TieredPricingCreateInput[]
@@ -5108,7 +5176,7 @@ export namespace Prisma {
     price?: FloatFieldUpdateOperationsInput | number
     discountPercentage?: NullableFloatFieldUpdateOperationsInput | number | null
     rating?: FloatFieldUpdateOperationsInput | number
-    image?: StringFieldUpdateOperationsInput | string
+    images?: XOR<ImageCollectionUpdateEnvelopeInput, ImageCollectionCreateInput>
     dimensions?: XOR<DimensionUpdateEnvelopeInput, DimensionCreateInput>
     features?: ProductUpdatefeaturesInput | string[]
     tieredPricing?: XOR<TieredPricingListUpdateEnvelopeInput, TieredPricingCreateInput> | TieredPricingCreateInput[]
@@ -5125,7 +5193,7 @@ export namespace Prisma {
     price: number
     discountPercentage?: number | null
     rating: number
-    image: string
+    images: XOR<ImageCollectionCreateEnvelopeInput, ImageCollectionCreateInput>
     dimensions: XOR<DimensionCreateEnvelopeInput, DimensionCreateInput>
     features?: ProductCreatefeaturesInput | string[]
     tieredPricing?: XOR<TieredPricingListCreateEnvelopeInput, TieredPricingCreateInput> | TieredPricingCreateInput[]
@@ -5141,7 +5209,7 @@ export namespace Prisma {
     price?: FloatFieldUpdateOperationsInput | number
     discountPercentage?: NullableFloatFieldUpdateOperationsInput | number | null
     rating?: FloatFieldUpdateOperationsInput | number
-    image?: StringFieldUpdateOperationsInput | string
+    images?: XOR<ImageCollectionUpdateEnvelopeInput, ImageCollectionCreateInput>
     dimensions?: XOR<DimensionUpdateEnvelopeInput, DimensionCreateInput>
     features?: ProductUpdatefeaturesInput | string[]
     tieredPricing?: XOR<TieredPricingListUpdateEnvelopeInput, TieredPricingCreateInput> | TieredPricingCreateInput[]
@@ -5156,7 +5224,7 @@ export namespace Prisma {
     price?: FloatFieldUpdateOperationsInput | number
     discountPercentage?: NullableFloatFieldUpdateOperationsInput | number | null
     rating?: FloatFieldUpdateOperationsInput | number
-    image?: StringFieldUpdateOperationsInput | string
+    images?: XOR<ImageCollectionUpdateEnvelopeInput, ImageCollectionCreateInput>
     dimensions?: XOR<DimensionUpdateEnvelopeInput, DimensionCreateInput>
     features?: ProductUpdatefeaturesInput | string[]
     tieredPricing?: XOR<TieredPricingListUpdateEnvelopeInput, TieredPricingCreateInput> | TieredPricingCreateInput[]
@@ -5250,12 +5318,12 @@ export namespace Prisma {
     productName: string
     productPrice: number
     quantity?: number
-    colorId?: string | null
+    colorValue?: string | null
+    colorName?: string | null
     productImage?: string | null
     productCategory?: string | null
     total: number
     amountPaid?: number
-    paymentStatus?: string
     paymentMethod?: $Enums.PaymentMethod
     paymentDate?: Date | string | null
     createdAt?: Date | string
@@ -5276,12 +5344,12 @@ export namespace Prisma {
     productName: string
     productPrice: number
     quantity?: number
-    colorId?: string | null
+    colorValue?: string | null
+    colorName?: string | null
     productImage?: string | null
     productCategory?: string | null
     total: number
     amountPaid?: number
-    paymentStatus?: string
     paymentMethod?: $Enums.PaymentMethod
     paymentDate?: Date | string | null
     createdAt?: Date | string
@@ -5301,12 +5369,12 @@ export namespace Prisma {
     productName?: StringFieldUpdateOperationsInput | string
     productPrice?: FloatFieldUpdateOperationsInput | number
     quantity?: IntFieldUpdateOperationsInput | number
-    colorId?: NullableStringFieldUpdateOperationsInput | string | null
+    colorValue?: NullableStringFieldUpdateOperationsInput | string | null
+    colorName?: NullableStringFieldUpdateOperationsInput | string | null
     productImage?: NullableStringFieldUpdateOperationsInput | string | null
     productCategory?: NullableStringFieldUpdateOperationsInput | string | null
     total?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
-    paymentStatus?: StringFieldUpdateOperationsInput | string
     paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -5326,12 +5394,12 @@ export namespace Prisma {
     productName?: StringFieldUpdateOperationsInput | string
     productPrice?: FloatFieldUpdateOperationsInput | number
     quantity?: IntFieldUpdateOperationsInput | number
-    colorId?: NullableStringFieldUpdateOperationsInput | string | null
+    colorValue?: NullableStringFieldUpdateOperationsInput | string | null
+    colorName?: NullableStringFieldUpdateOperationsInput | string | null
     productImage?: NullableStringFieldUpdateOperationsInput | string | null
     productCategory?: NullableStringFieldUpdateOperationsInput | string | null
     total?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
-    paymentStatus?: StringFieldUpdateOperationsInput | string
     paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -5352,12 +5420,12 @@ export namespace Prisma {
     productName: string
     productPrice: number
     quantity?: number
-    colorId?: string | null
+    colorValue?: string | null
+    colorName?: string | null
     productImage?: string | null
     productCategory?: string | null
     total: number
     amountPaid?: number
-    paymentStatus?: string
     paymentMethod?: $Enums.PaymentMethod
     paymentDate?: Date | string | null
     createdAt?: Date | string
@@ -5377,12 +5445,12 @@ export namespace Prisma {
     productName?: StringFieldUpdateOperationsInput | string
     productPrice?: FloatFieldUpdateOperationsInput | number
     quantity?: IntFieldUpdateOperationsInput | number
-    colorId?: NullableStringFieldUpdateOperationsInput | string | null
+    colorValue?: NullableStringFieldUpdateOperationsInput | string | null
+    colorName?: NullableStringFieldUpdateOperationsInput | string | null
     productImage?: NullableStringFieldUpdateOperationsInput | string | null
     productCategory?: NullableStringFieldUpdateOperationsInput | string | null
     total?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
-    paymentStatus?: StringFieldUpdateOperationsInput | string
     paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -5402,12 +5470,12 @@ export namespace Prisma {
     productName?: StringFieldUpdateOperationsInput | string
     productPrice?: FloatFieldUpdateOperationsInput | number
     quantity?: IntFieldUpdateOperationsInput | number
-    colorId?: NullableStringFieldUpdateOperationsInput | string | null
+    colorValue?: NullableStringFieldUpdateOperationsInput | string | null
+    colorName?: NullableStringFieldUpdateOperationsInput | string | null
     productImage?: NullableStringFieldUpdateOperationsInput | string | null
     productCategory?: NullableStringFieldUpdateOperationsInput | string | null
     total?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
-    paymentStatus?: StringFieldUpdateOperationsInput | string
     paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -5450,6 +5518,19 @@ export namespace Prisma {
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
     isSet?: boolean
+  }
+
+  export type ImageCollectionCompositeFilter = {
+    equals?: ImageCollectionObjectEqualityInput
+    is?: ImageCollectionWhereInput
+    isNot?: ImageCollectionWhereInput
+  }
+
+  export type ImageCollectionObjectEqualityInput = {
+    image1: string
+    image2?: string | null
+    image3?: string | null
+    image4?: string | null
   }
 
   export type DimensionCompositeFilter = {
@@ -5500,7 +5581,7 @@ export namespace Prisma {
     id: string
     name: string
     value: string
-    image: string
+    images: ImageCollectionObjectEqualityInput
   }
 
   export type DateTimeFilter<$PrismaModel = never> = {
@@ -5517,6 +5598,13 @@ export namespace Prisma {
   export type CategoryScalarRelationFilter = {
     is?: CategoryWhereInput
     isNot?: CategoryWhereInput
+  }
+
+  export type ImageCollectionOrderByInput = {
+    image1?: SortOrder
+    image2?: SortOrder
+    image3?: SortOrder
+    image4?: SortOrder
   }
 
   export type DimensionOrderByInput = {
@@ -5540,7 +5628,6 @@ export namespace Prisma {
     price?: SortOrder
     discountPercentage?: SortOrder
     rating?: SortOrder
-    image?: SortOrder
     features?: SortOrder
     categoryId?: SortOrder
     createdAt?: SortOrder
@@ -5560,7 +5647,6 @@ export namespace Prisma {
     price?: SortOrder
     discountPercentage?: SortOrder
     rating?: SortOrder
-    image?: SortOrder
     categoryId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -5573,7 +5659,6 @@ export namespace Prisma {
     price?: SortOrder
     discountPercentage?: SortOrder
     rating?: SortOrder
-    image?: SortOrder
     categoryId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -5767,12 +5852,12 @@ export namespace Prisma {
     productName?: SortOrder
     productPrice?: SortOrder
     quantity?: SortOrder
-    colorId?: SortOrder
+    colorValue?: SortOrder
+    colorName?: SortOrder
     productImage?: SortOrder
     productCategory?: SortOrder
     total?: SortOrder
     amountPaid?: SortOrder
-    paymentStatus?: SortOrder
     paymentMethod?: SortOrder
     paymentDate?: SortOrder
     createdAt?: SortOrder
@@ -5800,12 +5885,12 @@ export namespace Prisma {
     productName?: SortOrder
     productPrice?: SortOrder
     quantity?: SortOrder
-    colorId?: SortOrder
+    colorValue?: SortOrder
+    colorName?: SortOrder
     productImage?: SortOrder
     productCategory?: SortOrder
     total?: SortOrder
     amountPaid?: SortOrder
-    paymentStatus?: SortOrder
     paymentMethod?: SortOrder
     paymentDate?: SortOrder
     createdAt?: SortOrder
@@ -5826,12 +5911,12 @@ export namespace Prisma {
     productName?: SortOrder
     productPrice?: SortOrder
     quantity?: SortOrder
-    colorId?: SortOrder
+    colorValue?: SortOrder
+    colorName?: SortOrder
     productImage?: SortOrder
     productCategory?: SortOrder
     total?: SortOrder
     amountPaid?: SortOrder
-    paymentStatus?: SortOrder
     paymentMethod?: SortOrder
     paymentDate?: SortOrder
     createdAt?: SortOrder
@@ -5905,6 +5990,17 @@ export namespace Prisma {
     isSet?: boolean
   }
 
+  export type ImageCollectionCreateEnvelopeInput = {
+    set?: ImageCollectionCreateInput
+  }
+
+  export type ImageCollectionCreateInput = {
+    image1: string
+    image2?: string | null
+    image3?: string | null
+    image4?: string | null
+  }
+
   export type DimensionCreateEnvelopeInput = {
     set?: DimensionCreateInput
   }
@@ -5937,7 +6033,7 @@ export namespace Prisma {
     id: string
     name: string
     value: string
-    image: string
+    images: ImageCollectionCreateInput
   }
 
   export type CategoryCreateNestedOneWithoutProductsInput = {
@@ -5965,6 +6061,11 @@ export namespace Prisma {
     multiply?: number
     divide?: number
     unset?: boolean
+  }
+
+  export type ImageCollectionUpdateEnvelopeInput = {
+    set?: ImageCollectionCreateInput
+    update?: ImageCollectionUpdateInput
   }
 
   export type DimensionUpdateEnvelopeInput = {
@@ -6108,6 +6209,16 @@ export namespace Prisma {
     isSet?: boolean
   }
 
+  export type ImageCollectionWhereInput = {
+    AND?: ImageCollectionWhereInput | ImageCollectionWhereInput[]
+    OR?: ImageCollectionWhereInput[]
+    NOT?: ImageCollectionWhereInput | ImageCollectionWhereInput[]
+    image1?: StringFilter<"ImageCollection"> | string
+    image2?: StringNullableFilter<"ImageCollection"> | string | null
+    image3?: StringNullableFilter<"ImageCollection"> | string | null
+    image4?: StringNullableFilter<"ImageCollection"> | string | null
+  }
+
   export type DimensionWhereInput = {
     AND?: DimensionWhereInput | DimensionWhereInput[]
     OR?: DimensionWhereInput[]
@@ -6133,7 +6244,7 @@ export namespace Prisma {
     id?: StringFilter<"Color"> | string
     name?: StringFilter<"Color"> | string
     value?: StringFilter<"Color"> | string
-    image?: StringFilter<"Color"> | string
+    images?: XOR<ImageCollectionCompositeFilter, ImageCollectionObjectEqualityInput>
   }
 
   export type NestedDateTimeFilter<$PrismaModel = never> = {
@@ -6369,6 +6480,13 @@ export namespace Prisma {
     create: XOR<CategoryCreateWithoutProductsInput, CategoryUncheckedCreateWithoutProductsInput>
   }
 
+  export type ImageCollectionUpdateInput = {
+    image1?: StringFieldUpdateOperationsInput | string
+    image2?: NullableStringFieldUpdateOperationsInput | string | null
+    image3?: NullableStringFieldUpdateOperationsInput | string | null
+    image4?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type DimensionUpdateInput = {
     width?: StringFieldUpdateOperationsInput | string
     height?: StringFieldUpdateOperationsInput | string
@@ -6429,7 +6547,7 @@ export namespace Prisma {
     price: number
     discountPercentage?: number | null
     rating: number
-    image: string
+    images: XOR<ImageCollectionCreateEnvelopeInput, ImageCollectionCreateInput>
     dimensions: XOR<DimensionCreateEnvelopeInput, DimensionCreateInput>
     features?: ProductCreatefeaturesInput | string[]
     tieredPricing?: XOR<TieredPricingListCreateEnvelopeInput, TieredPricingCreateInput> | TieredPricingCreateInput[]
@@ -6445,7 +6563,7 @@ export namespace Prisma {
     price: number
     discountPercentage?: number | null
     rating: number
-    image: string
+    images: XOR<ImageCollectionCreateEnvelopeInput, ImageCollectionCreateInput>
     dimensions: XOR<DimensionCreateEnvelopeInput, DimensionCreateInput>
     features?: ProductCreatefeaturesInput | string[]
     tieredPricing?: XOR<TieredPricingListCreateEnvelopeInput, TieredPricingCreateInput> | TieredPricingCreateInput[]
@@ -6489,7 +6607,6 @@ export namespace Prisma {
     price?: FloatFilter<"Product"> | number
     discountPercentage?: FloatNullableFilter<"Product"> | number | null
     rating?: FloatFilter<"Product"> | number
-    image?: StringFilter<"Product"> | string
     features?: StringNullableListFilter<"Product">
     categoryId?: StringFilter<"Product"> | string
     createdAt?: DateTimeFilter<"Product"> | Date | string
@@ -6506,7 +6623,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     value?: StringFieldUpdateOperationsInput | string
-    image?: StringFieldUpdateOperationsInput | string
+    images?: XOR<ImageCollectionUpdateEnvelopeInput, ImageCollectionCreateInput>
   }
 
   export type ProductCreateManyCategoryInput = {
@@ -6516,7 +6633,7 @@ export namespace Prisma {
     price: number
     discountPercentage?: number | null
     rating: number
-    image: string
+    images: XOR<ImageCollectionCreateEnvelopeInput, ImageCollectionCreateInput>
     dimensions: XOR<DimensionCreateEnvelopeInput, DimensionCreateInput>
     features?: ProductCreatefeaturesInput | string[]
     tieredPricing?: XOR<TieredPricingListCreateEnvelopeInput, TieredPricingCreateInput> | TieredPricingCreateInput[]
@@ -6531,7 +6648,7 @@ export namespace Prisma {
     price?: FloatFieldUpdateOperationsInput | number
     discountPercentage?: NullableFloatFieldUpdateOperationsInput | number | null
     rating?: FloatFieldUpdateOperationsInput | number
-    image?: StringFieldUpdateOperationsInput | string
+    images?: XOR<ImageCollectionUpdateEnvelopeInput, ImageCollectionCreateInput>
     dimensions?: XOR<DimensionUpdateEnvelopeInput, DimensionCreateInput>
     features?: ProductUpdatefeaturesInput | string[]
     tieredPricing?: XOR<TieredPricingListUpdateEnvelopeInput, TieredPricingCreateInput> | TieredPricingCreateInput[]
@@ -6546,7 +6663,7 @@ export namespace Prisma {
     price?: FloatFieldUpdateOperationsInput | number
     discountPercentage?: NullableFloatFieldUpdateOperationsInput | number | null
     rating?: FloatFieldUpdateOperationsInput | number
-    image?: StringFieldUpdateOperationsInput | string
+    images?: XOR<ImageCollectionUpdateEnvelopeInput, ImageCollectionCreateInput>
     dimensions?: XOR<DimensionUpdateEnvelopeInput, DimensionCreateInput>
     features?: ProductUpdatefeaturesInput | string[]
     tieredPricing?: XOR<TieredPricingListUpdateEnvelopeInput, TieredPricingCreateInput> | TieredPricingCreateInput[]
@@ -6561,7 +6678,7 @@ export namespace Prisma {
     price?: FloatFieldUpdateOperationsInput | number
     discountPercentage?: NullableFloatFieldUpdateOperationsInput | number | null
     rating?: FloatFieldUpdateOperationsInput | number
-    image?: StringFieldUpdateOperationsInput | string
+    images?: XOR<ImageCollectionUpdateEnvelopeInput, ImageCollectionCreateInput>
     dimensions?: XOR<DimensionUpdateEnvelopeInput, DimensionCreateInput>
     features?: ProductUpdatefeaturesInput | string[]
     tieredPricing?: XOR<TieredPricingListUpdateEnvelopeInput, TieredPricingCreateInput> | TieredPricingCreateInput[]

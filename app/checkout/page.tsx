@@ -52,20 +52,11 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
 import { sendSMS } from "@/lib/notify";
+import { Category, Product as PrismaProduct } from "@/lib/generated/prisma";
 
 // Product type should match your schema
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  discountPercentage?: number;
-  image: string;
-  category: {
-    name: string;
-    type: "IMPORTED_USED" | "BRAND_NEW";
-  };
-  tieredPricing?: { min: number; max: number; price: number }[];
+interface Product extends PrismaProduct {
+  category: Category;
 }
 
 function CheckoutContent() {
@@ -76,11 +67,11 @@ function CheckoutContent() {
   const [product, setProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   // Payment related states
   const [paymentOption, setPaymentOption] = useState("full");
   const [advancePayment, setAdvancePayment] = useState(30);
-  const [colorId, setColorId] = useState("");
+  const [colorValue, setColorValue] = useState("");
+  const [colorName, setColorName] = useState("");
 
   // Form state
   const [formData, setFormData] = useState({
@@ -114,15 +105,13 @@ function CheckoutContent() {
       [name]: value,
     }));
   };
-
   // Get product details and payment options from URL params
   useEffect(() => {
     const fetchProduct = async () => {
       const productId = searchParams.get("productId");
       const qty = searchParams.get("quantity");
-      const payment = searchParams.get("paymentOption");
       const advance = searchParams.get("advancePayment");
-      const color = searchParams.get("colorId");
+      const colorValueParam = searchParams.get("colorValue");
 
       if (!productId) {
         router.push("/");
@@ -145,17 +134,16 @@ function CheckoutContent() {
           setQuantity(parseInt(qty, 10));
         }
 
-        // Set payment options from URL
-        if (payment) {
-          setPaymentOption(payment);
-        }
-
+        // Set payment option based on whether there's an advance payment parameter
         if (advance) {
+          setPaymentOption("advance");
           setAdvancePayment(parseInt(advance, 10));
+        } else {
+          setPaymentOption("full");
         }
-
-        if (color) {
-          setColorId(color);
+        // Set color information from URL
+        if (colorValueParam) {
+          setColorValue(colorValueParam);
         }
       } catch (error) {
         console.error("Error fetching product:", error);
@@ -171,6 +159,19 @@ function CheckoutContent() {
 
     fetchProduct();
   }, [searchParams, router, toast]);
+
+  // Set color name from product data when color value changes
+  useEffect(() => {
+    if (product?.colors?.length && colorValue) {
+      // Find the color matching the color value
+      const matchingColor = product.colors.find(
+        (color) => color.value === colorValue
+      );
+      if (matchingColor) {
+        setColorName(matchingColor.name);
+      }
+    }
+  }, [product, colorValue]);
 
   // Calculate total - remove delivery fee and keep only discounts from tiered pricing
   let unitPrice = product ? product.price : 0;
@@ -220,27 +221,34 @@ function CheckoutContent() {
 
     // Open payment confirmation modal
     setIsPaymentModalOpen(true);
-  };
-
-  // Handle payment confirmation and order submission
+  }; // Handle payment confirmation and order submission
   const handlePaymentConfirmed = async () => {
     setIsSubmitting(true);
 
     try {
       // Prepare order data with the new payment information
+      // Find a matching color in product colors if we have color value
+      const selectedColor =
+        colorValue && product?.colors
+          ? product.colors.find((color) => color.value === colorValue)
+          : null;
+
       const orderData = {
         ...formData,
         productId: product?.id,
         productName: product?.name,
         productPrice: product?.price,
         quantity,
-        colorId,
-        productImage: product?.image,
+        colorValue: colorValue || "",
+        colorName: colorName || "",
+        productImage:
+          selectedColor?.images.image1 ||
+          product?.images.image1 ||
+          "/placeholder.svg",
         productCategory: product?.category?.name,
         total,
         paymentMethod: "PAYHERE",
         amountPaid: advanceAmount,
-        paymentStatus: "PAID",
         paymentDate: new Date().toISOString(),
       };
 
@@ -422,7 +430,6 @@ function CheckoutContent() {
                 </div>
               </CardContent>
             </Card>
-
             {/* Shipping Address */}
             <Card>
               <CardHeader>
@@ -490,7 +497,6 @@ function CheckoutContent() {
                 </div>
               </CardContent>
             </Card>
-
             {/* Payment Method - Could be extended as needed */}
             <Card>
               <CardHeader>
@@ -551,8 +557,7 @@ function CheckoutContent() {
                   )}
                 </div>
               </CardContent>
-            </Card>
-
+            </Card>{" "}
             <div className="lg:hidden">
               <OrderSummary
                 product={product}
@@ -560,9 +565,10 @@ function CheckoutContent() {
                 total={total}
                 advanceAmount={advanceAmount}
                 balanceAmount={balanceAmount}
+                colorValue={colorValue}
+                colorName={colorName}
               />
             </div>
-
             <div className="flex justify-end">
               <Button
                 type="submit"
@@ -594,12 +600,15 @@ function CheckoutContent() {
             transition={{ duration: 0.5, delay: 0.4 }}
             className="sticky top-32"
           >
+            {" "}
             <OrderSummary
               product={product}
               quantity={quantity}
               total={total}
               advanceAmount={advanceAmount}
               balanceAmount={balanceAmount}
+              colorValue={colorValue}
+              colorName={colorName}
             />{" "}
           </motion.div>
         </div>
@@ -625,13 +634,26 @@ function OrderSummary({
   total,
   advanceAmount,
   balanceAmount,
+  colorValue,
+  colorName,
 }: {
   product: Product;
   quantity: number;
   total: number;
   advanceAmount: number;
   balanceAmount: number;
+  colorValue: string;
+  colorName: string;
 }) {
+  // Find the selected color if colorValue is provided
+  const selectedColor =
+    colorValue && product.colors?.length
+      ? product.colors.find((color) => color.value === colorValue)
+      : null;
+  // Determine image source: use color image if available, otherwise use product image
+  const imageSource =
+    selectedColor?.images.image1 || product.images.image1 || "/placeholder.svg";
+
   return (
     <Card className="bg-muted/10 border-primary/10">
       <CardHeader>
@@ -641,16 +663,21 @@ function OrderSummary({
         <div className="flex items-start space-x-4">
           <div className="relative h-24 w-24 overflow-hidden rounded-md border bg-muted">
             <Image
-              src={product.image || "/placeholder.svg"}
+              src={imageSource}
               alt={product.name}
               fill
               className="object-cover"
             />
           </div>
           <div className="flex-1">
-            <h3 className="font-medium">{product.name}</h3>
+            <h3 className="font-medium">{product.name}</h3>{" "}
             <div className="text-sm text-muted-foreground">
               Category: {product.category.name}
+              {(selectedColor || colorName) && (
+                <span className="block mt-1">
+                  Color: {selectedColor ? selectedColor.name : colorName}
+                </span>
+              )}
             </div>
             <div className="flex items-center justify-between mt-2">
               <div className="text-sm">

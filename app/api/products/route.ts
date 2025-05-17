@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
         price: body.price,
         discountPercentage: body.discountPercentage,
         rating: body.rating,
-        image: body.image,
+        images: body.images,
         dimensions: {
           width: body.dimensions.width,
           height: body.dimensions.height,
@@ -107,7 +107,7 @@ export async function PUT(request: NextRequest) {
         price: data.price,
         discountPercentage: data.discountPercentage,
         rating: data.rating,
-        image: data.image,
+        images: data.images,
         dimensions: data.dimensions,
         features: data.features,
         tieredPricing: data.tieredPricing,

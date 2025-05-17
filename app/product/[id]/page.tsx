@@ -18,6 +18,7 @@ import {
   Check,
   Info,
   Loader2,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -56,7 +57,7 @@ export default function ProductDetailPage({
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [advancePayment, setAdvancePayment] = useState(30); // Default 30% advance
   const [paymentOption, setPaymentOption] = useState("advance");
-  const [selectedColor, setSelectedColor] = useState(""); // Will set default after product loads
+  const [selectedColor, setSelectedColor] = useState<string | null>(null); // No default color selection
   const [isZoomed, setIsZoomed] = useState(false);
   const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
   const [currentPrice, setCurrentPrice] = useState(0);
@@ -79,10 +80,8 @@ export default function ProductDetailPage({
         const data: Product = await response.json();
         setProduct(data);
 
-        // Set default color if available
-        if (data.colors && data.colors.length > 0) {
-          setSelectedColor(data.colors[0].id);
-        }
+        // No default color selection now
+        // We'll start with product's default images
 
         // Set initial price
         setCurrentPrice(data.price);
@@ -98,19 +97,26 @@ export default function ProductDetailPage({
   }, [productId]);
 
   // Get selected color data
-  const selectedColorData =
-    product?.colors.find((color) => color.id === selectedColor) ||
-    (product?.colors && product.colors.length > 0 ? product.colors[0] : null);
+  const selectedColorData = selectedColor
+    ? product?.colors.find((color) => color.id === selectedColor) || null
+    : null;
 
-  // Generate product images based on selected color
+  // Generate product images based on selected color or use default product images
   const productImages = selectedColorData
     ? [
-        selectedColorData.image,
-        `/placeholder.svg?height=600&width=600&text=${selectedColorData.name}-Side`,
-        `/placeholder.svg?height=600&width=600&text=${selectedColorData.name}-Back`,
-        `/placeholder.svg?height=600&width=600&text=${selectedColorData.name}-Detail`,
-      ]
-    : ["/placeholder.svg?height=600&width=600"];
+        selectedColorData.images.image1,
+        selectedColorData.images.image2 || "/placeholder.svg",
+        selectedColorData.images.image3 || "/placeholder.svg",
+        selectedColorData.images.image4 || "/placeholder.svg",
+      ].filter(Boolean)
+    : product
+    ? [
+        product.images.image1,
+        product.images.image2 || "/placeholder.svg",
+        product.images.image3 || "/placeholder.svg",
+        product.images.image4 || "/placeholder.svg",
+      ].filter(Boolean)
+    : ["/placeholder.svg"];
 
   // Handle image zoom functionality
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -223,15 +229,28 @@ export default function ProductDetailPage({
     });
   };
 
-  // Handle buy now
+  // Handle buy now with color validation
   const handleBuyNow = () => {
-    // Redirect to checkout with product info and payment option
+    // Check if a color is selected when colors are available
+    if (product?.colors && product.colors.length > 0 && !selectedColor) {
+      toast({
+        title: "Please select a color",
+        description:
+          "You need to choose a color before proceeding to checkout.",
+        variant: "destructive",
+      });
+      return;
+    } // Redirect to checkout with product info and payment option
     const paymentDetails =
-      paymentOption === "advance"
-        ? `&paymentOption=advance&advancePayment=${advancePayment}`
-        : `&paymentOption=full`;
+      paymentOption === "advance" ? `&advancePayment=${advancePayment}` : ""; // Find selected color to get its value (hex code)
+    const selectedColorData = selectedColor
+      ? product?.colors.find((color) => color.id === selectedColor)
+      : null;
 
-    const colorParam = selectedColor ? `&colorId=${selectedColor}` : "";
+    // Only pass the color value (hex code), not the name
+    const colorParam = selectedColorData
+      ? `&colorValue=${encodeURIComponent(selectedColorData.value)}`
+      : "";
 
     router.push(
       `/checkout?productId=${productId}&quantity=${quantity}${paymentDetails}${colorParam}`
@@ -293,7 +312,7 @@ export default function ProductDetailPage({
             >
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={activeImageIndex + selectedColor} // Change key when color or image changes
+                  key={`${activeImageIndex}-${selectedColor || "default"}`} // Change key when color or image changes
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -302,8 +321,8 @@ export default function ProductDetailPage({
                 >
                   <Image
                     src={productImages[activeImageIndex] || "/placeholder.svg"}
-                    alt={`${product.name} in ${
-                      selectedColorData?.name || "default"
+                    alt={`${product.name} ${
+                      selectedColorData ? `in ${selectedColorData.name}` : ""
                     }`}
                     fill
                     className={`object-contain transition-opacity duration-300 ${
@@ -337,7 +356,7 @@ export default function ProductDetailPage({
             <div className="grid grid-cols-4 gap-3">
               {productImages.map((image, index) => (
                 <div
-                  key={`${selectedColor}-${index}`}
+                  key={`${selectedColor || "default"}-${index}`}
                   className={`relative aspect-square rounded-md overflow-hidden cursor-pointer border-2 transition-all duration-300 ${
                     activeImageIndex === index
                       ? "border-primary shadow-md scale-[1.02]"
@@ -465,14 +484,21 @@ export default function ProductDetailPage({
               )}
             </div>
 
-            {/* Color Selection - Enhanced with visual indicators */}
+            {/* Color Selection - Enhanced with visual indicators and required selection */}
             {product.colors && product.colors.length > 0 && (
               <div>
                 <h3 className="text-base font-semibold mb-2 font-cormorant flex items-center">
                   Color
-                  <span className="ml-2 text-sm font-normal text-muted-foreground">
-                    ({selectedColorData?.name || "Default"})
-                  </span>
+                  {selectedColorData ? (
+                    <span className="ml-2 text-sm font-normal text-muted-foreground">
+                      ({selectedColorData.name})
+                    </span>
+                  ) : (
+                    <span className="ml-2 text-sm font-normal text-red-500 flex items-center">
+                      <AlertCircle className="h-3 w-3 mr-1" />
+                      Required
+                    </span>
+                  )}
                 </h3>
                 <div className="flex flex-wrap gap-3 mb-2">
                   {product.colors.map((color) => (
@@ -679,23 +705,35 @@ export default function ProductDetailPage({
               </RadioGroup>
             </div>
 
-            {/* Actions - Enhanced with animations */}
+            {/* Actions - Enhanced with animations and color validation */}
             <div className="flex flex-col sm:flex-row gap-4">
               <Button
                 size="lg"
-                className="flex-1 font-montserrat transition-all duration-300 hover:scale-[1.02] py-3 md:py-0 hover:bg-white hover:text-primary border border-transparent hover:border-primary"
+                className={`flex-1 font-montserrat transition-all duration-300 hover:scale-[1.02] py-3 md:py-0 hover:bg-white hover:text-primary border border-transparent hover:border-primary ${
+                  product.colors && product.colors.length > 0 && !selectedColor
+                    ? "opacity-70 cursor-not-allowed"
+                    : ""
+                }`}
                 onClick={handleBuyNow}
+                disabled={
+                  product.colors && product.colors.length > 0 && !selectedColor
+                }
               >
                 <motion.div whileHover={{ scale: 1.1 }} className="mr-2">
                   <ShoppingCart className="h-5 w-5" />
                 </motion.div>
-                Buy Now
+                {product.colors && product.colors.length > 0 && !selectedColor
+                  ? "Select a Color"
+                  : "Buy Now"}
               </Button>
               <Button
                 size="lg"
                 variant="outline"
                 className="flex-1 font-montserrat transition-all duration-300 hover:bg-primary/5 py-3 md:py-0"
                 onClick={handleAddToCart}
+                disabled={
+                  product.colors && product.colors.length > 0 && !selectedColor
+                }
               >
                 <motion.div whileHover={{ scale: 1.1 }} className="mr-2">
                   <Heart className="h-5 w-5" />
