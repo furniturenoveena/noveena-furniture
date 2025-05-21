@@ -23,6 +23,23 @@ interface PaymentConfirmationModalProps {
   total: number;
   advanceAmount: number;
   productName: string;
+  orderData: {
+    firstName: string;
+    lastName: string;
+    phone: string;
+    addressLine1: string;
+    addressLine2?: string;
+    city: string;
+    province: string;
+    productId: string;
+    productName: string;
+    productPrice: number;
+    quantity: number;
+    colorValue?: string;
+    colorName?: string;
+    productImage?: string;
+    productCategory?: string;
+  };
 }
 
 export function PaymentConfirmationModal({
@@ -33,30 +50,89 @@ export function PaymentConfirmationModal({
   total,
   advanceAmount,
   productName,
+  orderData,
 }: PaymentConfirmationModalProps) {
   const { toast } = useToast();
   const [paymentStep, setPaymentStep] = useState<
     "confirmation" | "processing" | "success"
   >("confirmation");
 
-  const handleConfirm = () => {
-    setPaymentStep("processing");
+  const handleConfirm = async () => {
+    try {
+      setPaymentStep("processing");
 
-    // Simulate PayHere payment processing
-    // In a real implementation, this would integrate with the PayHere API
-    // https://support.payhere.lk/api-&-mobile-sdk/payhere-checkout
-    setTimeout(() => {
-      setPaymentStep("success");
-      toast({
-        title: "Payment Successful",
-        description: `Your payment of Rs. ${advanceAmount.toLocaleString()} has been confirmed.`,
+      // First create the order in the database
+      const orderResponse = await fetch("/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...orderData,
+          total,
+          paymentMethod: "PAYHERE",
+          amountPaid: 0, // Will be updated after successful payment
+          paymentDate: null, // Will be updated after successful payment
+        }),
       });
 
-      // After payment is successful, wait a bit then close modal and continue with order submission
-      setTimeout(() => {
-        onConfirmPayment();
-      }, 1500);
-    }, 2000);
+      const orderResult = await orderResponse.json();
+
+      if (!orderResponse.ok) {
+        throw new Error(orderResult.error || "Failed to create order");
+      }
+
+      // Initialize PayHere payment with the order ID
+      const response = await fetch("/api/payhere", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          orderId: orderResult.orderId, // Use the actual order ID from database
+          amount: advanceAmount,
+          firstName: orderData.firstName,
+          lastName: orderData.lastName,
+          email: "", // You might want to add email field to your form
+          phone: orderData.phone,
+          address: `${orderData.addressLine1}${orderData.addressLine2 ? `, ${orderData.addressLine2}` : ""}`,
+          city: orderData.city,
+          items: `${orderData.productName} (${orderData.quantity}x)`,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.error || "Failed to initialize payment");
+      }
+
+      // Create a form and submit it to PayHere
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = data.checkoutUrl;
+
+      // Add form fields
+      Object.entries(data.formData).forEach(([key, value]) => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = value as string;
+        form.appendChild(input);
+      });
+
+      // Add form to document and submit
+      document.body.appendChild(form);
+      form.submit();
+    } catch (error: any) {
+      console.error("Payment initialization error:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to initialize payment. Please try again.",
+        variant: "destructive",
+      });
+      setPaymentStep("confirmation");
+    }
   };
 
   return (
@@ -100,8 +176,7 @@ export function PaymentConfirmationModal({
                   complete your payment.
                 </p>
                 <p>
-                  * This is a temporary simulation as PayHere integration is
-                  pending.
+                  * Your order will be confirmed once the payment is successful.
                 </p>
               </div>
             </Card>
@@ -141,7 +216,7 @@ export function PaymentConfirmationModal({
               </Button>
               <Button
                 onClick={handleConfirm}
-                className="flex-1  transition-all duration-300 hover:scale-[1.02] py-3 md:py-0 hover:bg-white hover:text-primary border border-transparent hover:border-primary"
+                className="flex-1 transition-all duration-300 hover:scale-[1.02] py-3 md:py-0 hover:bg-white hover:text-primary border border-transparent hover:border-primary"
               >
                 <CreditCard className="mr-2 h-4 w-4" />
                 Proceed to Pay
@@ -151,7 +226,6 @@ export function PaymentConfirmationModal({
 
           {paymentStep === "processing" && (
             <Button disabled className="w-full">
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Processing...
             </Button>
           )}

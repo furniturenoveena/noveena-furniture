@@ -226,46 +226,7 @@ function CheckoutContent() {
     setIsSubmitting(true);
 
     try {
-      // Prepare order data with the new payment information
-      // Find a matching color in product colors if we have color value
-      const selectedColor =
-        colorValue && product?.colors
-          ? product.colors.find((color) => color.value === colorValue)
-          : null;
-
-      const orderData = {
-        ...formData,
-        productId: product?.id,
-        productName: product?.name,
-        productPrice: product?.price,
-        quantity,
-        colorValue: colorValue || "",
-        colorName: colorName || "",
-        productImage:
-          selectedColor?.images.image1 ||
-          product?.images.image1 ||
-          "/placeholder.svg",
-        productCategory: product?.category?.name,
-        total,
-        paymentMethod: "PAYHERE",
-        amountPaid: advanceAmount,
-        paymentDate: new Date().toISOString(),
-      };
-
-      // Submit order to API
-      const response = await fetch("/api/orders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(orderData),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || "Failed to place order");
-      } // Send SMS notification
+      // Send SMS notification
       const customerName = `${formData.firstName} ${formData.lastName}`;
       const paymentInfo =
         advanceAmount === total
@@ -288,8 +249,8 @@ function CheckoutContent() {
         description: "Thank you for your purchase! We'll contact you soon.",
       });
 
-      // Redirect to the success page with order details
-      router.push(`/checkout/success?orderId=${result.orderId}`);
+      // Redirect to the success page
+      router.push(`/checkout/success`);
     } catch (error: any) {
       console.error("Order submission error:", error);
       toast({
@@ -623,6 +584,23 @@ function CheckoutContent() {
         total={total}
         advanceAmount={advanceAmount}
         productName={product?.name || ""}
+        orderData={{
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          phone: formData.phone,
+          addressLine1: formData.addressLine1,
+          addressLine2: formData.addressLine2,
+          city: formData.city,
+          province: formData.province,
+          productId: product?.id || "",
+          productName: product?.name || "",
+          productPrice: product?.price || 0,
+          quantity,
+          colorValue,
+          colorName,
+          productImage: product?.colors?.find(color => color.value === colorValue)?.images.image1 || product?.images.image1 || "/placeholder.svg",
+          productCategory: product?.category?.name,
+        }}
       />
     </div>
   );

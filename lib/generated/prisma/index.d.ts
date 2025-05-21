@@ -3519,6 +3519,7 @@ export namespace Prisma {
     amountPaid: number | null
     paymentMethod: $Enums.PaymentMethod | null
     paymentDate: Date | null
+    paymentStatus: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3545,6 +3546,7 @@ export namespace Prisma {
     amountPaid: number | null
     paymentMethod: $Enums.PaymentMethod | null
     paymentDate: Date | null
+    paymentStatus: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3571,6 +3573,7 @@ export namespace Prisma {
     amountPaid: number
     paymentMethod: number
     paymentDate: number
+    paymentStatus: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -3613,6 +3616,7 @@ export namespace Prisma {
     amountPaid?: true
     paymentMethod?: true
     paymentDate?: true
+    paymentStatus?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3639,6 +3643,7 @@ export namespace Prisma {
     amountPaid?: true
     paymentMethod?: true
     paymentDate?: true
+    paymentStatus?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3665,6 +3670,7 @@ export namespace Prisma {
     amountPaid?: true
     paymentMethod?: true
     paymentDate?: true
+    paymentStatus?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -3778,6 +3784,7 @@ export namespace Prisma {
     amountPaid: number
     paymentMethod: $Enums.PaymentMethod
     paymentDate: Date | null
+    paymentStatus: string | null
     createdAt: Date
     updatedAt: Date
     _count: OrderCountAggregateOutputType | null
@@ -3823,6 +3830,7 @@ export namespace Prisma {
     amountPaid?: boolean
     paymentMethod?: boolean
     paymentDate?: boolean
+    paymentStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["order"]>
@@ -3851,11 +3859,12 @@ export namespace Prisma {
     amountPaid?: boolean
     paymentMethod?: boolean
     paymentDate?: boolean
+    paymentStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firstName" | "lastName" | "phone" | "orderNotes" | "addressLine1" | "addressLine2" | "city" | "province" | "productId" | "productName" | "productPrice" | "quantity" | "colorValue" | "colorName" | "productImage" | "productCategory" | "total" | "amountPaid" | "paymentMethod" | "paymentDate" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firstName" | "lastName" | "phone" | "orderNotes" | "addressLine1" | "addressLine2" | "city" | "province" | "productId" | "productName" | "productPrice" | "quantity" | "colorValue" | "colorName" | "productImage" | "productCategory" | "total" | "amountPaid" | "paymentMethod" | "paymentDate" | "paymentStatus" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
 
   export type $OrderPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Order"
@@ -3882,6 +3891,7 @@ export namespace Prisma {
       amountPaid: number
       paymentMethod: $Enums.PaymentMethod
       paymentDate: Date | null
+      paymentStatus: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["order"]>
@@ -4297,6 +4307,7 @@ export namespace Prisma {
     readonly amountPaid: FieldRef<"Order", 'Float'>
     readonly paymentMethod: FieldRef<"Order", 'PaymentMethod'>
     readonly paymentDate: FieldRef<"Order", 'DateTime'>
+    readonly paymentStatus: FieldRef<"Order", 'String'>
     readonly createdAt: FieldRef<"Order", 'DateTime'>
     readonly updatedAt: FieldRef<"Order", 'DateTime'>
   }
@@ -4702,6 +4713,7 @@ export namespace Prisma {
     amountPaid: 'amountPaid',
     paymentMethod: 'paymentMethod',
     paymentDate: 'paymentDate',
+    paymentStatus: 'paymentStatus',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -5001,6 +5013,7 @@ export namespace Prisma {
     amountPaid?: FloatFilter<"Order"> | number
     paymentMethod?: EnumPaymentMethodFilter<"Order"> | $Enums.PaymentMethod
     paymentDate?: DateTimeNullableFilter<"Order"> | Date | string | null
+    paymentStatus?: StringNullableFilter<"Order"> | string | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
   }
@@ -5027,6 +5040,7 @@ export namespace Prisma {
     amountPaid?: SortOrder
     paymentMethod?: SortOrder
     paymentDate?: SortOrder
+    paymentStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -5056,6 +5070,7 @@ export namespace Prisma {
     amountPaid?: FloatFilter<"Order"> | number
     paymentMethod?: EnumPaymentMethodFilter<"Order"> | $Enums.PaymentMethod
     paymentDate?: DateTimeNullableFilter<"Order"> | Date | string | null
+    paymentStatus?: StringNullableFilter<"Order"> | string | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
   }, "id">
@@ -5082,6 +5097,7 @@ export namespace Prisma {
     amountPaid?: SortOrder
     paymentMethod?: SortOrder
     paymentDate?: SortOrder
+    paymentStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: OrderCountOrderByAggregateInput
@@ -5116,6 +5132,7 @@ export namespace Prisma {
     amountPaid?: FloatWithAggregatesFilter<"Order"> | number
     paymentMethod?: EnumPaymentMethodWithAggregatesFilter<"Order"> | $Enums.PaymentMethod
     paymentDate?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
+    paymentStatus?: StringNullableWithAggregatesFilter<"Order"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
   }
@@ -5326,6 +5343,7 @@ export namespace Prisma {
     amountPaid?: number
     paymentMethod?: $Enums.PaymentMethod
     paymentDate?: Date | string | null
+    paymentStatus?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -5352,6 +5370,7 @@ export namespace Prisma {
     amountPaid?: number
     paymentMethod?: $Enums.PaymentMethod
     paymentDate?: Date | string | null
+    paymentStatus?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -5377,6 +5396,7 @@ export namespace Prisma {
     amountPaid?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -5402,6 +5422,7 @@ export namespace Prisma {
     amountPaid?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -5428,6 +5449,7 @@ export namespace Prisma {
     amountPaid?: number
     paymentMethod?: $Enums.PaymentMethod
     paymentDate?: Date | string | null
+    paymentStatus?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -5453,6 +5475,7 @@ export namespace Prisma {
     amountPaid?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -5478,6 +5501,7 @@ export namespace Prisma {
     amountPaid?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -5860,6 +5884,7 @@ export namespace Prisma {
     amountPaid?: SortOrder
     paymentMethod?: SortOrder
     paymentDate?: SortOrder
+    paymentStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -5893,6 +5918,7 @@ export namespace Prisma {
     amountPaid?: SortOrder
     paymentMethod?: SortOrder
     paymentDate?: SortOrder
+    paymentStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -5919,6 +5945,7 @@ export namespace Prisma {
     amountPaid?: SortOrder
     paymentMethod?: SortOrder
     paymentDate?: SortOrder
+    paymentStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
